@@ -1,11 +1,7 @@
 from biomass import Update
-from Update import Update
 from biomass import DNA
-from DNA import DNA
 from biomass import RNA
-from RNA import RNA
 from biomass import Protein
-from Protein import Protein
-#from biomass import Lipid
-#from Lipid import Lipid
-#from biomass import Metabolites
+from biomass import Lipid
+from biomass import Metabolite
+
