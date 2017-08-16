@@ -2,8 +2,8 @@
 ## Package to generate biomass coefficients from OMICs data.
 
 Author: Jean-Christophe Lachance
-Date: 05-16-2017
-Version: 0.1
+Date: 08-16-2017
+Version: 0.2
 
 Most bacterial species do not have all of their components measured experimentally. Genome-scale metabolic models rely both on a defined media and on a precise biomass objective function to generate reliable predictions on flux-states and gene essentiality. Generally, the biomass objective function is fetched from another organism, namely E.coli. This package aims to produce an easy way to generate biomass coefficients that reflect experimental reality by incorporating basic dry weight measurments and relative abundances of macromolecules obtained from multiple OMICs datasets. 
 
