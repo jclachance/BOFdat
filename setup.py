@@ -8,4 +8,4 @@ setup(name='biomass',
       author_email='jelachance@eng.ucsd.edu',
       license='MIT',
       packages=['biomass'],
-      zip_safe=False)
+      zip_safe=False, install_requires=['cobra'])
