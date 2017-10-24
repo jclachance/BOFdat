@@ -7,7 +7,7 @@ Genome-scale metabolic models rely both on a defined media and a precise biomass
 
 ### Example use
 
-A full biomass objective function stoichiometric coefficients determination from experimental data fetched from literature for the E.coli model iML1515 is available in the Example folder. The files used are also provided. 
+A full biomass objective function stoichiometric coefficients determination from experimental data fetched from literature for the *E.coli* model *i*ML1515 is available in the Example folder. The files used are also provided. 
 
 ### Documentation
 
