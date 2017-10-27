@@ -1,0 +1,344 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API &#8212; biomass 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="License" href="license.html" />
+    <link rel="prev" title="NGAM" href="NGAM.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-DNA">
+<span id="api"></span><h1>API<a class="headerlink" href="#module-DNA" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dna">
+<h2>DNA<a class="headerlink" href="#dna" title="Permalink to this headline">¶</a></h2>
+<p>This module generates BOFsc for the 4 bases of DNA (dATP, dTTP, dCTP and dGTP)</p>
+<dl class="function">
+<dt id="DNA.get_coefficients">
+<code class="descclassname">DNA.</code><code class="descname">get_coefficients</code><span class="sig-paren">(</span><em>path_to_fasta</em>, <em>path_to_model</em>, <em>CELL_WEIGHT=280</em>, <em>DNA_RATIO=0.031</em><span class="sig-paren">)</span><a class="headerlink" href="#DNA.get_coefficients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a dictionary of metabolite:coefficients for the 4 DNA bases from the organism’s
+DNA fasta file and the weight percentage of DNA in the cell.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path_to_fasta</strong> – a path to the DNA fasta file of the organism, format should be compatible with BioPython SeqIO</li>
+<li><strong>path_to_model</strong> – a path to the model, format supported are json and xml</li>
+<li><strong>CELL_WEIGHT</strong> – experimentally measured cell weight in femtograms, float</li>
+<li><strong>DNA_RATIO</strong> – the ratio of DNA in the entire cell</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a dictionary of metabolites and coefficients</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="DNA.update_biomass_coefficients">
+<code class="descclassname">DNA.</code><code class="descname">update_biomass_coefficients</code><span class="sig-paren">(</span><em>dict_of_coefficients</em>, <em>model</em><span class="sig-paren">)</span><a class="headerlink" href="#DNA.update_biomass_coefficients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the biomass coefficients given the input metabolite:coefficient dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dict_of_coefficients</strong> – dictionary of metabolites and coefficients</li>
+<li><strong>model</strong> – model to update</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The biomass objective function is updated.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-RNA"></span><div class="section" id="rna">
+<h2>RNA<a class="headerlink" href="#rna" title="Permalink to this headline">¶</a></h2>
+<p>This module generates BOFsc for the 4 bases of RNA (ATP, UTP, CTP and GTP)</p>
+<dl class="function">
+<dt id="RNA.get_coefficients">
+<code class="descclassname">RNA.</code><code class="descname">get_coefficients</code><span class="sig-paren">(</span><em>path_to_genbank</em>, <em>path_to_model</em>, <em>path_to_transcriptomic</em>, <em>CELL_WEIGHT=280</em>, <em>TOTAL_RNA_RATIO=0.205</em>, <em>rRNA_RATIO=0.8</em>, <em>tRNA_RATIO=0.1</em>, <em>mRNA_RATIO=0.1</em><span class="sig-paren">)</span><a class="headerlink" href="#RNA.get_coefficients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a dictionary of metabolite:coefficients for the 4 RNA bases from the organism’s
+GenBank annotated file, total RNA weight percentage, transcriptomic. Alternately, ribosomal,
+transfer and messenger RNA relative abundances can be incorporated otherwise the default 80% rRNA, 10% tRNA and
+10% mRNA are used.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path_to_genbank</strong> – a path to the GenBank annotation file of the organism, format should be compatible with BioPython SeqIO</li>
+<li><strong>path_to_model</strong> – a path to the model, format supported are json and xml</li>
+<li><strong>proteomics</strong> – a two column pandas dataframe (gene_id, abundance)</li>
+<li><strong>CELL_WEIGHT</strong> – experimentally measured cell weight in femtograms, float</li>
+<li><strong>RNA_RATIO</strong> – the ratio of DNA in the entire cell</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a dictionary of metabolites and coefficients</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="RNA.update_biomass_coefficients">
+<code class="descclassname">RNA.</code><code class="descname">update_biomass_coefficients</code><span class="sig-paren">(</span><em>dict_of_coefficients</em>, <em>model</em><span class="sig-paren">)</span><a class="headerlink" href="#RNA.update_biomass_coefficients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the biomass coefficients given the input metabolite:coefficient dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dict_of_coefficients</strong> – dictionary of metabolites and coefficients</li>
+<li><strong>model</strong> – model to update</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The biomass objective function is updated.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-Protein"></span><div class="section" id="protein">
+<h2>Protein<a class="headerlink" href="#protein" title="Permalink to this headline">¶</a></h2>
+<p>This module generates BOFsc for the 20 amino acids contained in proteins.</p>
+<dl class="function">
+<dt id="Protein.get_coefficients">
+<code class="descclassname">Protein.</code><code class="descname">get_coefficients</code><span class="sig-paren">(</span><em>path_to_genbank</em>, <em>path_to_model</em>, <em>path_to_proteomic</em>, <em>CELL_WEIGHT=280</em>, <em>PROTEIN_RATIO=0.55</em><span class="sig-paren">)</span><a class="headerlink" href="#Protein.get_coefficients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a dictionary of metabolite:coefficients for the 20 amino acids contained in proteins from the organism’s
+GenBank annotated file, total Protein weight percentage and proteomic data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path_to_genbank</strong> – a path to the GenBank annotation file of the organism, format should be compatible with BioPython SeqIO</li>
+<li><strong>path_to_model</strong> – a path to the model, format supported are json and xml</li>
+<li><strong>path_to_proteomic</strong> – a two column pandas dataframe (gene_id, abundance)</li>
+<li><strong>CELL_WEIGHT</strong> – experimentally measured cell weight in femtograms, float</li>
+<li><strong>PROTEIN_RATIO</strong> – the ratio of DNA in the entire cell</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a dictionary of metabolites and coefficients</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Protein.update_biomass_coefficients">
+<code class="descclassname">Protein.</code><code class="descname">update_biomass_coefficients</code><span class="sig-paren">(</span><em>dict_of_coefficients</em>, <em>model</em><span class="sig-paren">)</span><a class="headerlink" href="#Protein.update_biomass_coefficients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the biomass coefficients given the input metabolite:coefficient dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dict_of_coefficients</strong> – dictionary of metabolites and coefficients</li>
+<li><strong>model</strong> – model to update</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The biomass objective function is updated.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-Lipid"></span><div class="section" id="lipid">
+<h2>Lipid<a class="headerlink" href="#lipid" title="Permalink to this headline">¶</a></h2>
+<p>This module generates BOFsc for the lipid content of the cell.</p>
+<dl class="function">
+<dt id="Lipid.get_coefficients">
+<code class="descclassname">Lipid.</code><code class="descname">get_coefficients</code><span class="sig-paren">(</span><em>path_to_lipidomic</em>, <em>path_to_bigg_dict</em>, <em>path_to_model</em>, <em>CELL_WEIGHT=280</em>, <em>LIPID_RATIO=0.091</em>, <em>R_WEIGHT=284.486</em><span class="sig-paren">)</span><a class="headerlink" href="#Lipid.get_coefficients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a dictionary of metabolite:coefficients for the lipid content of the cell. Lipids vary from a specie to another.
+The lipidomic data provides the relative abundance of each lipid specie while the to_bigg_dict allows to convert identifiers given in the lipidomic data to BiGG identifiers for which
+the metabolite weight is known and can be added easily to the biomass.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>lipidomic</strong> – a dictionary or dataframe of metabolites identified in the lipidomic experiment</li>
+<li><strong>to_bigg_dict</strong> – a dictionary converting from the name present in the lipidomic data to BiGG identifiers. This dictionary is generated through manual curation from the modeller.</li>
+<li><strong>CELL_WEIGHT</strong> – measured cell weight in femtograms, otherwise default</li>
+<li><strong>LIPID_RATIO</strong> – measured lipid ratio of the cell, otherwise default</li>
+<li><strong>R_WEIGHT</strong> – weight of a carbon chain, otherwise default. If the weight of the lipid is not known it will be inferred based on the number of R chains and this given weight.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a dictionary of metabolites and coefficients that can be used to update the biomass objective function.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Lipid.update_biomass_coefficients">
+<code class="descclassname">Lipid.</code><code class="descname">update_biomass_coefficients</code><span class="sig-paren">(</span><em>dict_of_coefficients</em>, <em>model</em><span class="sig-paren">)</span><a class="headerlink" href="#Lipid.update_biomass_coefficients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the biomass coefficients given the input metabolite:coefficient dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dict_of_coefficients</strong> – dictionary of metabolites and coefficients</li>
+<li><strong>model</strong> – model to update</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The biomass objective function is updated.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-GAM"></span><div class="section" id="gam">
+<h2>GAM<a class="headerlink" href="#gam" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="GAM.experimental_GAM">
+<code class="descclassname">GAM.</code><code class="descname">experimental_GAM</code><span class="sig-paren">(</span><em>path_to_data</em>, <em>path_to_model</em>, <em>show_GAM=False</em><span class="sig-paren">)</span><a class="headerlink" href="#GAM.experimental_GAM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Description</p>
+<p>Growth-associated maintenance (GAM) is the ATP cost of assembling macromolecules in the organism.
+This function calculates GAM from provided path to experimental data. This data includes growth rates on
+different carbon sources, the associated uptake rate for each carbon source and the secretion rates of metabolic
+wastes. More information on the format in which to provide the experimental data is available on github.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path_to_data</strong> – The data file is the outcome of the HPLC growth, uptake and secretion rate experiment.</li>
+<li><strong>path_to_model</strong> – The path to the model, json or sbml formats supported</li>
+<li><strong>show_GAM</strong> – bool, will associated colors with carbon sources for easier display later</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">API</a><ul>
+<li><a class="reference internal" href="#dna">DNA</a></li>
+<li><a class="reference internal" href="#rna">RNA</a></li>
+<li><a class="reference internal" href="#protein">Protein</a></li>
+<li><a class="reference internal" href="#lipid">Lipid</a></li>
+<li><a class="reference internal" href="#gam">GAM</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="NGAM.html" title="previous chapter">NGAM</a></li>
+      <li>Next: <a href="license.html" title="next chapter">License</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/API.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Jean-Christophe Lachance.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/API.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,31 +1,31 @@
-from biomass import Update
+"""
+Protein
+=======
+
+This module generates BOFsc for the 20 amino acids contained in proteins.
 
 """
-Usage: create a protein_update object and apply the function get_coefficients to generate a dictionary of
-metabolites and coefficients based on experimental measurements. Use update_biomass function to update
-the biomass objective function with the generated coefficients.
-"""
 
-# Objects
-# none so far
 # Methods
-# Main funcion of this class generates the biomass coefficients for proteins
 def get_coefficients(path_to_genbank, path_to_model, path_to_proteomic, CELL_WEIGHT=280, PROTEIN_RATIO=0.55):
     """
-    Generates a dictionary of coefficients from the fasta file, experimental data
-    and user inputted cell weight and DNA ratio (otherwise default value)
-    ========================
-    Parameters
-    :param path_to_genbank: a path to the GenBank annotation file of the organism,
-    format should be compatible with BioPython SeqIO
+
+    Generates a dictionary of metabolite:coefficients for the 20 amino acids contained in proteins from the organism's
+    GenBank annotated file, total Protein weight percentage and proteomic data.
+
+    :param path_to_genbank: a path to the GenBank annotation file of the organism, format should be compatible with BioPython SeqIO
+
     :param path_to_model: a path to the model, format supported are json and xml
-    :param proteomics: a two column pandas dataframe (gene_id, abundance)
+
+    :param path_to_proteomic: a two column pandas dataframe (gene_id, abundance)
+
     :param CELL_WEIGHT: experimentally measured cell weight in femtograms, float
-    :param DNA_RATIO: the ratio of DNA in the entire cell
-    ========================
-    Return
+
+    :param PROTEIN_RATIO: the ratio of DNA in the entire cell
+
     :return: a dictionary of metabolites and coefficients
     """
+
     import pandas as pd
     AMINO_ACIDS = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W',
                    'Y']
@@ -199,13 +199,14 @@ The option to update the coefficients of the metabolites in the biomass objectiv
 '''
 def update_biomass_coefficients(dict_of_coefficients,model):
     """
-    Updates the biomass coefficients given the input dictionary.
-    ========================
-    Parameters
+
+    Updates the biomass coefficients given the input metabolite:coefficient dictionary.
+
     :param dict_of_coefficients: dictionary of metabolites and coefficients
+
     :param model: model to update
-    ========================
-    Return
-    :return: none
+
+    :return: The biomass objective function is updated.
     """
+    from biomass import Update
     Update.update_biomass(dict_of_coefficients,model)

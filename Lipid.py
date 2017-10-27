@@ -1,11 +1,9 @@
-from biomass import Update
-
 """
-Usage: create a dna_update object and apply the function get_coefficients to generate a dictionary of
-metabolites and coefficients based on experimental measurements. Use update_biomass function to update
-the biomass objective function with the generated coefficients.
+Lipid
+=====
 
-Inherits: Update
+This module generates BOFsc for the lipid content of the cell.
+
 """
 
 def get_coefficients(path_to_lipidomic,path_to_bigg_dict,
@@ -14,22 +12,25 @@ def get_coefficients(path_to_lipidomic,path_to_bigg_dict,
                      LIPID_RATIO=0.091,
                      R_WEIGHT = 284.486):
     """
-    Lipids vary from a specie to another. The lipidomic data provides the relative abundance of each lipid specie
-    while the to_bigg_dict allows to convert identifiers given in the lipidomic data to BiGG identifiers for which
+
+    Generates a dictionary of metabolite:coefficients for the lipid content of the cell. Lipids vary from a specie to another.
+    The lipidomic data provides the relative abundance of each lipid specie while the to_bigg_dict allows to convert identifiers given in the lipidomic data to BiGG identifiers for which
     the metabolite weight is known and can be added easily to the biomass.
-    =====================
-    Parameters
+
     :param lipidomic: a dictionary or dataframe of metabolites identified in the lipidomic experiment
-    :param to_bigg_dict: a dictionary converting from the name present in the lipidomic data to BiGG identifiers.
-    This dictionary is generated through manual curation from the modeller.
+
+    :param to_bigg_dict: a dictionary converting from the name present in the lipidomic data to BiGG identifiers. This dictionary is generated through manual curation from the modeller.
+
     :param CELL_WEIGHT: measured cell weight in femtograms, otherwise default
+
     :param LIPID_RATIO: measured lipid ratio of the cell, otherwise default
-    :param R_WEIGHT: weight of a carbon chain, otherwise default. If the weight of the lipid is not known it will be
-    inferred based on the number of R chains and this given weight.
-    =====================
-    Return
+
+    :param R_WEIGHT: weight of a carbon chain, otherwise default. If the weight of the lipid is not known it will be inferred based on the number of R chains and this given weight.
+
     :return: a dictionary of metabolites and coefficients that can be used to update the biomass objective function.
+
     """
+
     # Operation 0.1
     #Get the total lipid weight in the cell
     LIPID_WEIGHT = LIPID_RATIO * CELL_WEIGHT
@@ -157,16 +158,17 @@ def get_coefficients(path_to_lipidomic,path_to_bigg_dict,
 
     return biomass_coefficients
 
+def update_biomass_coefficients(dict_of_coefficients,model):
+    """
 
-def update_biomass_coefficient(dict_of_coefficients,model):
-    """
-    Updates the biomass coefficients given the input dictionary.
-    ========================
-    Parameters
+    Updates the biomass coefficients given the input metabolite:coefficient dictionary.
+
     :param dict_of_coefficients: dictionary of metabolites and coefficients
+
     :param model: model to update
-    ========================
-    Return
-    :return: none
+
+    :return: The biomass objective function is updated.
+
     """
+    from biomass import Update
     Update.update_biomass(dict_of_coefficients, model)

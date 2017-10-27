@@ -1,5 +1,5 @@
 """
-The standard input for this class is a dictionnart of metabolites and coefficients where:
+The standard input for this class is a dictionnary of metabolites and coefficients where:
 keys = metabolites
 values = coefficients
 CobraPy supports easily this kind of format to update reactions.

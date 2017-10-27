@@ -1,30 +1,34 @@
-from biomass import Update
-
-
 """
-Usage: Use the get_coefficients function to generate a dictionary of metabolite and stoichiometric coefficients.
-Validate the
+RNA
+===
+
+This module generates BOFsc for the 4 bases of RNA (ATP, UTP, CTP and GTP)
+
 """
 # Methods
 def get_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic,
                      CELL_WEIGHT=280, TOTAL_RNA_RATIO=0.205,
                      rRNA_RATIO=0.8, tRNA_RATIO=0.1, mRNA_RATIO=0.1):
     """
-    Generates a dictionary of coefficients from the GenBank annotation file, transcriptomic experimental data
-    and user inputted cell weight, total RNA ratio, riobosomal RNA relative abundance,
-    transfer RNA relative abundance and messenger RNA relative abundance(otherwise default value)
-    ========================
-    Parameters
-    :param path_to_genbank: a path to the GenBank annotation file of the organism,
-    format should be compatible with BioPython SeqIO
+
+    Generates a dictionary of metabolite:coefficients for the 4 RNA bases from the organism's
+    GenBank annotated file, total RNA weight percentage, transcriptomic. Alternately, ribosomal,
+    transfer and messenger RNA relative abundances can be incorporated otherwise the default 80% rRNA, 10% tRNA and
+    10% mRNA are used.
+
+    :param path_to_genbank: a path to the GenBank annotation file of the organism, format should be compatible with BioPython SeqIO
+
     :param path_to_model: a path to the model, format supported are json and xml
+
     :param proteomics: a two column pandas dataframe (gene_id, abundance)
+
     :param CELL_WEIGHT: experimentally measured cell weight in femtograms, float
-    :param DNA_RATIO: the ratio of DNA in the entire cell
-    ========================
-    Return
+
+    :param RNA_RATIO: the ratio of DNA in the entire cell
+
     :return: a dictionary of metabolites and coefficients
     """
+
     # Imports
     import pandas as pd
 
@@ -225,14 +229,14 @@ def get_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic,
 '''
 def update_biomass_coefficients(dict_of_coefficients,model):
     """
-    Updates the biomass coefficients given the input dictionary.
-    ========================
-    Parameters
-    :param dict_of_coefficients: dictionary of metabolites and coefficients
-    :param model: model to update
-    ========================
-    Return
-    :return: none
-    """
 
+    Updates the biomass coefficients given the input metabolite:coefficient dictionary.
+
+    :param dict_of_coefficients: dictionary of metabolites and coefficients
+
+    :param model: model to update
+
+    :return: The biomass objective function is updated.
+    """
+    from biomass import Update
     Update.update_biomass(dict_of_coefficients,model)

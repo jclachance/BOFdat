@@ -1,34 +1,26 @@
-from biomass import Update
+"""
+DNA
+===
+
+This module generates BOFsc for the 4 bases of DNA (dATP, dTTP, dCTP and dGTP)
 
 """
-Usage: create a dna_update object and apply the function get_coefficients to generate a dictionary of
-metabolites and coefficients based on experimental measurements. Use update_biomass function to update
-the biomass objective function with the generated coefficients.
-
-Inherits: Update
-"""
-# Mandatory imports
-
-# from biomass import Update
-
-# Objects
-# none so far
 
 # Methods
-
 def get_coefficients(path_to_fasta, path_to_model, CELL_WEIGHT=280, DNA_RATIO=0.031):
     """
-    Generates a dictionary of coefficients from the fasta file, experimental data
-    and user inputted cell weight and DNA ratio (otherwise default value)
-    ========================
-    Parameters
-    :param path_to_fasta: a path to the DNA fasta file of the organism,
-    format should be compatible with BioPython SeqIO
+
+    Generates a dictionary of metabolite:coefficients for the 4 DNA bases from the organism's
+    DNA fasta file and the weight percentage of DNA in the cell.
+
+    :param path_to_fasta: a path to the DNA fasta file of the organism, format should be compatible with BioPython SeqIO
+
     :param path_to_model: a path to the model, format supported are json and xml
+
     :param CELL_WEIGHT: experimentally measured cell weight in femtograms, float
+
     :param DNA_RATIO: the ratio of DNA in the entire cell
-    ========================
-    Return
+
     :return: a dictionary of metabolites and coefficients
     """
     BASES = ['A', 'T', 'C', 'G']
@@ -112,13 +104,15 @@ The option to update the coefficients of the metabolites in the biomass objectiv
 '''
 def update_biomass_coefficients(dict_of_coefficients,model):
     """
-    Updates the biomass coefficients given the input dictionary.
-    ========================
-    Parameters
+
+    Updates the biomass coefficients given the input metabolite:coefficient dictionary.
+
     :param dict_of_coefficients: dictionary of metabolites and coefficients
+
     :param model: model to update
-    ========================
-    Return
-    :return: none
+
+    :return: The biomass objective function is updated.
     """
+
+    from biomass import Update
     Update.update_biomass(dict_of_coefficients,model)

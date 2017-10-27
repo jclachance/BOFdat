@@ -1,4 +1,10 @@
-from biomass import Update
+"""
+GAM
+===
+
+
+
+"""
 
 """
 Growth associated maintenant (GAM) is defined as the energy cost of growth.
@@ -9,6 +15,8 @@ This package offers two options for the user:
 
 def experimental_GAM(path_to_data, path_to_model,show_GAM=False):
     """
+    Description
+
     Growth-associated maintenance (GAM) is the ATP cost of assembling macromolecules in the organism.
     This function calculates GAM from provided path to experimental data. This data includes growth rates on
     different carbon sources, the associated uptake rate for each carbon source and the secretion rates of metabolic
@@ -292,4 +300,5 @@ def theorical_GAM(protein_percent, rna_percent, dna_percent,CP = 4.324, CD = 1.3
 
 def update_GAM(gam):
     #Add the atp consumption to the biomass
+    from biomass import Update
 '''
