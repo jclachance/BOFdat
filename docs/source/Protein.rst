@@ -1,18 +1,18 @@
 Protein
 =======
 
-"""
-    Generates a dictionary of coefficients from the fasta file, experimental data
-    and user inputted cell weight and DNA ratio (otherwise default value)
-    ========================
-    Parameters
-    :param path_to_genbank: a path to the GenBank annotation file of the organism,
-    format should be compatible with BioPython SeqIO
-    :param path_to_model: a path to the model, format supported are json and xml
-    :param proteomics: a two column pandas dataframe (gene_id, abundance)
-    :param CELL_WEIGHT: experimentally measured cell weight in femtograms, float
-    :param DNA_RATIO: the ratio of DNA in the entire cell
-    ========================
-    Return
-    :return: a dictionary of metabolites and coefficients
-"""
+This module calculates the abundance of each of the 20 amino acids who compones proteins. 
+The main input files by user are the **GenBank annotation file** as well as the **proteomic data**.
+
+.. note:: Quantitative proteomic is hard to obtain. Using transcriptomic data assuming a 1:1 RNA abundance to protein may provide a working estimate for the cell's amino acid composition.
+
+
+The total protein weight percentage in the cell is provided as a fraction (number between 0 and 1).
+The GenBank files and proteomic should be compatible together. This means that the Gene IDs provided by the proteomic file should be accessible in the GenBank file 
+Protein uses CDS elements only. The **translation** into amino acid should be available as well as the **locus tag**. 
+Hence the transcriptomic file should include the GenBank locus tags as gene identifiers in the first column and the relative abundances in the second.  
+
+File example
+------------
+
+.. image:: /rna_file.png
