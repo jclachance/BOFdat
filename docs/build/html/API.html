@@ -1,47 +1,175 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>API &mdash; biomass 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
     
-    <title>API &#8212; biomass 0.0.1 documentation</title>
-    
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.0.1',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="License" href="license.html" />
-    <link rel="prev" title="NGAM" href="NGAM.html" />
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="biomass 0.0.1 documentation" href="index.html"/>
+        <link rel="next" title="License" href="license.html"/>
+        <link rel="prev" title="NGAM" href="NGAM.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
    
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  <div class="wy-grid-for-nav">
 
-  </head>
-  <body>
-  
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+          
+            <a href="index.html" class="icon icon-home"> biomass
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="DNA.html">DNA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="RNA.html">RNA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Protein.html">Protein</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Lipids.html">Lipids</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Metabolites.html">Metabolites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GAM.html">GAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NGAM.html">NGAM</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dna">DNA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rna">RNA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#protein">Protein</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lipid">Lipid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gam">GAM</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="help.html">Help</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">biomass</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/API.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="module-DNA">
 <span id="api"></span><h1>API<a class="headerlink" href="#module-DNA" title="Permalink to this headline">¶</a></h1>
@@ -88,6 +216,38 @@ DNA fasta file and the weight percentage of DNA in the cell.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The biomass objective function is updated.</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="DNA._import_genome">
+<code class="descclassname">DNA.</code><code class="descname">_import_genome</code><span class="sig-paren">(</span><em>fasta</em><span class="sig-paren">)</span><a class="headerlink" href="#DNA._import_genome" title="Permalink to this definition">¶</a></dt>
+<dd><p>This private function utilizes BioPython to read the fasta file provided by the user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fasta</strong> – the path to the fasta file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the genome sequence to use for calculation</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="DNA._import_model">
+<code class="descclassname">DNA.</code><code class="descname">_import_model</code><span class="sig-paren">(</span><em>path_to_model</em><span class="sig-paren">)</span><a class="headerlink" href="#DNA._import_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>This private function imports the model in either .json or .xml format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path_to_model</strong> – the path to the model. Supported format are .json and .xml</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">model</td>
 </tr>
 </tbody>
 </table>
@@ -145,6 +305,54 @@ transfer and messenger RNA relative abundances can be incorporated otherwise the
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="RNA._import_genome">
+<code class="descclassname">RNA.</code><code class="descname">_import_genome</code><span class="sig-paren">(</span><em>path_to_genbank</em><span class="sig-paren">)</span><a class="headerlink" href="#RNA._import_genome" title="Permalink to this definition">¶</a></dt>
+<dd><p>This private function utilizes BioPython to read the GenBank annotation file provided by the user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path_to_genbank</strong> – the path GenBank annotation file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the genome record</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="RNA._import_model">
+<code class="descclassname">RNA.</code><code class="descname">_import_model</code><span class="sig-paren">(</span><em>path_to_model</em><span class="sig-paren">)</span><a class="headerlink" href="#RNA._import_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>This private function imports the model in either .json or .xml format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path_to_model</strong> – the path to the model. Supported format are .json and .xml</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">model</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="RNA._import_transcriptomic">
+<code class="descclassname">RNA.</code><code class="descname">_import_transcriptomic</code><span class="sig-paren">(</span><em>path_to_transcriptomic</em><span class="sig-paren">)</span><a class="headerlink" href="#RNA._import_transcriptomic" title="Permalink to this definition">¶</a></dt>
+<dd><p>This private function imports the 2 column .csv file containing the relative abundances of each gene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path_to_transcriptomic</strong> – the path to to 2 column .csv file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">pandas DataFrame containing gene identifiers and relative abundances</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <span class="target" id="module-Protein"></span><div class="section" id="protein">
 <h2>Protein<a class="headerlink" href="#protein" title="Permalink to this headline">¶</a></h2>
@@ -190,6 +398,54 @@ GenBank annotated file, total Protein weight percentage and proteomic data.</p>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The biomass objective function is updated.</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Protein._import_genome">
+<code class="descclassname">Protein.</code><code class="descname">_import_genome</code><span class="sig-paren">(</span><em>path_to_genbank</em><span class="sig-paren">)</span><a class="headerlink" href="#Protein._import_genome" title="Permalink to this definition">¶</a></dt>
+<dd><p>This private function utilizes BioPython to read the GenBank annotation file provided by the user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path_to_genbank</strong> – the path GenBank annotation file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the genome record</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Protein._import_model">
+<code class="descclassname">Protein.</code><code class="descname">_import_model</code><span class="sig-paren">(</span><em>path_to_model</em><span class="sig-paren">)</span><a class="headerlink" href="#Protein._import_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>This private function imports the model in either .json or .xml format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path_to_model</strong> – the path to the model. Supported format are .json and .xml</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">model</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Protein._import_proteomic">
+<code class="descclassname">Protein.</code><code class="descname">_import_proteomic</code><span class="sig-paren">(</span><em>path_to_proteomic</em><span class="sig-paren">)</span><a class="headerlink" href="#Protein._import_proteomic" title="Permalink to this definition">¶</a></dt>
+<dd><p>This private function imports the 2 column .csv file containing the relative abundances of each gene.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path_to_proteomic</strong> – the path to to 2 column .csv file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">pandas DataFrame containing gene identifiers and relative abundances</td>
 </tr>
 </tbody>
 </table>
@@ -246,6 +502,54 @@ the metabolite weight is known and can be added easily to the biomass.</p>
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="Lipid._make_compliant_lipidomic">
+<code class="descclassname">Lipid.</code><code class="descname">_make_compliant_lipidomic</code><span class="sig-paren">(</span><em>path_to_lipidomic</em><span class="sig-paren">)</span><a class="headerlink" href="#Lipid._make_compliant_lipidomic" title="Permalink to this definition">¶</a></dt>
+<dd><p>This private function imports the 2 column .csv file that connects the lipid annotation from your lipid abundances file to identifiers in the model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path_to_lipidomic</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a pandas dataframe containing lipid name and relative abundance</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Lipid._make_compliant_bigg">
+<code class="descclassname">Lipid.</code><code class="descname">_make_compliant_bigg</code><span class="sig-paren">(</span><em>path_to_bigg_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#Lipid._make_compliant_bigg" title="Permalink to this definition">¶</a></dt>
+<dd><p>This private function imports the 2 column .csv file that connects the lipid annotation from your lipid abundances file to identifiers in the model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path_to_bigg_dict</strong> – the path to the convertion 2 column .csv file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a dictionary for convertion</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Lipid._import_model">
+<code class="descclassname">Lipid.</code><code class="descname">_import_model</code><span class="sig-paren">(</span><em>path_to_model</em><span class="sig-paren">)</span><a class="headerlink" href="#Lipid._import_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>This private function imports the model in either .json or .xml format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path_to_model</strong> – the path to the model. Supported format are .json and .xml</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">model</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <span class="target" id="module-GAM"></span><div class="section" id="gam">
 <h2>GAM<a class="headerlink" href="#gam" title="Permalink to this headline">¶</a></h2>
@@ -279,66 +583,75 @@ wastes. More information on the format in which to provide the experimental data
 </div>
 
 
+           </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="license.html" class="btn btn-neutral float-right" title="License" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="NGAM.html" class="btn btn-neutral" title="NGAM" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Jean-Christophe Lachance.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">API</a><ul>
-<li><a class="reference internal" href="#dna">DNA</a></li>
-<li><a class="reference internal" href="#rna">RNA</a></li>
-<li><a class="reference internal" href="#protein">Protein</a></li>
-<li><a class="reference internal" href="#lipid">Lipid</a></li>
-<li><a class="reference internal" href="#gam">GAM</a></li>
-</ul>
-</li>
-</ul>
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="NGAM.html" title="previous chapter">NGAM</a></li>
-      <li>Next: <a href="license.html" title="next chapter">License</a></li>
-  </ul></li>
-</ul>
-</div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/API.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2017, Jean-Christophe Lachance.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
-      
-      |
-      <a href="_sources/API.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
 
-    
+    </section>
 
-    
-  </body>
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>
