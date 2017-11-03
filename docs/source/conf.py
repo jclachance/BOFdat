@@ -18,7 +18,7 @@
 #
 import os
 import sys
-sys.path.insert(0,'/home/jean-christophe/Documents/Maitrise_UCSD/biomass/Mflorum/biomass/')
+sys.path.insert(0,'/home/jean-christophe/Documents/Maitrise_UCSD/BOFdat/biomass/')
 
 
 # -- General configuration ------------------------------------------------
@@ -45,7 +45,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'biomass'
+project = u'BOFdat'
 copyright = u'2017, Jean-Christophe Lachance'
 author = u'Jean-Christophe Lachance'
 
