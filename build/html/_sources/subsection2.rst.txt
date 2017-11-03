@@ -1,4 +1,0 @@
-Subsection2
-===========
-
-some other content
