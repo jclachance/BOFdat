@@ -1,11 +1,11 @@
 from setuptools import setup
 
-setup(name='biomass',
-      version='0.1',
-      description='Package to generate biomass coefficients from OMICs data',
-      url='https://github.com/jclachance/biomass/',
+setup(name='BOFdat',
+      version='0.3',
+      description='Package to generate biomass objective function stoichiometric coefficients from experimental data',
+      url='https://github.com/jclachance/BOFdat/',
       author='Jean-Christophe Lachance',
       author_email='jelachance@eng.ucsd.edu',
       license='MIT',
-      packages=['biomass'],
+      packages=find_packages(),
       zip_safe=False, install_requires=['cobra'])
