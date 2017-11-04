@@ -1,7 +1,12 @@
 API
 ===
 
-.. automodule:: BOFdat.DNA
+.. toctree::
+
+   BOFdat.DNA
+   BOFdat.RNA
+
+.. automodule:: DNA
    :members: get_coefficients, update_biomass_coefficients, _import_genome, _import_model 
 
 .. automodule:: RNA
