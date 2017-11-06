@@ -8,4 +8,6 @@ setup(name='BOFdat',
       author_email='jelachance@eng.ucsd.edu',
       license='MIT',
       packages=find_packages(),
-      zip_safe=False, install_requires=['cobra'])
+      py_module=['DNA','RNA'],
+      zip_safe=False, 
+      install_requires=['cobra', 'BioPython])
