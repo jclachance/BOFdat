@@ -1,14 +1,10 @@
 API
 ===
 
-
-.. automodule:: BOFdat.DNA
-   :members: 
-   :undoc-members:
-   :show-inheritance: 
-
-.. automodule:: BOFdat.RNA
-   :members: get_coefficients, update_biomass_coefficients, _import_genome, _import_model, _import_transcriptomic
+.. toctree::
+   BOFdat.DNA
+   BOFdat.RNA
+   
 
 .. automodule:: Protein
    :members: get_coefficients, update_biomass_coefficients, _import_genome, _import_model, _import_proteomic
