@@ -16,6 +16,7 @@ Contents
 --------
 
 .. toctree::
+   :maxdepth: 2
    DNA
    RNA
    Protein
@@ -26,7 +27,7 @@ Contents
    API
    license
    help
-   :maxdepth: 2
+   
    
 
 * :ref:`genindex`
