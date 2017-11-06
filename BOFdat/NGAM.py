@@ -5,6 +5,7 @@ The non-growth associated maintenance represents all extra cost of living that a
 The NGAM can be ....
 
 """
-
+'''
 def calculate_NGAM():
     #No clue how to do that just yet
+'''
