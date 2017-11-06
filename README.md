@@ -11,15 +11,13 @@ A full biomass objective function stoichiometric coefficients determination from
 
 ### Documentation
 
-Documentation available on Read the docs:
-
+Visit the [documentation](http://BOFdat.readthedocs.org/)
 
 
 ### Cite
 
 **upcoming paper**
 
-### License
 
 
 
