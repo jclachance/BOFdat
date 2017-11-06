@@ -17,8 +17,8 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-import sys
-sys.path.insert(0,'/home/jean-christophe/Documents/Maitrise_UCSD/BOFdat/biomass/')
+#import sys
+#sys.path.insert(0,os.path.abspath('.'))
 
 
 # -- General configuration ------------------------------------------------
@@ -100,7 +100,7 @@ html_static_path = ['nstatic']
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'biomassdoc'
+htmlhelp_basename = 'BOFdatdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
