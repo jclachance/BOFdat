@@ -6,6 +6,8 @@ API
    BOFdat.DNA
    BOFdat.RNA
 
+.. autofunction:: DNA.get_coefficients
+
 .. automodule:: DNA
    :members: get_coefficients, update_biomass_coefficients, _import_genome, _import_model 
 
