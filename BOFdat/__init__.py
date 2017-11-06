@@ -1,8 +1,8 @@
-from biomass import Update
-from biomass import DNA
-from biomass import RNA
-from biomass import Protein
-from biomass import Lipid
-from biomass import Metabolite
-from biomass import GAM
+from BOFdat import Update
+from BOFdat import DNA
+from BOFdat import RNA
+from BOFdat import Protein
+from BOFdat import Lipid
+from BOFdat import Metabolite
+from BOFdat import GAM
 
