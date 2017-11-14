@@ -1,21 +1,18 @@
 """
-GAM
-===
+Maintenance
+===========
 
-
-
-"""
-
-"""
 Growth associated maintenant (GAM) is defined as the energy cost of growth.
 This package offers two options for the user:
 1- Calculate GAM from experimental data
 2- Estimate GAM
+
 """
 
-def experimental_GAM(path_to_data, path_to_model,show_GAM=False):
+def experimental_maintenance(path_to_data, path_to_model,show_GAM=False):
     """
     Description
+    -----------
 
     Growth-associated maintenance (GAM) is the ATP cost of assembling macromolecules in the organism.
     This function calculates GAM from provided path to experimental data. This data includes growth rates on

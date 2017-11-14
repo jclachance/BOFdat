@@ -7,7 +7,7 @@ This module generates BOFsc for the 4 bases of DNA (dATP, dTTP, dCTP and dGTP)
 """
 
 # Methods
-def get_coefficients(path_to_fasta, path_to_model, CELL_WEIGHT=280, DNA_RATIO=0.031):
+def generate_coefficients(path_to_fasta, path_to_model, CELL_WEIGHT=280, DNA_RATIO=0.031):
     """
 
     Generates a dictionary of metabolite:coefficients for the 4 DNA bases from the organism's

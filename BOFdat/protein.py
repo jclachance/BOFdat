@@ -7,7 +7,7 @@ This module generates BOFsc for the 20 amino acids contained in proteins.
 """
 
 # Methods
-def get_coefficients(path_to_genbank, path_to_model, path_to_proteomic, CELL_WEIGHT=280, PROTEIN_RATIO=0.55):
+def generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, CELL_WEIGHT=280, PROTEIN_RATIO=0.55):
     """
 
     Generates a dictionary of metabolite:coefficients for the 20 amino acids contained in proteins from the organism's

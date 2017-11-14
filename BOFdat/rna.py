@@ -6,7 +6,7 @@ This module generates BOFsc for the 4 bases of RNA (ATP, UTP, CTP and GTP)
 
 """
 # Methods
-def get_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic,
+def generate_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic,
                      CELL_WEIGHT=280, TOTAL_RNA_RATIO=0.205,
                      rRNA_RATIO=0.8, tRNA_RATIO=0.1, mRNA_RATIO=0.1):
     """

@@ -1,12 +1,13 @@
-from biomass import Update
-import pandas as pd
-
 """
+Metabolite
+==========
+
 Usage: create a dna_update object and apply the function get_coefficients to generate a dictionary of
 metabolites and coefficients based on experimental measurements. Use update_biomass function to update
 the biomass objective function with the generated coefficients.
 
 Inherits: Update
+
 """
 
 # Operations to screen data for Universal biomass table and model should be included before the get_coefficient method
@@ -87,7 +88,7 @@ def filter_for_biomass_metab(path_to_bigg_dict):
     return pd.DataFrame({'metab_name': metab_name, 'metab_id': metab_id}, columns=['metab_name', 'metab_id'])
 
 
-def get_coefficients_from_experimental_data(path_to_metabolomic, path_to_bigg_dict, path_to_model, METAB_RATIO=0.029,
+def generate_coefficients_from_experimental_data(path_to_metabolomic, path_to_bigg_dict, path_to_model, METAB_RATIO=0.029,
                                             CELL_WEIGHT=280):
     """
     This functions generates a dictionary of stoichiometric coefficients for the uodate of the biomass
