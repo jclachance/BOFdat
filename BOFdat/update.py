@@ -1,4 +1,8 @@
 """
+Update
+======
+
+
 The standard input for this class is a dictionnary of metabolites and coefficients where:
 keys = metabolites
 values = coefficients
@@ -12,13 +16,11 @@ Since no real standard exists in BiGG to exists to annotate the Biomass Objectiv
 def update_biomass(dict_of_coefficients, model):
     """
     Updates the biomass coefficients given the input dictionary.
-    ========================
-    Parameters
+
     :param dict_of_coefficients: a dictionary of metabolites and coefficients
+
     :param model: the model to be modified
 
-    ========================
-    Return
     :return: none
     """
 

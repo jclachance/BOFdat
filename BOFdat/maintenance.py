@@ -2,28 +2,29 @@
 Maintenance
 ===========
 
-Growth associated maintenant (GAM) is defined as the energy cost of growth.
+Growth associated maintenance (GAM) is defined as the energy cost of growth, namely polymerization of macromolecules.
+Non-Growth associated maintenance (NGAM) represent all the extra costs that the cell must overcome to operate.
 This package offers two options for the user:
-1- Calculate GAM from experimental data
-2- Estimate GAM
+1- Calculate GAM and NGAM from experimental data
+2- Estimate GAM and NGAM from theorical values
 
 """
 
 def experimental_maintenance(path_to_data, path_to_model,show_GAM=False):
     """
-    Description
-    -----------
 
     Growth-associated maintenance (GAM) is the ATP cost of assembling macromolecules in the organism.
     This function calculates GAM from provided path to experimental data. This data includes growth rates on
     different carbon sources, the associated uptake rate for each carbon source and the secretion rates of metabolic
-    wastes. More information on the format in which to provide the experimental data is available on github.
+    wastes. More information on the format in which to provide the experimental data is available on GitHub.
 
     :param path_to_data: The data file is the outcome of the HPLC growth, uptake and secretion rate experiment.
-    :param path_to_model: The path to the model, json or sbml formats supported
-    :param show_GAM: bool, will associated colors with carbon sources for easier display later
 
-    :return:
+    :param path_to_model: The path to the model, json or sbml formats supported
+
+    :param show_GAM: bool, will associate colors with carbon sources for easier display later
+
+    :return: a dictionary {GAM:value, NGAM:value}
     """
 
     #From experimental data growth rate on a given carbon source
@@ -297,5 +298,6 @@ def theorical_GAM(protein_percent, rna_percent, dna_percent,CP = 4.324, CD = 1.3
 
 def update_GAM(gam):
     #Add the atp consumption to the biomass
-    from biomass import Update
+    from BOFdat import update
+
 '''

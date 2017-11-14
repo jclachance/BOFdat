@@ -2,16 +2,21 @@
 Metabolite
 ==========
 
-Usage: create a dna_update object and apply the function get_coefficients to generate a dictionary of
-metabolites and coefficients based on experimental measurements. Use update_biomass function to update
-the biomass objective function with the generated coefficients.
-
-Inherits: Update
+This module generates BOFsc for the metabolite content of the cell.
 
 """
 
 # Operations to screen data for Universal biomass table and model should be included before the get_coefficient method
-def filter_for_model_metab(path_to_bigg_dict, path_to_model):
+def filter_for_model_metab(path_to_conversion_file, path_to_model):
+    """
+
+    :param path_to_conversion_file: a dictionary converting from the name present in the lipidomic data to BiGG identifiers. This dictionary is generated through manual curation from the modeller.
+
+    :param path_to_model: a path to the model, format supported are json and xml
+
+    :return: updated dictionary with metabolites found in the model
+    """
+
     def import_model(path_to_model):
         import cobra
         extension = path_to_model.split('.')[-1]
@@ -29,7 +34,7 @@ def filter_for_model_metab(path_to_bigg_dict, path_to_model):
     model_metab_id = [m.id for m in model.metabolites]
     # Get to_bigg_dict
     import pandas as pd
-    to_bigg_df = pd.read_csv(path_to_bigg_dict)
+    to_bigg_df = pd.read_csv(path_to_conversion_file)
     to_bigg_dict = dict(zip([i for i in to_bigg_df[to_bigg_df.columns[0]]],
                             [i for i in to_bigg_df[to_bigg_df.columns[1]]]))
     # Get the metabolites that are in the model
@@ -42,7 +47,17 @@ def filter_for_model_metab(path_to_bigg_dict, path_to_model):
     return model_metab
 
 
-def filter_for_biomass_metab(path_to_bigg_dict):
+def filter_for_biomass_metab(path_to_conversion_file):
+    """
+    Filters the list of metabolites by comparing it to all metabolites that have been added to metabolic models.
+    Source: Joana C. Xavier, Kiran Raosaheb Patil and Isabel Rocha, Integration of Biomass Formulations of
+    Genome-Scale Metabolic Models with Experimental Data Reveals Universally Essential Cofactors in Prokaryotes,
+    Metabolic Engineering, http://dx.doi.org/10.1016/j.ymben.2016.12.002
+
+    :param path_to_bigg_dict:
+
+    :return:
+    """
     def import_universal_table():
         import pandas as pd
         Universal_biomass = pd.read_csv('BIOMASS_universal_components.csv', skiprows=1)
@@ -66,7 +81,7 @@ def filter_for_biomass_metab(path_to_bigg_dict):
     all_compounds = import_universal_table()
     # Get to_bigg_dict
     import pandas as pd
-    to_bigg_df = pd.read_csv(path_to_bigg_dict)
+    to_bigg_df = pd.read_csv(path_to_conversion_file)
     to_bigg_dict = dict(zip([i for i in to_bigg_df[to_bigg_df.columns[0]]],
                             [i for i in to_bigg_df[to_bigg_df.columns[1]]]))
     # Get the metabolites that are in the universal biomass table
@@ -88,22 +103,22 @@ def filter_for_biomass_metab(path_to_bigg_dict):
     return pd.DataFrame({'metab_name': metab_name, 'metab_id': metab_id}, columns=['metab_name', 'metab_id'])
 
 
-def generate_coefficients_from_experimental_data(path_to_metabolomic, path_to_bigg_dict, path_to_model, METAB_RATIO=0.029,
+def generate_coefficients_from_experimental_data(path_to_metabolomic, path_to_conversion_file, path_to_model, METAB_RATIO=0.029,
                                             CELL_WEIGHT=280):
     """
     This functions generates a dictionary of stoichiometric coefficients for the uodate of the biomass
     objective function from experimental data.
     The metabolomic data taken as an input is supposed to be filtered using other functions.
-    THIS FUNCTION DOES FILTER FOR METABOLITES IN THE MODEL OR THE UNIVERSAL TABLE.
+    For filtering see functions filter_for_model_metab and/or filter_for_biomass_metab
 
-    Parameters
-    ===================
     :param path_to_metabolomic: the path to a csv file of BiGG identifiers for metabolites and relative abundances
+
     :param path_to_model: the path to the metabolic model of interest
+
     :param TOTAL_METAB: the soluble fraction of the cell
+
     :param CELL_WEIGHT: total cell weight
-    ===================
-    Return
+
     :return: a dictionary of metabolites and coefficients that can be used to update the biomass objective function.
     """
     # Operation 0.1
@@ -117,9 +132,9 @@ def generate_coefficients_from_experimental_data(path_to_metabolomic, path_to_bi
         df.columns = ['lipid_name', 'abundance']
         return df
 
-    def make_compliant_bigg(path_to_bigg_dict):
+    def make_compliant_bigg(path_to_conversion_file):
         import pandas as pd
-        df = pd.read_csv(path_to_bigg_dict)
+        df = pd.read_csv(path_to_conversion_file)
         df.columns = ['lipid_name', 'lipid_id']
         keys = [i for i in df.lipid_name]
         values = [i for i in df.lipid_id]
@@ -138,10 +153,14 @@ def generate_coefficients_from_experimental_data(path_to_metabolomic, path_to_bi
     # Operation 1
     def convert_metabolomic_to_bigg(metabolomic, to_bigg_dict):
         """
+
         This function generates a dictionary of BiGG identifiers that were generated through manual curation of the user
         with their relative abundances.
+
         :param lipidomic: a two column csv file that contains original lipid names and relative abundances
+
         :param to_bigg_dict: a dictionary converting names in the experimental data to BiGG identifiers
+
         :return: a dictionary containing BiGG identifiers and their relative abundances
         """
         import pandas as pd
@@ -202,7 +221,7 @@ def generate_coefficients_from_experimental_data(path_to_metabolomic, path_to_bi
     # 0.1- Calculate the total metabolite weight
     # 0.2- Make data compliant for the rest of the functions
     metabolomic_compliant = make_compliant_metabolomic(path_to_metabolomic)
-    bigg_compliant = make_compliant_bigg(path_to_bigg_dict)
+    bigg_compliant = make_compliant_bigg(path_to_conversion_file)
     # 0.3- Get model
     model = import_model(path_to_model)
     # 1- Convert names to BiGG
@@ -216,6 +235,20 @@ def generate_coefficients_from_experimental_data(path_to_metabolomic, path_to_bi
 
     return biomass_coefficients
 
+def update_biomass_coefficient(dict_of_coefficients, model):
+    """
+
+    Updates the biomass coefficients given the input metabolite:coefficient dictionary.
+
+    :param dict_of_coefficients: dictionary of metabolites and coefficients
+
+    :param model: model to update
+
+    :return: The biomass objective function is updated.
+
+    """
+    from BOFdat import update
+    update.update_biomass(dict_of_coefficients, model)
 
 #######################
 # Section under progress
@@ -257,22 +290,6 @@ def get_estimated_coefficients(UNIVERSAL_TABLE,model, TOTAL_METAB= 0.05):
     #2- Split the soluble pool into the number of metabolites that were found
     # and attribute resulting coefficient for these metabolites
     dict_of_coefficients = attribute_coefficients(biomass_metabs, )
-
-
-
-def update_biomass_coefficient(dict_of_coefficients, model):
-    """
-    Updates the biomass coefficients given the input dictionary.
-    ========================
-    Parameters
-    :param dict_of_coefficients: dictionary of metabolites and coefficients
-    :param model: model to update
-    ========================
-    Return
-    :return: none
-    """
-
-    Update.update_biomass(dict_of_coefficients, model)
 
 #Deprecated
 def convert_to_bigg(metab_names):

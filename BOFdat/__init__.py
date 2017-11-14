@@ -1,8 +1,8 @@
-from BOFdat import Update
-from BOFdat import DNA
-from BOFdat import RNA
-from BOFdat import Protein
-from BOFdat import Lipid
-from BOFdat import Metabolite
-from BOFdat import GAM
+from BOFdat import update
+from BOFdat import dna
+from BOFdat import rna
+from BOFdat import protein
+from BOFdat import lipid
+from BOFdat import metabolite
+from BOFdat import maintenance
 

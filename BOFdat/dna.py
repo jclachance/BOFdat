@@ -114,5 +114,5 @@ def update_biomass_coefficients(dict_of_coefficients,model):
     :return: The biomass objective function is updated.
     """
 
-    from biomass import Update
-    Update.update_biomass(dict_of_coefficients,model)
+    from BOFdat import update
+    update.update_biomass(dict_of_coefficients,model)
