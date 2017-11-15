@@ -2,14 +2,7 @@
 Update
 ======
 
-
-The standard input for this class is a dictionnary of metabolites and coefficients where:
-keys = metabolites
-values = coefficients
-CobraPy supports easily this kind of format to update reactions.
-Since no real standard exists in BiGG to exists to annotate the Biomass Objective Function:
-- Either the name of the biomass objective function should be provided by the user or
-- Default = the model takes the current objective reaction and updates it with the current metabolites
+This module updates BOFsc in the model.
 
 """
 

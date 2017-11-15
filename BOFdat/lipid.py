@@ -5,8 +5,49 @@ Lipid
 This module generates BOFsc for the lipid content of the cell.
 
 """
+def filter_for_model_metab(path_to_conversion_file, path_to_model):
+    """
 
-def get_coefficients(path_to_lipidomic,path_to_bigg_dict,
+    :param path_to_conversion_file: a dictionary converting from the name present in the lipidomic data to BiGG identifiers. This dictionary is generated through manual curation from the modeller.
+
+    :param path_to_model: a path to the model, format supported are json and xml
+
+    :return: updated dictionary with metabolites found in the model
+    """
+
+    def import_model(path_to_model):
+        import cobra
+        extension = path_to_model.split('.')[-1]
+        if extension == 'json':
+            model = cobra.io.load_json_model(path_to_model)
+        elif extension == 'xml':
+            model = cobra.io.read_sbml_model(path_to_model)
+        else:
+            print('Model format type not supported')
+        return model
+
+    # Get the model
+    model = import_model(path_to_model)
+    # Get the metabolites in model
+    model_metab_id = [m.id for m in model.metabolites]
+    # Get to_bigg_dict
+    import pandas as pd
+    to_bigg_df = pd.read_csv(path_to_conversion_file)
+    to_bigg_dict = dict(zip([i for i in to_bigg_df[to_bigg_df.columns[0]]],
+                            [i for i in to_bigg_df[to_bigg_df.columns[1]]]))
+    # Get the metabolites that are in the model
+    model_metab = {k: v for k, v in to_bigg_dict.iteritems() if k in model_metab_id}
+
+    # Get the metabolites that are not in the model but present in OMICs data
+    non_model_metab = [k for k in to_bigg_dict.keys() if k not in model_metab_id]
+    if len(non_model_metab) != 0:
+        print("These metabolites were not found in the model but were present in your metabolomic data, "
+                     "consider adding them to your model: %s " % ([metab for metab in non_model_metab]))
+
+    return model_metab
+
+
+def generate_coefficients(path_to_lipidomic,path_to_bigg_dict,
                      path_to_model,
                      CELL_WEIGHT=280,
                      LIPID_RATIO=0.091,
@@ -45,6 +86,7 @@ def get_coefficients(path_to_lipidomic,path_to_bigg_dict,
         df = pd.read_csv(path_to_bigg_dict, names=['lipid_name','lipid_id'],skiprows=1)
         keys = [i for i in df.lipid_name]
         values = [i for i in df.lipid_id]
+
         return dict(zip(keys,values))
 
     #Operation 0.3
@@ -62,13 +104,17 @@ def get_coefficients(path_to_lipidomic,path_to_bigg_dict,
         """
         This function generates a dictionary of BiGG identifiers that were generated through manual curation of the user
         with their relative abundances.
+
         :param lipidomic: a two column csv file that contains original lipid names and relative abundances
+
         :param to_bigg_dict: a dictionary converting names in the experimental data to BiGG identifiers
+
         :return: a dictionary containing BiGG identifiers and their relative abundances
         """
         import pandas as pd
         #Generate the dictionary
         keys,values = [],[]
+
         for i,row in lipidomic.iterrows():
             keys.append(to_bigg_dict.get(row.lipid_name))
             values.append(row.abundance)
@@ -149,6 +195,7 @@ def get_coefficients(path_to_lipidomic,path_to_bigg_dict,
     model = import_model(path_to_model)
     #1- Generate a dictionary of BiGG IDs and relative abundances
     bigg_abundance = convert_lipidomics_to_bigg(lipidomic_compliant, bigg_compliant)
+
     #2- Get the relative abundance of each lipid
     rel_abundance = get_relative_abundance(bigg_abundance)
     #3- Get the weight of each lipid specie

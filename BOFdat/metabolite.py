@@ -38,11 +38,12 @@ def filter_for_model_metab(path_to_conversion_file, path_to_model):
     to_bigg_dict = dict(zip([i for i in to_bigg_df[to_bigg_df.columns[0]]],
                             [i for i in to_bigg_df[to_bigg_df.columns[1]]]))
     # Get the metabolites that are in the model
-    model_metab = {k: v for k, v in to_bigg_dict.iteritems() if v in model_metab_id}
+    model_metab = {k: v for k, v in to_bigg_dict.iteritems() if k in model_metab_id}
     # Get the metabolites that are not in the model but present in OMICs data
     non_model_metab = [k for k in to_bigg_dict.keys() if k not in model_metab_id]
-    print("These metabolites were not found in the model but were present in your metabolomic data, "
-          "consider adding them to your model: %s " % ([metab for metab in non_model_metab]))
+    if len(non_model_metab) != 0:
+        print("These metabolites were not found in the model but were present in your metabolomic data, "
+          "consider adding them to your model: %s " % ([metab for metab in non_model_metab],))
 
     return model_metab
 
