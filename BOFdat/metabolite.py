@@ -105,7 +105,7 @@ def filter_for_biomass_metab(path_to_conversion_file):
 
 
 def generate_coefficients_from_experimental_data(path_to_metabolomic, path_to_conversion_file, path_to_model, METAB_RATIO=0.029,
-                                            CELL_WEIGHT=280):
+                                            CELL_WEIGHT=280, remove_DNA_RNA_prot=True):
     """
     This functions generates a dictionary of stoichiometric coefficients for the uodate of the biomass
     objective function from experimental data.
@@ -130,15 +130,15 @@ def generate_coefficients_from_experimental_data(path_to_metabolomic, path_to_co
     def make_compliant_metabolomic(path_to_lipidomic):
         import pandas as pd
         df = pd.read_csv(path_to_lipidomic)
-        df.columns = ['lipid_name', 'abundance']
+        df.columns = ['metab_name', 'abundance']
         return df
 
     def make_compliant_bigg(path_to_conversion_file):
         import pandas as pd
         df = pd.read_csv(path_to_conversion_file)
-        df.columns = ['lipid_name', 'lipid_id']
-        keys = [i for i in df.lipid_name]
-        values = [i for i in df.lipid_id]
+        df.columns = ['metab_name', 'metab_id']
+        keys = [i for i in df.metab_name]
+        values = [i for i in df.metab_id]
         return dict(zip(keys, values))
 
     # Operation 0.3
@@ -149,10 +149,29 @@ def generate_coefficients_from_experimental_data(path_to_metabolomic, path_to_co
             model = cobra.io.load_json_model(path_to_model)
         elif extension == 'xml':
             model = cobra.io.read_sbml_model(path_to_model)
+        else:
+            print('model provided in unsupported format')
         return model
 
+    # Remove molecules previously calculated
+    def remove_molecules(bigg_abundance):
+        amino_acids = ['ala__L', 'cys__L', 'asp__L', 'glu__L', 'phe__L', 'gly', 'his__L', 'ile__L', 'lys__L',
+                       'leu__L', 'met__L', 'asn__L', 'pro__L', 'gln__L', 'arg__L', 'ser__L', 'thr__L',
+                       'val__L', 'trp__L',
+                       'tyr__L']
+        nucleotides = ['datp', 'dttp', 'dctp', 'dgtp', 'atp', 'utp', 'ctp', 'gtp']
+
+        new_dict = {}
+        for k,v in bigg_abundance.iteritems():
+            if k in amino_acids or k in nucleotides:
+                pass
+            else:
+                new_dict[k] = v
+
+        return new_dict
+
     # Operation 1
-    def convert_metabolomic_to_bigg(metabolomic, to_bigg_dict):
+    def convert_metabolomic_to_bigg(metabolomic, to_bigg_dict,remove_DNA_RNA_prot):
         """
 
         This function generates a dictionary of BiGG identifiers that were generated through manual curation of the user
@@ -164,25 +183,40 @@ def generate_coefficients_from_experimental_data(path_to_metabolomic, path_to_co
 
         :return: a dictionary containing BiGG identifiers and their relative abundances
         """
-        import pandas as pd
         # Generate the dictionary
         keys, values = [], []
         for i, row in metabolomic.iterrows():
-            keys.append(to_bigg_dict.get(row.lipid_name))
-            values.append(row.abundance)
-
-        return dict(zip(keys, values))
+            if type(to_bigg_dict.get(row.metab_name)) != str:
+                pass
+            else:
+                keys.append(to_bigg_dict.get(row.metab_name))
+                values.append(row.abundance)
+        unfiltered_dict = dict(zip(keys, values))
+        if remove_DNA_RNA_prot == False:
+            return unfiltered_dict
+        elif remove_DNA_RNA_prot == True:
+            return remove_molecules(unfiltered_dict)
 
     # Operation 2
-    def get_relative_abundance(bigg_abundance):
+    def get_relative_abundance(bigg_abundance,model):
         # Calculate relative abundances
         total_peak = sum(bigg_abundance.values())
-        return {k: v / total_peak for k, v in bigg_abundance.iteritems()}
+        keys,values = [],[]
+        #Convert to model identifiers
+        for k, v in bigg_abundance.iteritems():
+            for m in model.metabolites:
+                if m.id.startswith(k):
+                    metab_id = m.id
+            keys.append(metab_id)
+            values.append(v/total_peak)
+
+        return dict(zip(keys,values))
 
     # Operation 3
     def get_metabolite_weight(bigg_abundance, model):
-        # Function to change the molecular weight of a lipid that entails R chains of undefined weight
         # Import Universal BiGG model
+        '''
+        Deprecated
         def import_universal_model():
             import cobra
             import os
@@ -190,20 +224,27 @@ def generate_coefficients_from_experimental_data(path_to_metabolomic, path_to_co
             return cobra.io.load_json_model('universal_BiGG_zac.json')
 
         # universal_model = import_universal_model()
+        '''
         keys, values = [], []
         for k, v in bigg_abundance.iteritems():
-            try:
-                # Get metabolite in BiGG ID
-                model_metab = model.metabolites.get_by_id(k)
-                # Get molecular weight of the compound from chemical formula
-                values.append(model_metab.formula_weight)
-                keys.append(k)
-            except:
-                print('Metabolite %s not found in model' % (k,))
+            #Find k in the model
+            for m in model.metabolites:
+                if m.id.startswith(k):
+                    try:
+                        # Get metabolite in BiGG ID
+                        model_metab = model.metabolites.get_by_id(m.id)
+                        # Get molecular weight of the compound from chemical formula
+                        formula_weight = model_metab.formula_weight
+                        metab_id = m.id
+                    except:
+                        print('Metabolite %s not found in model' % (k,))
+            values.append(formula_weight)
+            keys.append(metab_id)
+
         return dict(zip(keys, values))
 
     # Operation 4
-    def calculate_coefficient(weight_dict, relative_abundance, METAB_WEIGHT, CELL_WEIGHT,model):
+    def calculate_coefficient(weight_dict, relative_abundance, METAB_WEIGHT, CELL_WEIGHT, model):
         keys, values = [], []
         for k, v in weight_dict.iteritems():
             # Generate the total weight of the compound in the cell
@@ -226,17 +267,17 @@ def generate_coefficients_from_experimental_data(path_to_metabolomic, path_to_co
     # 0.3- Get model
     model = import_model(path_to_model)
     # 1- Convert names to BiGG
-    bigg_abundance = convert_metabolomic_to_bigg(metabolomic_compliant, bigg_compliant)
+    bigg_abundance = convert_metabolomic_to_bigg(metabolomic_compliant, bigg_compliant,remove_DNA_RNA_prot)
     # 2- Get the relative abundance of each metabolite
-    rel_abundance = get_relative_abundance(bigg_abundance)
+    rel_abundance = get_relative_abundance(bigg_abundance,model)
     # 3- Get the weight of each lipid specie
     weight_dict = get_metabolite_weight(bigg_abundance, model)
     # 4- Calculate biomass coefficients
-    biomass_coefficients = calculate_coefficient(weight_dict, rel_abundance, METAB_WEIGHT, CELL_WEIGHT,model)
+    biomass_coefficients = calculate_coefficient(weight_dict, rel_abundance, METAB_WEIGHT, CELL_WEIGHT, model)
 
     return biomass_coefficients
 
-def update_biomass_coefficient(dict_of_coefficients, model):
+def update_biomass_coefficients(dict_of_coefficients, model):
     """
 
     Updates the biomass coefficients given the input metabolite:coefficient dictionary.
@@ -250,6 +291,44 @@ def update_biomass_coefficient(dict_of_coefficients, model):
     """
     from BOFdat import update
     update.update_biomass(dict_of_coefficients, model)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #######################
 # Section under progress

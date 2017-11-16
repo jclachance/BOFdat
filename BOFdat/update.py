@@ -5,6 +5,7 @@ Update
 This module updates BOFsc in the model.
 
 """
+#def change_gam():
 
 def update_biomass(dict_of_coefficients, model):
     """
@@ -27,6 +28,7 @@ def update_biomass(dict_of_coefficients, model):
         #      % (model.name, model.optimize(), len(biomass.metabolites)))
 
     def add_biomass_metab(dict_of_metab, biomass):
+        print(dict_of_metab)
         biomass.add_metabolites(dict_of_metab)
         #print('The actual model %s solves in %s and its biomass contains %s metabolites'
         #      % (model.name, model.optimize(), len(biomass.metabolites)))
@@ -34,10 +36,8 @@ def update_biomass(dict_of_coefficients, model):
 
     def find_metabolites_in_biomass(biomass, dict_of_coefficients):
         # 1- Find metabolites in BIOMASS
-        reactants_biomass, biomass_coefficients, reactant_removal = [], [], []
         for k, v in dict_of_coefficients.iteritems():
             metab = k
-            coefficient = v
             dict_addition = {k: -v}
             for r in biomass.reactants:
                 if metab.id == r.id:

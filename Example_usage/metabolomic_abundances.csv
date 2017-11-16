@@ -1,3 +1,4 @@
+metabolite_name,metabolite_id
 Glu,21.4540580126
 Glutathione(ox),8.1792754372
 "N-succinyl-L,L-2,6-diaminopimelate",4.3684112542
@@ -119,4 +120,3 @@ Glu-Glu (Glutamyl-glutamic acid),0.0036037301
 N-Acetylglucosamine 6-phosphate,0.0032477356
 N-Acetylglucosamine 1-phosphate,0.0031061178
 dCMP,0.0010714339
-Metabolite,Abundance
