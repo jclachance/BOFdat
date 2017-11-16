@@ -202,7 +202,7 @@ def _convert_to_mmolgDW(RNA_coefficients, model, RNA_RATIO, CELL_WEIGHT):
 
 def generate_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic,
                      CELL_WEIGHT=280, TOTAL_RNA_RATIO=0.205,
-                     rRNA_RATIO=0.8, tRNA_RATIO=0.1, mRNA_RATIO=0.1):
+                     rRNA_RATIO=0.9, tRNA_RATIO=0.05, mRNA_RATIO=0.05):
     """
 
     Generates a dictionary of metabolite:coefficients for the 4 RNA bases from the organism's
