@@ -8,4 +8,4 @@ setup(name='BOFdat',
       author_email='jelachance@eng.ucsd.edu',
       license='MIT',
       packages=find_packages(),
-      install_requires=['cobra', 'BioPython'])
+      install_requires=['cobra==0.8.0', 'BioPython'])
