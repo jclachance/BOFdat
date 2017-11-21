@@ -5,6 +5,19 @@ Lipid
 This module generates BOFsc for the lipid content of the cell.
 
 """
+
+
+def _import_model(path_to_model):
+    import cobra
+    extension = path_to_model.split('.')[-1]
+    if extension == 'json':
+        model = cobra.io.load_json_model(path_to_model)
+    elif extension == 'xml':
+        model = cobra.io.read_sbml_model(path_to_model)
+    else:
+        print('Model format type not supported')
+    return model
+
 def filter_for_model_metab(path_to_conversion_file, path_to_model):
     """
 
@@ -12,40 +25,30 @@ def filter_for_model_metab(path_to_conversion_file, path_to_model):
 
     :param path_to_model: a path to the model, format supported are json and xml
 
-    :return: updated dictionary with metabolites found in the model
+    :return: updated dataframe with metabolites found in the model
     """
-
-    def import_model(path_to_model):
-        import cobra
-        extension = path_to_model.split('.')[-1]
-        if extension == 'json':
-            model = cobra.io.load_json_model(path_to_model)
-        elif extension == 'xml':
-            model = cobra.io.read_sbml_model(path_to_model)
-        else:
-            print('Model format type not supported')
-        return model
-
+    import pandas as pd
     # Get the model
-    model = import_model(path_to_model)
+    model = _import_model(path_to_model)
     # Get the metabolites in model
     model_metab_id = [m.id for m in model.metabolites]
     # Get to_bigg_dict
-    import pandas as pd
     to_bigg_df = pd.read_csv(path_to_conversion_file)
     to_bigg_dict = dict(zip([i for i in to_bigg_df[to_bigg_df.columns[0]]],
                             [i for i in to_bigg_df[to_bigg_df.columns[1]]]))
+
     # Get the metabolites that are in the model
-    model_metab = {k: v for k, v in to_bigg_dict.iteritems() if k in model_metab_id}
+    model_metab = {k: v for k, v in to_bigg_dict.iteritems() if v in model_metab_id}
 
     # Get the metabolites that are not in the model but present in OMICs data
-    non_model_metab = [k for k in to_bigg_dict.keys() if k not in model_metab_id]
+    non_model_metab = [k for k,v in to_bigg_dict.iteritems() if v not in model_metab_id]
     if len(non_model_metab) != 0:
-        print("These metabolites were not found in the model but were present in your metabolomic data, "
+        print("These lipids were not found in the model but were present in your lipidomic data, "
                      "consider adding them to your model: %s " % ([metab for metab in non_model_metab]))
 
-    return model_metab
+    model_metab_df = pd.DataFrame({'lipid_name':model_metab.keys(),'lipid_id':model_metab.values()},columns=['lipid_name','lipid_id'])
 
+    return model_metab_df
 
 def generate_coefficients(path_to_lipidomic,path_to_bigg_dict,
                      path_to_model,
@@ -83,24 +86,10 @@ def generate_coefficients(path_to_lipidomic,path_to_bigg_dict,
 
     def make_compliant_bigg(path_to_bigg_dict):
         import pandas as pd
-        df = pd.read_csv(path_to_bigg_dict, names=['lipid_name','lipid_id'],skiprows=1)
-        keys = [i for i in df.lipid_name]
-        values = [i for i in df.lipid_id]
-
-        return dict(zip(keys,values))
-
-    #Operation 0.3
-    def import_model(path_to_model):
-        import cobra
-        extension = path_to_model.split('.')[-1]
-        if extension == 'json':
-            model = cobra.io.load_json_model(path_to_model)
-        elif extension == 'xml':
-            model = cobra.io.read_sbml_model(path_to_model)
-        return model
+        return pd.read_csv(path_to_bigg_dict, names=['lipid_name','lipid_id'],skiprows=1)
 
     # Operation 1
-    def convert_lipidomics_to_bigg(lipidomic,to_bigg_dict):
+    def convert_lipidomics_to_bigg(lipid_abun,lipid_conv):
         """
         This function generates a dictionary of BiGG identifiers that were generated through manual curation of the user
         with their relative abundances.
@@ -112,20 +101,18 @@ def generate_coefficients(path_to_lipidomic,path_to_bigg_dict,
         :return: a dictionary containing BiGG identifiers and their relative abundances
         """
         import pandas as pd
-        #Generate the dictionary
-        keys,values = [],[]
+        #Generate the dictionary of lipid_id and relative abundances
+        df = pd.merge(left=lipid_conv, right=lipid_abun, on='lipid_name')
+        df1 = pd.concat([df.lipid_id, df.abundance], axis=1)
+        grouped = df1.groupby('lipid_id').agg(lambda x: sum(x))
 
-        for i,row in lipidomic.iterrows():
-            keys.append(to_bigg_dict.get(row.lipid_name))
-            values.append(row.abundance)
-
-        return dict(zip(keys,values))
+        return dict(zip([i for i in grouped.index], [i for i in grouped.abundance]))
 
     # Operation 2
     def get_relative_abundance(bigg_abundance):
         # Calculate relative abundances
         total_peak = sum(bigg_abundance.values())
-        return {k: v / total_peak for k, v in bigg_abundance.iteritems()}
+        return {k: float(v) / total_peak for k, v in bigg_abundance.iteritems()}
 
     # Operation 3
     def get_lipid_weight(model,compound_list,R_WEIGHT):
@@ -191,11 +178,11 @@ def generate_coefficients(path_to_lipidomic,path_to_bigg_dict,
     #0.2- Make data compliant for the rest of the functions
     lipidomic_compliant = make_compliant_lipidomic(path_to_lipidomic)
     bigg_compliant = make_compliant_bigg(path_to_bigg_dict)
+
     #0.3- Get the model
-    model = import_model(path_to_model)
+    model = _import_model(path_to_model)
     #1- Generate a dictionary of BiGG IDs and relative abundances
     bigg_abundance = convert_lipidomics_to_bigg(lipidomic_compliant, bigg_compliant)
-
     #2- Get the relative abundance of each lipid
     rel_abundance = get_relative_abundance(bigg_abundance)
     #3- Get the weight of each lipid specie

@@ -56,6 +56,8 @@ def _convert_to_coefficient(model, ratio_genome, CELL_WEIGHT, DNA_RATIO):
     # Transform the ratios into mmol/gDW
     DNA_WEIGHT = CELL_WEIGHT * DNA_RATIO
 
+    DIPHOSPHATE_WEIGHT = 174.951262
+
     base_to_bigg = {'A': model.metabolites.datp_c, 'T': model.metabolites.dttp_c,
                     'C': model.metabolites.dctp_c, 'G': model.metabolites.dgtp_c}
     coefficients,metabolites = [],[]
@@ -65,7 +67,7 @@ def _convert_to_coefficient(model, ratio_genome, CELL_WEIGHT, DNA_RATIO):
         ratio = ratio_genome.get(letter)
         total_weight = ratio * DNA_WEIGHT
         metab = base_to_bigg.get(letter)
-        mol_weight = metab.formula_weight
+        mol_weight = metab.formula_weight - DIPHOSPHATE_WEIGHT
         mmols_per_cell = (total_weight / mol_weight) * 1000
         mmols_per_gDW = mmols_per_cell / CELL_WEIGHT
         coefficients.append(mmols_per_gDW)

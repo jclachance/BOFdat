@@ -54,8 +54,11 @@ def _import_model(path_to_model):
 def _import_proteomic(path_to_proteomic):
     import pandas as pd
     proteomics =pd.read_csv(path_to_proteomic, names=['gene_ID', 'Mean'], skiprows=1)
-    keys = [k for k in proteomics.gene_ID]
-    values = [v for v in proteomics.Mean]
+    if proteomics.isnull().values.any():
+        print('Some proteins in your dataset do not have associated abundance, removing them')
+        proteomics = proteomics.dropna()
+    keys = [str(k) for k in proteomics.gene_ID]
+    values = [float(v) for v in proteomics.Mean]
     return dict(zip(keys, values))
 
 def _get_aa_composition(seq_dict):
@@ -67,7 +70,7 @@ def _get_aa_composition(seq_dict):
     # Keys = amino acid by letter code
     # Values = the occurence of that amino acid
     list_of_dict = []
-    for k,v seq_dict.iteritems():
+    for k,v in seq_dict.iteritems():
         list_of_occurences = []
         # Get the occurence for each letter
         for letter in AMINO_ACIDS:
@@ -119,7 +122,7 @@ def _get_norm_sum(normalized_dict):
 
     return norm_sum
 
-def _get_ratio(normalized_dict, norm_sum, PROTEIN_RATIO):
+def _get_ratio(normalized_dict, norm_sum, PROTEIN_RATIO, CELL_WEIGHT):
     # 2- Divide letter to norm_sum to get ratio of each amino acid in the cell
     # based on proteomic data
     ratio_dict = {'A': 0., 'C': 0., 'D': 0., 'E': 0., 'F': 0., 'G': 0., 'H': 0., 'I': 0.,
@@ -138,7 +141,8 @@ def _get_ratio(normalized_dict, norm_sum, PROTEIN_RATIO):
     return ratio_dict
 
 def _convert_to_coefficient(ratio_dict, path_to_model, CELL_WEIGHT):
-    model = import_model(path_to_model)
+    WATER_WEIGHT = 18.01528
+    model = _import_model(path_to_model)
     # 3- Convert gram ratios to mmol/g Dry weight
     '''
     To verify that the normalized to grams to get to the total amount of protein
@@ -161,7 +165,7 @@ def _convert_to_coefficient(ratio_dict, path_to_model, CELL_WEIGHT):
     # Get number of moles from number of grams
     for letter in AMINO_ACIDS:
         metab = letter_to_bigg.get(letter)
-        mol_weight = metab.formula_weight
+        mol_weight = metab.formula_weight - WATER_WEIGHT
         grams = ratio_dict.get(letter)
         mmols_per_cell = (grams / mol_weight) * 1000
         mmols_per_gDW = mmols_per_cell / CELL_WEIGHT
@@ -192,6 +196,8 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, CEL
     """
     # Operations
     # 1- Parse the genome, extract protein sequence, count and store amino acid composition of each protein
+    if PROTEIN_RATIO > 1.:
+        print('Must enter ratio, value between 0. and 1.')
     seq_dict = _get_protein_sequence(path_to_genbank)
     list_of_dict = _get_aa_composition(seq_dict)
     normalized_dict = _normalize_aa_composition(list_of_dict,path_to_proteomic)
@@ -199,8 +205,8 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, CEL
     # 2- Get coefficients from experimental proteomics data
     # Proteomics data should come in a 2 columns standard format protein_id:abundance
     norm_sum = _get_norm_sum(normalized_dict)
-    ratio_dict = get_ratio(normalized_dict, norm_sum, PROTEIN_RATIO)
-    biomass_coefficients = convert_to_coefficient(ratio_dict,path_to_model, CELL_WEIGHT)
+    ratio_dict = _get_ratio(normalized_dict, norm_sum, PROTEIN_RATIO, CELL_WEIGHT)
+    biomass_coefficients = _convert_to_coefficient(ratio_dict,path_to_model, CELL_WEIGHT)
 
     return biomass_coefficients
 

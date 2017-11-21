@@ -178,6 +178,7 @@ def _total_coefficients(mRNA_fractions, tRNA_fractions, rRNA_fractions, mRNA_RAT
 
 
 def _convert_to_mmolgDW(RNA_coefficients, model, RNA_RATIO, CELL_WEIGHT):
+    DIPHOSPHATE_WEIGHT = 174.951262
     # Get coefficients for BIOMASS
     # Transform the ratios into mmol/gDW
     RNA_WEIGHT = CELL_WEIGHT * RNA_RATIO
@@ -190,7 +191,7 @@ def _convert_to_mmolgDW(RNA_coefficients, model, RNA_RATIO, CELL_WEIGHT):
         ratio = RNA_coefficients.get(letter)
         total_weight = ratio * RNA_WEIGHT
         metab = rna_base_to_bigg.get(letter)
-        mol_weight = metab.formula_weight
+        mol_weight = metab.formula_weight - DIPHOSPHATE_WEIGHT
         mmols_per_cell = (total_weight / mol_weight) * 1000
         mmols_per_gDW = mmols_per_cell / CELL_WEIGHT
         coefficients.append(mmols_per_gDW)
