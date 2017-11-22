@@ -5,6 +5,31 @@ Metabolite
 This module generates BOFsc for the metabolite content of the cell.
 
 """
+def _import_model(path_to_model):
+    import cobra
+    extension = path_to_model.split('.')[-1]
+    if extension == 'json':
+        model = cobra.io.load_json_model(path_to_model)
+    elif extension == 'xml':
+        model = cobra.io.read_sbml_model(path_to_model)
+    else:
+        print('Model format type not supported')
+    return model
+
+def _import_metabolomic(path_to_lipidomic):
+    import pandas as pd
+    df = pd.read_csv(path_to_lipidomic)
+    df.columns = ['metab_name', 'abundance']
+    return df
+
+def _import_conversion(path_to_conversion_file):
+    import pandas as pd
+    df = pd.read_csv(path_to_conversion_file)
+    df.columns = ['metab_name', 'metab_id']
+    keys = [i for i in df.metab_name]
+    values = [i for i in df.metab_id]
+    return dict(zip(keys, values))
+
 
 # Operations to screen data for Universal biomass table and model should be included before the get_coefficient method
 def filter_for_model_metab(path_to_conversion_file, path_to_model):
@@ -16,20 +41,8 @@ def filter_for_model_metab(path_to_conversion_file, path_to_model):
 
     :return: updated dictionary with metabolites found in the model
     """
-
-    def import_model(path_to_model):
-        import cobra
-        extension = path_to_model.split('.')[-1]
-        if extension == 'json':
-            model = cobra.io.load_json_model(path_to_model)
-        elif extension == 'xml':
-            model = cobra.io.read_sbml_model(path_to_model)
-        else:
-            print('Model format type not supported')
-        return model
-
     # Get the model
-    model = import_model(path_to_model)
+    model = _import_model(path_to_model)
     # Get the metabolites in model
     model_metab_id = [m.id for m in model.metabolites]
     # Get to_bigg_dict
@@ -45,7 +58,7 @@ def filter_for_model_metab(path_to_conversion_file, path_to_model):
         print("These metabolites were not found in the model but were present in your metabolomic data, "
           "consider adding them to your model: %s " % ([metab for metab in non_model_metab],))
 
-    return model_metab
+    return pd.DataFrame({'metab_name': model_metab.keys(), 'metab_id': model_metab.values()}, columns=['metab_name', 'metab_id'])
 
 
 def filter_for_biomass_metab(path_to_conversion_file):
@@ -92,7 +105,7 @@ def filter_for_biomass_metab(path_to_conversion_file):
             if m[:-2] in all_compounds:
                 universal_metab.append(m)
     print("These metabolites were found in the metabolomic data and universal table of biomass components, "
-          "consider adding them to your the biomass objective function: %s " % (
+          "consider adding them to the biomass objective function: %s " % (
               [metab for metab in universal_metab]))
     # Generate a dataframe
     metab_name, metab_id = [], []
@@ -127,31 +140,6 @@ def generate_coefficients_from_experimental_data(path_to_metabolomic, path_to_co
     METAB_WEIGHT = METAB_RATIO * CELL_WEIGHT
 
     # Operation 0.2
-    def make_compliant_metabolomic(path_to_lipidomic):
-        import pandas as pd
-        df = pd.read_csv(path_to_lipidomic)
-        df.columns = ['metab_name', 'abundance']
-        return df
-
-    def make_compliant_bigg(path_to_conversion_file):
-        import pandas as pd
-        df = pd.read_csv(path_to_conversion_file)
-        df.columns = ['metab_name', 'metab_id']
-        keys = [i for i in df.metab_name]
-        values = [i for i in df.metab_id]
-        return dict(zip(keys, values))
-
-    # Operation 0.3
-    def import_model(path_to_model):
-        import cobra
-        extension = path_to_model.split('.')[-1]
-        if extension == 'json':
-            model = cobra.io.load_json_model(path_to_model)
-        elif extension == 'xml':
-            model = cobra.io.read_sbml_model(path_to_model)
-        else:
-            print('model provided in unsupported format')
-        return model
 
     # Remove molecules previously calculated
     def remove_molecules(bigg_abundance):
@@ -265,7 +253,7 @@ def generate_coefficients_from_experimental_data(path_to_metabolomic, path_to_co
     metabolomic_compliant = make_compliant_metabolomic(path_to_metabolomic)
     bigg_compliant = make_compliant_bigg(path_to_conversion_file)
     # 0.3- Get model
-    model = import_model(path_to_model)
+    model = _import_model(path_to_model)
     # 1- Convert names to BiGG
     bigg_abundance = convert_metabolomic_to_bigg(metabolomic_compliant, bigg_compliant,remove_DNA_RNA_prot)
     # 2- Get the relative abundance of each metabolite
