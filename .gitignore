@@ -1,0 +1,6 @@
+*.pyc
+*.egg-info
+gurobi.log
+*.swp
+.ipynb_checkpoints
+*.csv#
