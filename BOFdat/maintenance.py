@@ -88,12 +88,17 @@ def experimental_maintenance(path_to_data, path_to_model,show_GAM=False):
         biomass.lower_bound = 0.
         biomass.objective_coefficient = 0.
 
+        # remove GAM from biomass function
+        for key, value in biomass.metabolites.items():
+            if abs(value) > 50:
+                biomass.add_metabolites({key: -value})
         #Set carbon sources to 0
         '''
         Will need to prepare the model to run the simulations
         '''
         #model.reactions.EX_glc_LPAREN_e_RPAREN_.lower_bound = 0
         #Optimize for ATP maintenance
+        model.reactions.ATPM.lower_bound = 0
         model.reactions.ATPM.objective_coefficient = 1.
 
         #model.reactions.EX_o2_LPAREN_e_RPAREN_.lower_bound = -1000
@@ -182,14 +187,12 @@ def experimental_maintenance(path_to_data, path_to_model,show_GAM=False):
         return raw_GAM
 
     def show_gam(raw_GAM):
-
         import seaborn as sns
         import numpy as np
         import matplotlib.pyplot as plt
 
         x = raw_GAM['Growth_rate']
         y = raw_GAM['ATP']
-
         #Fit with np.polyfit
         m, b = np.polyfit(x, y, 1)
 
@@ -202,9 +205,10 @@ def experimental_maintenance(path_to_data, path_to_model,show_GAM=False):
         print('R2=', correlation ** 2)
         plt.scatter(raw_GAM['Growth_rate'], raw_GAM['ATP'])
         # plt.scatter(filtered_data['GR'],filtered_data['ATP'], color=filtered_data['color'], marker=filtered_data['marker'].tolist())
-        plt.show()
+
         plt.xlim([0, 1.1])
-        plt.ylim([0, 90])
+        plt.ylim([0, 110])
+        plt.show()
         #plt.savefig('all_data.png')
         #plt.savefig('all_data.svg')
         plt.close()
