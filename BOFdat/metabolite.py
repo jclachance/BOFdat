@@ -117,7 +117,7 @@ def filter_for_biomass_metab(path_to_conversion_file):
     return pd.DataFrame({'metab_name': metab_name, 'metab_id': metab_id}, columns=['metab_name', 'metab_id'])
 
 
-def generate_coefficients(path_to_metabolomic, path_to_conversion_file, path_to_model, METAB_RATIO=0.029,
+def generate_coefficients(path_to_metabolomic, path_to_conversion_file, path_to_model, METAB_WEIGHT_FRACTION=0.029,
                                             CELL_WEIGHT=280, remove_DNA_RNA_prot=True):
     """
     This functions generates a dictionary of stoichiometric coefficients for the uodate of the biomass
@@ -137,7 +137,7 @@ def generate_coefficients(path_to_metabolomic, path_to_conversion_file, path_to_
     """
     # Operation 0.1
     # Get the total lipid weight in the cell
-    METAB_WEIGHT = METAB_RATIO * CELL_WEIGHT
+    METAB_WEIGHT = METAB_WEIGHT_FRACTION * CELL_WEIGHT
 
     # Operation 0.2
 

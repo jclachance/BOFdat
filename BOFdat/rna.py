@@ -202,8 +202,11 @@ def _convert_to_mmolgDW(RNA_coefficients, model, RNA_RATIO, CELL_WEIGHT):
 
 
 def generate_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic,
-                     CELL_WEIGHT=280, TOTAL_RNA_RATIO=0.205,
-                     rRNA_RATIO=0.9, tRNA_RATIO=0.05, mRNA_RATIO=0.05):
+                         CELL_WEIGHT=280,
+                         RNA_WEIGHT_FRACTION=0.205,
+                         rRNA_WEIGHT_FRACTION=0.9,
+                         tRNA_WEIGHT_FRACTION=0.05,
+                         mRNA_WEIGHT_FRACTION=0.05):
     """
 
     Generates a dictionary of metabolite:coefficients for the 4 RNA bases from the organism's
@@ -229,9 +232,10 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic
     # Operations
     genome_record = _import_genome(path_to_genbank)
     rRNA_dict, tRNA_dict, mRNA_dict = _process_record(genome_record,path_to_transcriptomic)
-    RNA_coefficients = _total_coefficients(rRNA_dict, tRNA_dict, mRNA_dict, mRNA_RATIO, tRNA_RATIO, rRNA_RATIO)
+    RNA_coefficients = _total_coefficients(rRNA_dict, tRNA_dict, mRNA_dict,
+                                           mRNA_WEIGHT_FRACTION, tRNA_WEIGHT_FRACTION, rRNA_WEIGHT_FRACTION)
     RNA_biomass_ratios = _convert_to_mmolgDW(RNA_coefficients,
-                                            _import_model(path_to_model), TOTAL_RNA_RATIO, CELL_WEIGHT)
+                                            _import_model(path_to_model), RNA_WEIGHT_FRACTION, CELL_WEIGHT)
 
     return RNA_biomass_ratios
 

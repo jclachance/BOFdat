@@ -122,7 +122,7 @@ def _get_norm_sum(normalized_dict):
 
     return norm_sum
 
-def _get_ratio(normalized_dict, norm_sum, PROTEIN_RATIO, CELL_WEIGHT):
+def _get_ratio(normalized_dict, norm_sum, PROTEIN_WEIGHT_FRACTION, CELL_WEIGHT):
     # 2- Divide letter to norm_sum to get ratio of each amino acid in the cell
     # based on proteomic data
     ratio_dict = {'A': 0., 'C': 0., 'D': 0., 'E': 0., 'F': 0., 'G': 0., 'H': 0., 'I': 0.,
@@ -130,7 +130,7 @@ def _get_ratio(normalized_dict, norm_sum, PROTEIN_RATIO, CELL_WEIGHT):
                   'W': 0., 'Y': 0.}
 
     # Constant for the amount of protein in the cell
-    PROTEIN_WEIGHT = CELL_WEIGHT * PROTEIN_RATIO
+    PROTEIN_WEIGHT = CELL_WEIGHT * PROTEIN_WEIGHT_FRACTION
     for letter in AMINO_ACIDS:
         value = normalized_dict.get(letter)
         ratio = value / norm_sum
@@ -176,7 +176,7 @@ def _convert_to_coefficient(ratio_dict, path_to_model, CELL_WEIGHT):
     return Protein_biomass_coefficients
 
 
-def generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, CELL_WEIGHT=280, PROTEIN_RATIO=0.55):
+def generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, CELL_WEIGHT=280, PROTEIN_WEIGHT_FRACTION=0.55):
     """
 
     Generates a dictionary of metabolite:coefficients for the 20 amino acids contained in proteins from the organism's
@@ -196,7 +196,7 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, CEL
     """
     # Operations
     # 1- Parse the genome, extract protein sequence, count and store amino acid composition of each protein
-    if PROTEIN_RATIO > 1.:
+    if PROTEIN_WEIGHT_FRACTION > 1.:
         print('Must enter ratio, value between 0. and 1.')
     seq_dict = _get_protein_sequence(path_to_genbank)
     list_of_dict = _get_aa_composition(seq_dict)
@@ -205,7 +205,7 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, CEL
     # 2- Get coefficients from experimental proteomics data
     # Proteomics data should come in a 2 columns standard format protein_id:abundance
     norm_sum = _get_norm_sum(normalized_dict)
-    ratio_dict = _get_ratio(normalized_dict, norm_sum, PROTEIN_RATIO, CELL_WEIGHT)
+    ratio_dict = _get_ratio(normalized_dict, norm_sum, PROTEIN_WEIGHT_FRACTION, CELL_WEIGHT)
     biomass_coefficients = _convert_to_coefficient(ratio_dict,path_to_model, CELL_WEIGHT)
 
     return biomass_coefficients

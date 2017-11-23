@@ -53,7 +53,7 @@ def filter_for_model_lipid(path_to_conversion_file, path_to_model):
 def generate_coefficients(path_to_lipidomic,path_to_bigg_dict,
                      path_to_model,
                      CELL_WEIGHT=280,
-                     LIPID_RATIO=0.091,
+                     LIPID_WEIGHT_FRACTION=0.091,
                      R_WEIGHT = 284.486):
     """
 
@@ -77,7 +77,7 @@ def generate_coefficients(path_to_lipidomic,path_to_bigg_dict,
 
     # Operation 0.1
     #Get the total lipid weight in the cell
-    LIPID_WEIGHT = LIPID_RATIO * CELL_WEIGHT
+    LIPID_WEIGHT = LIPID_WEIGHT_FRACTION * CELL_WEIGHT
 
     # Operation 0.2
     def make_compliant_lipidomic(path_to_lipidomic):
