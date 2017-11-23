@@ -6,7 +6,7 @@ API
    BOFdat.RNA
    
 
-.. automodule:: protein
+.. automodule:: BOFdat.protein
    :members: generate_coefficients, update_biomass_coefficients, _import_genome, _import_model, _import_proteomic
 
 .. automodule:: lipid
