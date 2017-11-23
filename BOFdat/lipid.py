@@ -18,7 +18,7 @@ def _import_model(path_to_model):
         print('Model format type not supported')
     return model
 
-def filter_for_model_metab(path_to_conversion_file, path_to_model):
+def filter_for_model_lipid(path_to_conversion_file, path_to_model):
     """
 
     :param path_to_conversion_file: a dictionary converting from the name present in the lipidomic data to BiGG identifiers. This dictionary is generated through manual curation from the modeller.

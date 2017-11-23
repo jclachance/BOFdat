@@ -2,15 +2,20 @@ API
 ===
 
 .. toctree::
-   BOFdat.DNA
-   BOFdat.RNA
-   
+.. automodule:: BOFdat.dna
+   :members: generate_coefficients, update_biomass_coefficients
+
+.. automodule:: BOFdat.rna
+   :members: generate_coefficients, update_biomass_coefficients
 
 .. automodule:: BOFdat.protein
-   :members: generate_coefficients, update_biomass_coefficients, _import_genome, _import_model, _import_proteomic
+   :members: generate_coefficients, update_biomass_coefficients
 
 .. automodule:: BOFdat.lipid
-   :members: generate_coefficients, update_biomass_coefficients, _make_compliant_lipidomic, _make_compliant_bigg, _import_model
+   :members: filter_for_model_lipid, generate_coefficients, update_biomass_coefficients
+
+.. automodule:: BOFdat.metabolite
+   :members: filter_for_model_metab, filter_for_biomass_metab, generate_coefficients, update_biomass_coefficients
 
 .. automodule:: BOFdat.maintenance
    :members: experimental_maintenance
