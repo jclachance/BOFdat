@@ -19,13 +19,12 @@ Contents
    :numbered:
    :maxdepth: 2
 
-   DNA
-   RNA
-   Protein
-   Lipids
-   Metabolites
-   GAM
-   NGAM
+   dna
+   rna
+   protein
+   lipids
+   metabolites
+   maintenance
    API
    license
    help
