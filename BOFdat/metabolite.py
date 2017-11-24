@@ -44,24 +44,29 @@ def filter_for_model_metab(path_to_conversion_file, path_to_model):
     # Get the model
     model = _import_model(path_to_model)
     # Get the metabolites in model
-    model_metab_id = [m.id for m in model.metabolites]
+    # Remove the compartment
+    model_metab_id = [m.id[:-2] for m in model.metabolites]
     # Get to_bigg_dict
     import pandas as pd
     to_bigg_df = pd.read_csv(path_to_conversion_file)
+    if len(to_bigg_df.columns) > 2:
+        del to_bigg_df[to_bigg_dict.columns[0]]
     to_bigg_dict = dict(zip([i for i in to_bigg_df[to_bigg_df.columns[0]]],
                             [i for i in to_bigg_df[to_bigg_df.columns[1]]]))
+
     # Get the metabolites that are in the model
-    model_metab = {k: v for k, v in to_bigg_dict.iteritems() if k in model_metab_id}
+    model_metab = {k: v for k, v in to_bigg_dict.iteritems() if v in model_metab_id}
+    print(model_metab)
     # Get the metabolites that are not in the model but present in OMICs data
-    non_model_metab = [k for k in to_bigg_dict.keys() if k not in model_metab_id]
+    non_model_metab = [k for k,v in to_bigg_dict.iteritems() if v not in model_metab_id]
     if len(non_model_metab) != 0:
         print("These metabolites were not found in the model but were present in your metabolomic data, "
-          "consider adding them to your model: %s " % ([metab for metab in non_model_metab],))
+          "consider adding them to your model: %s " % (', '.join([metab for metab in non_model_metab]),))
 
     return pd.DataFrame({'metab_name': model_metab.keys(), 'metab_id': model_metab.values()}, columns=['metab_name', 'metab_id'])
 
 
-def filter_for_biomass_metab(path_to_conversion_file):
+def filter_for_universal_biomass_metab(path_to_conversion_file):
     """
     Filters the list of metabolites by comparing it to all metabolites that have been added to metabolic models.
     Source: Joana C. Xavier, Kiran Raosaheb Patil and Isabel Rocha, Integration of Biomass Formulations of
@@ -102,7 +107,7 @@ def filter_for_biomass_metab(path_to_conversion_file):
     universal_metab = []
     for m in to_bigg_df[to_bigg_df.columns[1]]:
         if type(m) == str:
-            if m[:-2] in all_compounds:
+            if m in all_compounds:
                 universal_metab.append(m)
     print("These metabolites were found in the metabolomic data and universal table of biomass components, "
           "consider adding them to the biomass objective function: %s " % (
@@ -249,9 +254,9 @@ def generate_coefficients(path_to_metabolomic, path_to_conversion_file, path_to_
 
     # Operations
     # 0.1- Calculate the total metabolite weight
-    # 0.2- Make data compliant for the rest of the functions
-    metabolomic_compliant = make_compliant_metabolomic(path_to_metabolomic)
-    bigg_compliant = make_compliant_bigg(path_to_conversion_file)
+    # 0.2- Import data
+    metabolomic_compliant = _import_metabolomic(path_to_metabolomic)
+    bigg_compliant = _import_conversion(path_to_conversion_file)
     # 0.3- Get model
     model = _import_model(path_to_model)
     # 1- Convert names to BiGG
@@ -278,7 +283,7 @@ def update_biomass_coefficients(dict_of_coefficients, model):
 
     """
     from BOFdat import update
-    update.update_biomass(dict_of_coefficients, model)
+    update.update_biomass_metabolites(dict_of_coefficients, model)
 
 
 

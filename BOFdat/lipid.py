@@ -50,7 +50,7 @@ def filter_for_model_lipid(path_to_conversion_file, path_to_model):
 
     return model_metab_df
 
-def generate_coefficients(path_to_lipidomic,path_to_bigg_dict,
+def generate_coefficients(path_to_lipidomic,path_to_conversion_file,
                      path_to_model,
                      CELL_WEIGHT=280,
                      LIPID_WEIGHT_FRACTION=0.091,
@@ -177,7 +177,7 @@ def generate_coefficients(path_to_lipidomic,path_to_bigg_dict,
     #0.1- Calculate the total lipid weight
     #0.2- Make data compliant for the rest of the functions
     lipidomic_compliant = make_compliant_lipidomic(path_to_lipidomic)
-    bigg_compliant = make_compliant_bigg(path_to_bigg_dict)
+    bigg_compliant = make_compliant_bigg(path_to_conversion_file)
 
     #0.3- Get the model
     model = _import_model(path_to_model)

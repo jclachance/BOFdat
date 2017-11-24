@@ -1,0 +1,98 @@
+metab_name,metab_id
+Val,val__L
+SAH (S-Adenosylhomocysteine),ahcys
+Dihydroorotate,dhor__S
+S7P (D-Sedoheptulose 7-phosphate),s7p
+Citrulline,citr__L
+dCTP,dctp
+Pyridoxamine5'-phosphate,pyam5p
+His,his__L
+GDP,gdp
+dCDP,dcdp
+"P1, P4-Di(adenosine-5') tetraphosphate",ap4a
+Adenosine,ade
+Trp,trp__L
+O-Phosphoserine,pser__L
+Ser,ser__L
+Lys,lys__L
+Pro,pro__L
+Agmatine,agm
+Tyr,tyr__L
+5-Methylthioadenosine,5mta
+Arg,arg__L
+UDP-glucose,udpg
+Sorbitol 6-phosphate,sbt6p
+Ala-Ala,alaala
+N-Acetylglucosamine 1-phosphate,acgam1p
+Met,met__L
+Spermidine,spmd
+Leu,leu__L
+AMP,amp
+"N-succinyl-L,L-2,6-diaminopimelate",sl26da
+Adenine,ade
+Malate,mal__L
+dTDP,dtdp
+Nicotinamide,ncam
+Succinate,succ
+Citrate,cit
+dTTP,dttp
+UDP-N-acetylglucosamine,uacgam
+DHAP,dhap
+Glutathione(red),gthrd
+Cadaverine,15dap
+dTMP,dtmp
+NADH,nadh
+CTP,ctp
+UMP,ump
+UDP-glucuronate,udpglcur
+"F1,6P (Fructose 1,6-bisphosphate)",fdp
+ATP,atp
+F6P (Fructose 6-phosphate),f6p
+R5P (D-Ribose 5-phosphate),r5p
+NADP+,nadp
+Glucosamine 6-phosphate,gam6p
+ADP,adp
+Carbamoylaspartate,cbasp
+UDP,udp
+NADPH,nadph
+IMP,imp
+GMP,gmp
+dADP,dadp
+NAD+,nad
+Homoserine,hom__L
+SAM+ (S-Adenosylmethionine),ametam
+dATP,datp
+Ornithine,orn
+CDP,cdp
+cis-Aconitate,acon_C
+ITP,itp
+Allantoin,alltn
+3PG and 2PG (3-phosphoglycerate and 2-phosphoglycerate),3pg
+Orotate,orot
+Histidinol,histd
+dCMP,dcmp
+N-Acetylglutamate,acglu
+Asp,asp__L
+6-Phosphogluconate,6pgc
+PEP (Phosphoenolpyruvic acid),pep
+G6P (Glucose 6-phosphate),g6p
+Phe,phe__L
+Asn,asn__L
+Ru5P (D-Ribulose 5-phosphate),ru5p__D
+Ile,ile__L
+Gln,gln__L
+Thr,thr__L
+UTP,utp
+2-Isopropylmalate,2ippm
+N-Acetylornithine,acorn
+Glu,glu__L
+G1P (Glucose 1-phosphate),g1p
+2-Oxoglutarate,akg
+Quinate,quin
+Fumarate,fum
+Glutathione(ox),gthox
+N-Acetylglucosamine 6-phosphate,acgam6p
+Ala,ala__L
+"Putrescine (1,4-Butanediamine)",ptrc
+isochorismate/prephenate/chorismate,pphn
+FAD,fad
