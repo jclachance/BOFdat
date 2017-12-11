@@ -18,14 +18,14 @@ def _import_model(path_to_model):
     else:
         raise Exception('Model format not compatible, provide xml or json')
 
-def _import_transcriptomic(path_to_transcriptomic,seq_dict):
+def _import_transcriptomic(path_to_transcriptomic,all_locus):
     import pandas as pd
     transcriptomic =pd.read_csv(path_to_transcriptomic,header=None)
     #1- Verify number of columns
     if len(transcriptomic.columns) > 2:
         raise Exception("Your file format is not appropriate, more than 2 columns")
     #2- Verify presence of header
-    if type(transcriptomic.loc[0, 1]) == str and type(transcriptomic.loc[0, 2]) == str:
+    if type(transcriptomic.loc[0, 0]) == str and type(transcriptomic.loc[0, 1]) == str:
         transcriptomic = transcriptomic.iloc[1:]
     #3- Remove null data
     if transcriptomic.isnull().values.any():
@@ -46,16 +46,14 @@ def _import_transcriptomic(path_to_transcriptomic,seq_dict):
     if len(set(conform_df['identifiers'])) == len(conform_df['identifiers']):
         pass
     else:
-        raise Exception('Redundancy in dataset identifiers')
+        raise Exception('Redundancy in transcriptomic dataset identifiers')
     #6- Make sure that protein id are used
-    if len(list(set(conform_df['identifiers']).intersection(set(seq_dict.keys())))) == len(conform_df):
+    if len(list(set(conform_df['identifiers']).intersection(set(all_locus)))) == len(conform_df):
         pass
     else:
-        raise Exception('Identifiers not protein_id')
+        raise Exception("Identifiers not 'locus_tag' or 'GeneID'")
 
-    keys = [k for k in df.identifiers]
-    values = [v for v in df.abundances]
-    return dict(zip(keys, values))
+    return conform_df
 
 def _get_number(seq):
     # This function is used if and only if the level of expression of each gene is assumed equal
@@ -89,13 +87,12 @@ def _get_RNA_sequence(location, strand,genome_record):
         elif strand == -1:
             rna_seq = my_seq.reverse_complement().transcribe()
     except:
-        raise ('error no strand provided')
+        raise Exception('No strand provided')
 
     return str(rna_seq)
 
 def _make_number_df(number_list, locus_list, seq_list):
-
-    # This function gnerates a dataframe with locus info, sequence and amount of each base
+    # This function generates a dataframe with locus info, sequence and amount of each base
     A_number, U_number, C_number, G_number = [], [], [], []
     for d in number_list:
         for base in BASES:
@@ -126,18 +123,18 @@ def _get_total_fractions(df):
     fraction_dict['C'] = total_per_base.C / grand_total
     return fraction_dict
 
-def _get_mRNA_fractions(df, path_to_transcriptomic):
-    transcriptomic = _import_transcriptomic(path_to_transcriptomic)
+def _get_mRNA_fractions(df, path_to_transcriptomic,all_locus):
+    transcriptomic = _import_transcriptomic(path_to_transcriptomic,all_locus)
     # Merge dataframes
-    mean_abundance = pd.merge(left=df, right=transcriptomic, left_on='locus', right_on='gene_ID')
+    mean_abundance = pd.merge(left=df, right=transcriptomic, left_on='locus', right_on='identifiers')
     # Generate list of normalized values per gene per base by RPKM from transcriptomic data
     A_norm, U_norm, G_norm, C_norm = [], [], [], []
     for i, row in mean_abundance.iterrows():
         # 1- Multiply fraction by abundance for each gene
-        A_mean = row.A * row.Mean
-        U_mean = row.U * row.Mean
-        G_mean = row.G * row.Mean
-        C_mean = row.C * row.Mean
+        A_mean = row['A'] * row['abundances']
+        U_mean = row['U'] * row['abundances']
+        G_mean = row['G'] * row['abundances']
+        C_mean = row['C'] * row['abundances']
         A_norm.append(A_mean)
         U_norm.append(U_mean)
         G_norm.append(G_mean)
@@ -145,14 +142,15 @@ def _get_mRNA_fractions(df, path_to_transcriptomic):
 
     # Get the mean of each list stored in a dictionary
     mRNA_fractions = {'A': 0, 'U': 0, 'C': 0, 'G': 0}
-    mRNA_fractions['A'] = sum(A_norm) / sum(mean_abundance.Mean)
-    mRNA_fractions['U'] = sum(U_norm) / sum(mean_abundance.Mean)
-    mRNA_fractions['G'] = sum(G_norm) / sum(mean_abundance.Mean)
-    mRNA_fractions['C'] = sum(C_norm) / sum(mean_abundance.Mean)
+    mRNA_fractions['A'] = sum(A_norm) / sum(mean_abundance['abundances'])
+    mRNA_fractions['U'] = sum(U_norm) / sum(mean_abundance['abundances'])
+    mRNA_fractions['G'] = sum(G_norm) / sum(mean_abundance['abundances'])
+    mRNA_fractions['C'] = sum(C_norm) / sum(mean_abundance['abundances'])
 
     return mRNA_fractions
 
 def _process_record(path_to_genbank,path_to_transcriptomic,identifier):
+    from Bio import SeqIO
     rRNA_seq, rRNA_locus, rRNA_number = [], [], []
     tRNA_seq, tRNA_locus, tRNA_number = [], [], []
     mRNA_seq, mRNA_locus, mRNA_fraction = [], [], []
@@ -204,9 +202,13 @@ def _process_record(path_to_genbank,path_to_transcriptomic,identifier):
         raise Exception("Unsupported identifier, use 'locus_tag' or 'GeneID'")
 
     # Make dataframe for each
-    rRNA_dict = _get_total_fractions(_make_number_df(rRNA_number, rRNA_locus, rRNA_seq))
-    tRNA_dict = _get_total_fractions(_make_number_df(tRNA_number, tRNA_locus, tRNA_seq))
-    mRNA_dict = _get_mRNA_fractions(_make_number_df(mRNA_fraction, mRNA_locus, mRNA_seq), path_to_transcriptomic)
+    tRNA_df = _make_number_df(tRNA_number, tRNA_locus, tRNA_seq)
+    rRNA_df = _make_number_df(rRNA_number, rRNA_locus, rRNA_seq)
+    mRNA_df = _make_number_df(mRNA_fraction, mRNA_locus, mRNA_seq)
+    rRNA_dict = _get_total_fractions(rRNA_df)
+    tRNA_dict = _get_total_fractions(tRNA_df)
+    all_locus = [i for i in rRNA_df['locus']] + [i for i in tRNA_df['locus']] + [i for i in mRNA_df['locus']]
+    mRNA_dict = _get_mRNA_fractions(mRNA_df, path_to_transcriptomic,all_locus)
 
     return rRNA_dict, tRNA_dict, mRNA_dict
 
@@ -222,7 +224,6 @@ def _total_coefficients(mRNA_fractions, tRNA_fractions, rRNA_fractions, mRNA_RAT
         RNA_total[letter] = mrna + trna + rrna
 
     return RNA_total
-
 
 def _convert_to_mmolgDW(RNA_coefficients, model, RNA_RATIO, CELL_WEIGHT):
     DIPHOSPHATE_WEIGHT = 174.951262
