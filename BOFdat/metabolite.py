@@ -140,12 +140,13 @@ def generate_coefficients(path_to_metabolomic, path_to_conversion_file, path_to_
 
     :return: a dictionary of metabolites and coefficients that can be used to update the biomass objective function.
     """
+    if METAB_WEIGHT_FRACTION > 1.:
+        raise Exception('WEIGHT FRACTION should be a number between 0 and 1')
     # Operation 0.1
     # Get the total lipid weight in the cell
     METAB_WEIGHT = METAB_WEIGHT_FRACTION * CELL_WEIGHT
 
     # Operation 0.2
-
     # Remove molecules previously calculated
     def remove_molecules(bigg_abundance):
         amino_acids = ['ala__L', 'cys__L', 'asp__L', 'glu__L', 'phe__L', 'gly', 'his__L', 'ile__L', 'lys__L',

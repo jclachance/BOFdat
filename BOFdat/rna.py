@@ -8,27 +8,54 @@ This module generates BOFsc for the 4 bases of RNA (ATP, UTP, CTP and GTP)
 BASES = ['A', 'U', 'C', 'G']
 import pandas as pd
 # Methods
-def _import_genome(path_to_genbank):
-    # This function import the genome record from genbank
-    from Bio import SeqIO
-    genome_record = SeqIO.read(path_to_genbank, 'genbank')
-    return genome_record
-
-
 def _import_model(path_to_model):
     import cobra
     extension = path_to_model.split('.')[-1]
     if extension == 'json':
-        model = cobra.io.load_json_model(path_to_model)
+        return cobra.io.load_json_model(path_to_model)
     elif extension == 'xml':
-        model = cobra.io.read_sbml_model(path_to_model)
-    return model
+        return cobra.io.read_sbml_model(path_to_model)
+    else:
+        raise Exception('Model format not compatible, provide xml or json')
 
-
-def _import_transcriptomic(path_to_transcriptomic):
+def _import_transcriptomic(path_to_transcriptomic,seq_dict):
     import pandas as pd
-    return pd.read_csv(path_to_transcriptomic, names=['gene_ID', 'Mean'], skiprows=1)
+    transcriptomic =pd.read_csv(path_to_transcriptomic,header=None)
+    #1- Verify number of columns
+    if len(transcriptomic.columns) > 2:
+        raise Exception("Your file format is not appropriate, more than 2 columns")
+    #2- Verify presence of header
+    if type(transcriptomic.loc[0, 1]) == str and type(transcriptomic.loc[0, 2]) == str:
+        transcriptomic = transcriptomic.iloc[1:]
+    #3- Remove null data
+    if transcriptomic.isnull().values.any():
+        transcriptomic = transcriptomic.dropna()
+    #4- Verify column order (identifiers first, abundance second)
+    try:
+        try:
+            abundances = [float(i) for i in transcriptomic.iloc[0:, 1]]
+            identifiers = [str(i) for i in transcriptomic.iloc[0:, 0]]
+        except:
+            abundances = [float(i) for i in transcriptomic.iloc[0:, 0]]
+            identifiers = [str(i) for i in transcriptomic.iloc[0:, 1]]
+    except Exception:
+        raise Exception('The abundances cannot be converted to float.')
 
+    conform_df = pd.DataFrame({'identifiers':identifiers,'abundances':abundances},columns=['identifiers','abundances'])
+    #5- Verify redundancy in protein identifiers
+    if len(set(conform_df['identifiers'])) == len(conform_df['identifiers']):
+        pass
+    else:
+        raise Exception('Redundancy in dataset identifiers')
+    #6- Make sure that protein id are used
+    if len(list(set(conform_df['identifiers']).intersection(set(seq_dict.keys())))) == len(conform_df):
+        pass
+    else:
+        raise Exception('Identifiers not protein_id')
+
+    keys = [k for k in df.identifiers]
+    values = [v for v in df.abundances]
+    return dict(zip(keys, values))
 
 def _get_number(seq):
     # This function is used if and only if the level of expression of each gene is assumed equal
@@ -38,7 +65,6 @@ def _get_number(seq):
         ratio_gene[base] = number
     return ratio_gene
 
-
 def _get_fraction(seq):
     # This function is to be used in case the level of expression of each gene cannot be assumed equal
     ratio_gene = {'A': 0, 'U': 0, 'C': 0, 'G': 0}
@@ -46,7 +72,6 @@ def _get_fraction(seq):
         fraction = float(seq.count(base)) / len(seq)
         ratio_gene[base] = fraction
     return ratio_gene
-
 
 def _get_RNA_sequence(location, strand,genome_record):
     # This function spits out the RNA sequence of a given gene
@@ -68,7 +93,6 @@ def _get_RNA_sequence(location, strand,genome_record):
 
     return str(rna_seq)
 
-
 def _make_number_df(number_list, locus_list, seq_list):
 
     # This function gnerates a dataframe with locus info, sequence and amount of each base
@@ -89,9 +113,7 @@ def _make_number_df(number_list, locus_list, seq_list):
                                'A': A_number, 'U': U_number,
                                'C': C_number, 'G': G_number},
                               columns=['locus', 'sequence', 'A', 'U', 'C', 'G'])
-
     return generic_df
-
 
 def _get_total_fractions(df):
     total_per_base = df.sum(axis=0, numeric_only=True)
@@ -103,7 +125,6 @@ def _get_total_fractions(df):
     fraction_dict['G'] = total_per_base.G / grand_total
     fraction_dict['C'] = total_per_base.C / grand_total
     return fraction_dict
-
 
 def _get_mRNA_fractions(df, path_to_transcriptomic):
     transcriptomic = _import_transcriptomic(path_to_transcriptomic)
@@ -131,37 +152,63 @@ def _get_mRNA_fractions(df, path_to_transcriptomic):
 
     return mRNA_fractions
 
-
-def _process_record(genome_record,path_to_transcriptomic):
+def _process_record(path_to_genbank,path_to_transcriptomic,identifier):
     rRNA_seq, rRNA_locus, rRNA_number = [], [], []
     tRNA_seq, tRNA_locus, tRNA_number = [], [], []
     mRNA_seq, mRNA_locus, mRNA_fraction = [], [], []
 
-    for element in genome_record.features:
-        if element.type == 'CDS':
-            rna_seq = _get_RNA_sequence(element.location, element.strand,genome_record)
-            mRNA_seq.append(rna_seq)
-            mRNA_locus.append(element.qualifiers['locus_tag'][0])
-            mRNA_fraction.append(_get_fraction(rna_seq))
+    if identifier == 'locus_tag':
+        genome_record = SeqIO.parse(path_to_genbank, 'genbank')
+        for record in genome_record:
+            for element in record.features:
+                if element.type == 'CDS':
+                    rna_seq = _get_RNA_sequence(element.location, element.strand, record)
+                    mRNA_seq.append(rna_seq)
+                    mRNA_locus.append(element.qualifiers['locus_tag'][0])
+                    mRNA_fraction.append(_get_fraction(rna_seq))
 
-        if element.type == 'tRNA':
-            rna_seq = _get_RNA_sequence(element.location, element.strand,genome_record)
-            tRNA_seq.append(rna_seq)
-            tRNA_locus.append(element.qualifiers['locus_tag'][0])
-            tRNA_number.append(_get_number(rna_seq))
+                if element.type == 'tRNA':
+                    rna_seq = _get_RNA_sequence(element.location, element.strand, record)
+                    tRNA_seq.append(rna_seq)
+                    tRNA_locus.append(element.qualifiers['locus_tag'][0])
+                    tRNA_number.append(_get_number(rna_seq))
 
-        if element.type == 'rRNA':
-            rna_seq = _get_RNA_sequence(element.location, element.strand,genome_record)
-            rRNA_seq.append(rna_seq)
-            rRNA_locus.append(element.qualifiers['locus_tag'][0])
-            rRNA_number.append(_get_number(rna_seq))
+                if element.type == 'rRNA':
+                    rna_seq = _get_RNA_sequence(element.location, element.strand, record)
+                    rRNA_seq.append(rna_seq)
+                    rRNA_locus.append(element.qualifiers['locus_tag'][0])
+                    rRNA_number.append(_get_number(rna_seq))
+
+    elif identifier == 'geneID':
+        genome_record = SeqIO.parse(path_to_genbank, 'genbank')
+        for record in genome_record:
+            for element in record.features:
+                if element.type == 'mRNA':
+                    rna_seq = _get_RNA_sequence(element.location, element.strand, record)
+                    mRNA_seq.append(rna_seq)
+                    mRNA_locus.append(j[7:] for j in element.qualifiers['db_xref'] if j.startswith('GeneID:'))
+                    mRNA_fraction.append(_get_fraction(rna_seq))
+
+                if element.type == 'tRNA':
+                    rna_seq = _get_RNA_sequence(element.location, element.strand, record)
+                    tRNA_seq.append(rna_seq)
+                    tRNA_locus.append(j[7:] for j in element.qualifiers['db_xref'] if j.startswith('GeneID:'))
+                    tRNA_number.append(_get_number(rna_seq))
+
+                if element.type == 'rRNA':
+                    rna_seq = _get_RNA_sequence(element.location, element.strand, record)
+                    rRNA_seq.append(rna_seq)
+                    rRNA_locus.append(j[7:] for j in element.qualifiers['db_xref'] if j.startswith('GeneID:'))
+                    rRNA_number.append(_get_number(rna_seq))
+    else:
+        raise Exception("Unsupported identifier, use 'locus_tag' or 'GeneID'")
+
     # Make dataframe for each
     rRNA_dict = _get_total_fractions(_make_number_df(rRNA_number, rRNA_locus, rRNA_seq))
     tRNA_dict = _get_total_fractions(_make_number_df(tRNA_number, tRNA_locus, tRNA_seq))
     mRNA_dict = _get_mRNA_fractions(_make_number_df(mRNA_fraction, mRNA_locus, mRNA_seq), path_to_transcriptomic)
 
     return rRNA_dict, tRNA_dict, mRNA_dict
-
 
 def _total_coefficients(mRNA_fractions, tRNA_fractions, rRNA_fractions, mRNA_RATIO, tRNA_RATIO, rRNA_RATIO):
     # Multiply mRNA,rRNA and tRNA
@@ -200,15 +247,14 @@ def _convert_to_mmolgDW(RNA_coefficients, model, RNA_RATIO, CELL_WEIGHT):
     RNA_biomass_ratios = dict(zip(metabolites, coefficients))
     return RNA_biomass_ratios
 
-
 def generate_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic,
                          CELL_WEIGHT=280,
                          RNA_WEIGHT_FRACTION=0.205,
                          rRNA_WEIGHT_FRACTION=0.9,
                          tRNA_WEIGHT_FRACTION=0.05,
-                         mRNA_WEIGHT_FRACTION=0.05):
+                         mRNA_WEIGHT_FRACTION=0.05,
+                         identifier='locus_tag'):
     """
-
     Generates a dictionary of metabolite:coefficients for the 4 RNA bases from the organism's
     GenBank annotated file, total RNA weight percentage, transcriptomic. Alternately, ribosomal,
     transfer and messenger RNA relative abundances can be incorporated otherwise the default 80% rRNA, 10% tRNA and
@@ -218,24 +264,31 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic
 
     :param path_to_model: a path to the model, format supported are json and xml
 
-    :param proteomics: a two column pandas dataframe (gene_id, abundance)
+    :param path_to_transcriptomic: a two column pandas dataframe (gene_id, abundance)
 
     :param CELL_WEIGHT: experimentally measured cell weight in femtograms, float
 
-    :param RNA_RATIO: the ratio of DNA in the entire cell
+    :param RNA_WEIGHT_FRACTION: the weight fraction of RNA in the entire cell
+
+    :param rRNA_WEIGHT_FRACTION: the fraction of rRNA to total
+
+    :param tRNA_WEIGHT_FRACTION: the fraction of tRNA to total
+
+    :param mRNA_WEIGHT_FRACTION: the fraction of mRNA to total
+
+    :param identifier: the type of identifier in the input file, 'locus_tag' or 'geneID'
 
     :return: a dictionary of metabolites and coefficients
     """
-    # Imports
-    import pandas as pd
-
+    if RNA_WEIGHT_FRACTION > 1. or rRNA_WEIGHT_FRACTION > 1. or tRNA_WEIGHT_FRACTION > 1. or mRNA_WEIGHT_FRACTION > 1.:
+        raise Exception('WEIGHT FRACTION should be a number between 0 and 1')
     # Operations
-    genome_record = _import_genome(path_to_genbank)
-    rRNA_dict, tRNA_dict, mRNA_dict = _process_record(genome_record,path_to_transcriptomic)
+    model = _import_model(path_to_model)
+    rRNA_dict, tRNA_dict, mRNA_dict = _process_record(path_to_genbank,path_to_transcriptomic,identifier)
     RNA_coefficients = _total_coefficients(rRNA_dict, tRNA_dict, mRNA_dict,
                                            mRNA_WEIGHT_FRACTION, tRNA_WEIGHT_FRACTION, rRNA_WEIGHT_FRACTION)
     RNA_biomass_ratios = _convert_to_mmolgDW(RNA_coefficients,
-                                            _import_model(path_to_model), RNA_WEIGHT_FRACTION, CELL_WEIGHT)
+                                            model, RNA_WEIGHT_FRACTION, CELL_WEIGHT)
 
     return RNA_biomass_ratios
 

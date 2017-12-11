@@ -8,27 +8,20 @@ This module generates BOFsc for the 4 bases of DNA (dATP, dTTP, dCTP and dGTP)
 BASES = ['A', 'T', 'C', 'G']
 
 # Methods
-# Imports the genome as a fasta file
-# PATH provided by user
 def _import_genome(fasta):
     from Bio import SeqIO
     genome = SeqIO.read(fasta, 'fasta')
     return genome
 
-# Imports the model
-# PATH provided by user
-# Checks for format
 def _import_model(path_to_model):
-    # Determine format to import
-    model_format = path_to_model.split('.')[-1]
     import cobra
-    # Import model 2 formats possible so far json and xml
-    if model_format == 'json':
-        model = cobra.io.load_json_model(path_to_model)
-    elif model_format == 'xml':
-        model = cobra.io.read_sbml_model(path_to_model)
-
-    return model
+    extension = path_to_model.split('.')[-1]
+    if extension == 'json':
+        return cobra.io.load_json_model(path_to_model)
+    elif extension == 'xml':
+        return cobra.io.read_sbml_model(path_to_model)
+    else:
+        raise Exception('Model format not compatible, provide xml or json')
 
 def _get_number_of_bases(genome):
     # Counts the number of each letter in the genome
@@ -78,7 +71,6 @@ def _convert_to_coefficient(model, ratio_genome, CELL_WEIGHT, DNA_RATIO):
 
 def generate_coefficients(path_to_fasta, path_to_model, CELL_WEIGHT=280, DNA_WEIGHT_FRACTION=0.031):
     """
-
     Generates a dictionary of metabolite:coefficients for the 4 DNA bases from the organism's
     DNA fasta file and the weight percentage of DNA in the cell.
 
@@ -92,8 +84,9 @@ def generate_coefficients(path_to_fasta, path_to_model, CELL_WEIGHT=280, DNA_WEI
 
     :return: a dictionary of metabolites and coefficients
     """
-
-    # Get the biomass coefficients
+    if DNA_WEIGHT_FRACTION > 1.:
+        raise Exception('WEIGHT FRACTION should be a number between 0 and 1')
+    #Operations
     genome = _import_genome(path_to_fasta)
     base_in_genome = _get_number_of_bases(genome)
     ratio_in_genome = _get_ratio(base_in_genome, genome)
@@ -106,7 +99,6 @@ The option to update the coefficients of the metabolites in the biomass objectiv
 '''
 def update_biomass_coefficients(dict_of_coefficients,model):
     """
-
     Updates the biomass coefficients given the input metabolite:coefficient dictionary.
 
     :param dict_of_coefficients: dictionary of metabolites and coefficients

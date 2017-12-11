@@ -9,37 +9,15 @@ import pandas as pd
 AMINO_ACIDS = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W','Y']
 
 # Methods
-'''
-DEPRECATED
-def _import_genome(genbank):
-    from Bio import SeqIO
-    try:
-        # Unique handle in record
-        genome_record = SeqIO.read(genbank, 'genbank')
-    except:
-        # Multiple handles in record
-        genome_record = SeqIO.parse(genbank, 'genbank')
-    return genome_record
-'''
 def _get_protein_sequence(path_to_genbank):
     # Get the prot id and sequence of each protein from genbank file
     from Bio import SeqIO
-    try:
-        # Unique handle in record
-        genome_record = SeqIO.read(path_to_genbank, 'genbank')
-        seq_dict = {}
-        for i in genome_record.features:
+    genome_record = SeqIO.parse(path_to_genbank, 'genbank')
+    seq_dict = {}
+    for record in genome_record:
+        for i in record.features:
             if i.type == 'CDS' and 'protein_id' in i.qualifiers:
                 seq_dict[i.qualifiers['protein_id'][0]] = i.qualifiers['translation'][0]
-
-    except:
-        # Multiple handles in record
-        genome_record = SeqIO.parse(path_to_genbank, 'genbank')
-        seq_dict = {}
-        for record in genome_record:
-            for i in record.features:
-                if i.type == 'CDS' and 'protein_id' in i.qualifiers:
-                    seq_dict[i.qualifiers['protein_id'][0]] = i.qualifiers['translation'][0]
 
     return seq_dict
 
@@ -50,15 +28,46 @@ def _import_model(path_to_model):
         return cobra.io.load_json_model(path_to_model)
     elif extension == 'xml':
         return cobra.io.read_sbml_model(path_to_model)
+    else:
+        raise Exception('Model format not compatible, provide xml or json')
 
-def _import_proteomic(path_to_proteomic):
+def _import_proteomic(path_to_proteomic,seq_dict):
     import pandas as pd
-    proteomics =pd.read_csv(path_to_proteomic, names=['gene_ID', 'Mean'], skiprows=1)
+    proteomics =pd.read_csv(path_to_proteomic,header=None)
+    #1- Verify number of columns
+    if len(proteomics.columns) > 2:
+        raise Exception("Your file format is not appropriate, more than 2 columns")
+    #2- Verify presence of header
+    if type(proteomics.loc[0, 1]) == str and type(proteomics.loc[0, 2]) == str:
+        proteomics = proteomics.iloc[1:]
+    #3- Remove null data
     if proteomics.isnull().values.any():
-        print('Some proteins in your dataset do not have associated abundance, removing them')
         proteomics = proteomics.dropna()
-    keys = [str(k) for k in proteomics.gene_ID]
-    values = [float(v) for v in proteomics.Mean]
+    #4- Verify column order (identifiers first, abundance second)
+    try:
+        try:
+            abundances = [float(i) for i in proteomics.iloc[0:, 1]]
+            identifiers = [str(i) for i in proteomics.iloc[0:, 0]]
+        except:
+            abundances = [float(i) for i in proteomics.iloc[0:, 0]]
+            identifiers = [str(i) for i in proteomics.iloc[0:, 1]]
+    except Exception:
+        raise Exception('The abundances cannot be converted to float.')
+
+    conform_df = pd.DataFrame({'identifiers':identifiers,'abundances':abundances},columns=['identifiers','abundances'])
+    #5- Verify redundancy in protein identifiers
+    if len(set(conform_df['identifiers'])) == len(conform_df['identifiers']):
+        pass
+    else:
+        raise Exception('Redundancy in dataset identifiers')
+    #6- Make sure that protein id are used
+    if len(list(set(conform_df['identifiers']).intersection(set(seq_dict.keys())))) == len(conform_df):
+        pass
+    else:
+        raise Exception('Identifiers not protein_id')
+
+    keys = [k for k in df.identifiers]
+    values = [v for v in df.abundances]
     return dict(zip(keys, values))
 
 def _get_aa_composition(seq_dict):
@@ -86,13 +95,13 @@ def _get_aa_composition(seq_dict):
 
     return list_of_dict
 
-def _normalize_aa_composition(list_of_dict, path_to_proteomic):
+def _normalize_aa_composition(list_of_dict, path_to_proteomic,seq_dict):
     # Normalize the value of each amino acid per protein following proteomic data
     normalized_dict = {'A': 0., 'C': 0., 'D': 0., 'E': 0., 'F': 0., 'G': 0., 'H': 0., 'I': 0.,
                        'K': 0., 'L': 0., 'M': 0., 'N': 0., 'P': 0., 'Q': 0., 'R': 0., 'S': 0., 'T': 0., 'V': 0.,
                        'W': 0., 'Y': 0.}
     # Import proteomic data into dictionnary
-    proteomics = _import_proteomic(path_to_proteomic)
+    proteomics = _import_proteomic(path_to_proteomic,seq_dict)
     for d in list_of_dict:
         # Get the coefficient from proteomics
         coeff = proteomics.get(str(list(d.keys())[0]))
@@ -194,13 +203,15 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, CEL
 
     :return: a dictionary of metabolites and coefficients
     """
+    if PROTEIN_WEIGHT_FRACTION > 1.:
+        raise Exception('WEIGHT FRACTION should be a number between 0 and 1')
     # Operations
     # 1- Parse the genome, extract protein sequence, count and store amino acid composition of each protein
     if PROTEIN_WEIGHT_FRACTION > 1.:
-        print('Must enter ratio, value between 0. and 1.')
+        raise ValueError('Must enter ratio, value between 0. and 1.')
     seq_dict = _get_protein_sequence(path_to_genbank)
     list_of_dict = _get_aa_composition(seq_dict)
-    normalized_dict = _normalize_aa_composition(list_of_dict,path_to_proteomic)
+    normalized_dict = _normalize_aa_composition(list_of_dict,path_to_proteomic,seq_dict)
 
     # 2- Get coefficients from experimental proteomics data
     # Proteomics data should come in a 2 columns standard format protein_id:abundance

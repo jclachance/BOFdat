@@ -74,7 +74,8 @@ def generate_coefficients(path_to_lipidomic,path_to_conversion_file,
     :return: a dictionary of metabolites and coefficients that can be used to update the biomass objective function.
 
     """
-
+    if LIPID_WEIGHT_FRACTION > 1.:
+        raise Exception('WEIGHT FRACTION should be a number between 0 and 1')
     # Operation 0.1
     #Get the total lipid weight in the cell
     LIPID_WEIGHT = LIPID_WEIGHT_FRACTION * CELL_WEIGHT
