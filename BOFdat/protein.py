@@ -66,8 +66,8 @@ def _import_proteomic(path_to_proteomic,seq_dict):
     else:
         raise Exception('Identifiers not protein_id')
 
-    keys = [k for k in df.identifiers]
-    values = [v for v in df.abundances]
+    keys = [k for k in conform_df.identifiers]
+    values = [v for v in conform_df.abundances]
     return dict(zip(keys, values))
 
 def _get_aa_composition(seq_dict):
