@@ -38,7 +38,7 @@ def _import_proteomic(path_to_proteomic,seq_dict):
     if len(proteomics.columns) > 2:
         raise Exception("Your file format is not appropriate, more than 2 columns")
     #2- Verify presence of header
-    if type(proteomics.loc[0, 1]) == str and type(proteomics.loc[0, 2]) == str:
+    if type(proteomics.loc[0, 0]) == str and type(proteomics.loc[0, 1]) == str:
         proteomics = proteomics.iloc[1:]
     #3- Remove null data
     if proteomics.isnull().values.any():
@@ -59,7 +59,7 @@ def _import_proteomic(path_to_proteomic,seq_dict):
     if len(set(conform_df['identifiers'])) == len(conform_df['identifiers']):
         pass
     else:
-        raise Exception('Redundancy in dataset identifiers')
+        raise Exception('Redundancy in proteomic dataset identifiers')
     #6- Make sure that protein id are used
     if len(list(set(conform_df['identifiers']).intersection(set(seq_dict.keys())))) == len(conform_df):
         pass
