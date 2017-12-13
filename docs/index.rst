@@ -13,7 +13,7 @@ Please consider supporting BOFdat by citing our publication when you generate yo
 Installation
 ------------
 
-Python package for Escher can be installed using pip::
+BOFdat can be installed using pip::
    
    pip install BOFdat
 
