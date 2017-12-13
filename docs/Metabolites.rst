@@ -10,4 +10,3 @@ Before generating coefficients for metabolites and adding those to the BOF, it i
 
 Once these filters have been applied, the 2 files that the *generate_coefficients* function take as input are the "abundance" file, which is your raw metabolomic file in 2 columns and the "conversion" file which is the conversion of the name of each of the metabolite present in the metabolomic to your identifiers in BiGG format.
 
-.. image:: /gam_file.png

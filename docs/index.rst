@@ -10,6 +10,14 @@ Citing BOFdat
 
 Please consider supporting BOFdat by citing our publication when you generate your BOFsc:
 
+Installation
+------------
+
+Python package for Escher can be installed using pip::
+   
+   pip install BOFdat
+
+
 **include citation**
 
 Contents

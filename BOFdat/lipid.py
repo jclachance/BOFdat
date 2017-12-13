@@ -63,7 +63,7 @@ def generate_coefficients(path_to_lipidomic,path_to_conversion_file,
 
     :param lipidomic: a dictionary or dataframe of metabolites identified in the lipidomic experiment
 
-    :param to_bigg_dict: a dictionary converting from the name present in the lipidomic data to BiGG identifiers. This dictionary is generated through manual curation from the modeller.
+    :param path_to_conversion_file: a dictionary converting from the name present in the lipidomic data to BiGG identifiers. This dictionary is generated through manual curation from the modeller.
 
     :param CELL_WEIGHT: measured cell weight in femtograms, otherwise default
 

@@ -14,7 +14,4 @@ BOFdat supports multiple handle GenBank files as for eukaryotes. The use of **pr
 because they are unique and present in all GenBank files.
 Hence the transcriptomic file should include the GenBank locus tags as gene identifiers in the first column and the relative abundances in the second.  
 
-File example
-------------
 
-.. image:: /rna_file.png

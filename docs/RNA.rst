@@ -8,7 +8,4 @@ The GenBank files and transcriptomic should be compatible together. This means t
 RNA uses 3 different types of elements in the annotation: CDS, tRNA and rRNA. The location and strand of these element should be provided as well as the locus tag. 
 Hence the transcriptomic file should include the GenBank locus tags as gene identifiers in the first column and the relative abundances in the second.  
 
-File example
-------------
 
-.. image:: /rna_file.png
