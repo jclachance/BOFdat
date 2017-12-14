@@ -6,6 +6,7 @@ This module generates BOFsc for the 20 amino acids contained in proteins.
 
 """
 import pandas as pd
+import warnings
 AMINO_ACIDS = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W','Y']
 
 # Methods
@@ -33,6 +34,7 @@ def _import_model(path_to_model):
 
 def _import_proteomic(path_to_proteomic,seq_dict):
     import pandas as pd
+    import warnings
     proteomics =pd.read_csv(path_to_proteomic,header=None)
     #1- Verify number of columns
     if len(proteomics.columns) > 2:
@@ -59,9 +61,9 @@ def _import_proteomic(path_to_proteomic,seq_dict):
     if len(set(conform_df['identifiers'])) == len(conform_df['identifiers']):
         pass
     else:
-        raise Exception('Redundancy in proteomic dataset identifiers')
+        warnings.warn('Redundancy in dataset identifiers')
     #6- Make sure that protein id are used
-    if len(list(set(conform_df['identifiers']).intersection(set(seq_dict.keys())))) == len(conform_df):
+    if len(list(set(conform_df['identifiers']).intersection(set(seq_dict.keys())))) > 0:
         pass
     else:
         raise Exception('Identifiers not protein_id')
@@ -185,7 +187,7 @@ def _convert_to_coefficient(ratio_dict, path_to_model, CELL_WEIGHT):
     return Protein_biomass_coefficients
 
 
-def generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, CELL_WEIGHT=280, PROTEIN_WEIGHT_FRACTION=0.55):
+def generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, PROTEIN_WEIGHT_FRACTION=0.55):
     """
 
     Generates a dictionary of metabolite:coefficients for the 20 amino acids contained in proteins from the organism's
@@ -197,12 +199,11 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, CEL
 
     :param path_to_proteomic: a two column pandas dataframe (protein_id, abundance)
 
-    :param CELL_WEIGHT: experimentally measured cell weight in femtograms, float
-
     :param PROTEIN_RATIO: the ratio of DNA in the entire cell
 
     :return: a dictionary of metabolites and coefficients
     """
+    CELL_WEIGHT = 280
     if PROTEIN_WEIGHT_FRACTION > 1.:
         raise Exception('WEIGHT FRACTION should be a number between 0 and 1')
     # Operations

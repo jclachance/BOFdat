@@ -69,7 +69,7 @@ def _convert_to_coefficient(model, ratio_genome, CELL_WEIGHT, DNA_RATIO):
     DNA_coefficients = dict(zip(metabolites,coefficients))
     return DNA_coefficients
 
-def generate_coefficients(path_to_fasta, path_to_model, CELL_WEIGHT=280, DNA_WEIGHT_FRACTION=0.031):
+def generate_coefficients(path_to_fasta, path_to_model , DNA_WEIGHT_FRACTION=0.031):
     """
     Generates a dictionary of metabolite:coefficients for the 4 DNA bases from the organism's
     DNA fasta file and the weight percentage of DNA in the cell.
@@ -78,12 +78,11 @@ def generate_coefficients(path_to_fasta, path_to_model, CELL_WEIGHT=280, DNA_WEI
 
     :param path_to_model: a path to the model, format supported are json and xml
 
-    :param CELL_WEIGHT: experimentally measured cell weight in femtograms, float
-
     :param DNA_RATIO: the ratio of DNA in the entire cell
 
     :return: a dictionary of metabolites and coefficients
     """
+    CELL_WEIGHT = 280
     if DNA_WEIGHT_FRACTION > 1.:
         raise Exception('WEIGHT FRACTION should be a number between 0 and 1')
     #Operations

@@ -20,6 +20,7 @@ def _import_model(path_to_model):
 
 def _import_transcriptomic(path_to_transcriptomic,all_locus):
     import pandas as pd
+    import warnings
     transcriptomic =pd.read_csv(path_to_transcriptomic,header=None)
     #1- Verify number of columns
     if len(transcriptomic.columns) > 2:
@@ -46,13 +47,17 @@ def _import_transcriptomic(path_to_transcriptomic,all_locus):
     if len(set(conform_df['identifiers'])) == len(conform_df['identifiers']):
         pass
     else:
-        raise Exception('Redundancy in transcriptomic dataset identifiers')
-    #6- Make sure that protein id are used
-    if len(list(set(conform_df['identifiers']).intersection(set(all_locus)))) == len(conform_df):
+        warnings.warn('Redundancy in dataset identifiers')
+    #6- Make sure that locus_tag or gene ID are used
+    if list(set(conform_df['identifiers']).intersection(set(all_locus))) > 0:
         pass
     else:
         raise Exception("Identifiers not 'locus_tag' or 'GeneID'")
-
+    #7- Verify if given identifiers are provided in GenBank file
+    if list(set(conform_df['identifiers']).intersection(set(all_locus))) == len(conform_df):
+        pass
+    else:
+        warnings.warn('Some identifiers not found in provided annotation')
     return conform_df
 
 def _get_number(seq):
@@ -249,7 +254,6 @@ def _convert_to_mmolgDW(RNA_coefficients, model, RNA_RATIO, CELL_WEIGHT):
     return RNA_biomass_ratios
 
 def generate_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic,
-                         CELL_WEIGHT=280,
                          RNA_WEIGHT_FRACTION=0.205,
                          rRNA_WEIGHT_FRACTION=0.9,
                          tRNA_WEIGHT_FRACTION=0.05,
@@ -267,8 +271,6 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic
 
     :param path_to_transcriptomic: a two column pandas dataframe (gene_id, abundance)
 
-    :param CELL_WEIGHT: experimentally measured cell weight in femtograms, float
-
     :param RNA_WEIGHT_FRACTION: the weight fraction of RNA in the entire cell
 
     :param rRNA_WEIGHT_FRACTION: the fraction of rRNA to total
@@ -281,6 +283,7 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic
 
     :return: a dictionary of metabolites and coefficients
     """
+    CELL_WEIGHT = 280
     if RNA_WEIGHT_FRACTION > 1. or rRNA_WEIGHT_FRACTION > 1. or tRNA_WEIGHT_FRACTION > 1. or mRNA_WEIGHT_FRACTION > 1.:
         raise Exception('WEIGHT FRACTION should be a number between 0 and 1')
     # Operations

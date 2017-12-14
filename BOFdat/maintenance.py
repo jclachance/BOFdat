@@ -9,6 +9,31 @@ This package offers two options for the user:
 2- Estimate GAM and NGAM from theorical values
 
 """
+def _import_model(path_to_model):
+    import cobra
+    extension = path_to_model.split('.')[-1]
+    if extension == 'json':
+        return cobra.io.load_json_model(path_to_model)
+    elif extension == 'xml':
+        return cobra.io.read_sbml_model(path_to_model)
+    else:
+        raise Exception('Model format not compatible, provide xml or json')
+
+def _import_data(path_to_data):
+    import pandas as pd
+    import warnings
+
+    data = pd.read_csv(path_to_data)
+    '''
+    #1- This file should have a header
+    for i in data.columns:
+        try:
+            float(i)
+            raise ValueError('Provide file header')
+        except:
+            pass
+    '''
+    return data
 
 def experimental_maintenance(path_to_data, path_to_model,show_GAM=False):
     """
@@ -29,18 +54,6 @@ def experimental_maintenance(path_to_data, path_to_model,show_GAM=False):
 
     #From experimental data growth rate on a given carbon source
     #Obtain best fit from model to experimental data
-    def import_model(path_to_model):
-        import cobra
-        extension = path_to_model.split('.')[-1]
-        if extension == 'json':
-            return cobra.io.load_json_model(path_to_model)
-        elif extension == 'xml':
-            return cobra.io.read_sbml_model(path_to_model)
-
-    def import_data(path_to_data):
-        import pandas as pd
-        return pd.read_csv(path_to_data)
-
     def get_carbon_sources(data):
         return [c for c in data.Source]
 
@@ -48,7 +61,6 @@ def experimental_maintenance(path_to_data, path_to_model,show_GAM=False):
         # Attribute colors to carbon sources for ploting
         # Set a color palette
         import seaborn as sb
-
         color_palette = sb.color_palette('deep',len(carbon_sources))
         data['color'] = ''
         for i in len(carbon_sources):
@@ -190,7 +202,7 @@ def experimental_maintenance(path_to_data, path_to_model,show_GAM=False):
         import seaborn as sns
         import numpy as np
         import matplotlib.pyplot as plt
-
+        sns.set_style('whitegrid')
         x = raw_GAM['Growth_rate']
         y = raw_GAM['ATP']
         #Fit with np.polyfit
@@ -205,7 +217,8 @@ def experimental_maintenance(path_to_data, path_to_model,show_GAM=False):
         print('R2=', correlation ** 2)
         plt.scatter(raw_GAM['Growth_rate'], raw_GAM['ATP'])
         # plt.scatter(filtered_data['GR'],filtered_data['ATP'], color=filtered_data['color'], marker=filtered_data['marker'].tolist())
-
+        plt.ylabel('ATP')
+        plt.xlabel('Growth rate')
         plt.xlim([0, 1.1])
         plt.ylim([0, 110])
         plt.show()
@@ -283,9 +296,9 @@ def experimental_maintenance(path_to_data, path_to_model,show_GAM=False):
         return {'GAM': m, 'NGAM': b}
 
     #1- Import model
-    model = import_model(path_to_model)
+    model = _import_model(path_to_model)
     #2- Import experimental data
-    data = import_data(path_to_data)
+    data = _import_data(path_to_data)
     #3- Calculate GAM
     raw_GAM = calculate_gam(model, data,show_GAM)
     #4-
