@@ -20,7 +20,7 @@ def _import_model(path_to_model):
 def _import_lipidomic(path_to_lipidomic):
         import pandas as pd
         import warnings
-        lipidomic  = pd.read_csv(path_to_lipidomic, header=None)
+        lipidomic  = pd.read_csv(path_to_lipidomic)
         # 1- Verify number of columns
         if len(lipidomic.columns) > 2:
             raise Exception("Your file format is not appropriate, more than 2 columns")
