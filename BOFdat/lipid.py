@@ -54,7 +54,7 @@ def _import_lipidomic(path_to_lipidomic):
 def _import_conversion(path_to_conversion_file):
         import pandas as pd
         import warnings
-        conversion_file = pd.read_csv(path_to_conversion_file, header=None)
+        conversion_file = pd.read_csv(path_to_conversion_file)
         # 1- Verify number of columns
         if len(conversion_file.columns) > 2:
             raise Exception("Your file format is not appropriate, more than 2 columns")
