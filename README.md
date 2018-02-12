@@ -1,5 +1,5 @@
 # BOFdat
-## Package to easily generate biomass objective function stoichiometric coefficients for genome-scale models from experimental data.
+## Package to generate biomass objective function stoichiometric coefficients for genome-scale models from experimental data.
 
 ### Significance
 
@@ -15,8 +15,8 @@ Visit the [documentation](http://BOFdat.readthedocs.org/)
 
 
 ### Cite
-
-**upcoming paper**
+BOFdat: generating biomass objective function stoichiometric coefficients from experimental data
+https://www.biorxiv.org/content/early/2018/01/05/243881
 
 
 
