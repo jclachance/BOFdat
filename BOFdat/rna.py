@@ -7,6 +7,7 @@ This module generates BOFsc for the 4 bases of RNA (ATP, UTP, CTP and GTP)
 """
 BASES = ['A', 'U', 'C', 'G']
 import pandas as pd
+from IPython import embed
 # Methods
 def _import_model(path_to_model):
     import cobra
@@ -163,7 +164,7 @@ def _process_record(path_to_genbank,path_to_transcriptomic,identifier):
     if identifier == 'locus_tag':
         genome_record = SeqIO.parse(path_to_genbank, 'genbank')
         for record in genome_record:
-            for element in record.features:
+            for i,element in enumerate(record.features):
                 if element.type == 'CDS':
                     rna_seq = _get_RNA_sequence(element.location, element.strand, record)
                     mRNA_seq.append(rna_seq)
@@ -173,14 +174,43 @@ def _process_record(path_to_genbank,path_to_transcriptomic,identifier):
                 if element.type == 'tRNA':
                     rna_seq = _get_RNA_sequence(element.location, element.strand, record)
                     tRNA_seq.append(rna_seq)
-                    tRNA_locus.append(element.qualifiers['locus_tag'][0])
                     tRNA_number.append(_get_number(rna_seq))
+                    try: tRNA_locus.append(element.qualifiers['locus_tag'][0])
+					except:
+						# It is possible that tRNA features lack the 'locus_tag' field!
+						# lines below are taken from Prokaryotic Annotation Guide!
+						# (https://www.ncbi.nlm.nih.gov/genbank/genomesubmit_annotation/#RNA)
+						#
+						# RNA features (rRNA, tRNA, ncRNA) must include a corresponding gene feature with a locus_tag qualifier. 
+						# Please be sure to specify which amino acid the tRNA gene corresponds to. 
+						# If the amino acid of a tRNA is unknown, use tRNA-Xxx as the product, as in the example.
+						# Many submitters like to label the tRNAs such as tRNA-Gly1, etc. 
+						# If you wish to do this please include "tRNA-Gly1" as a note and not in /gene. 
+						# The use of /gene is reserved for the actual biological gene symbol such as "trnG".
+						# If a tRNA is a pseudogene, please use the /pseudo qualifier.
+						before = record.features[max(0,i-1)]
+						if before.type == 'gene':
+							try: tRNA_locus.append(before.qualifiers['locus_tag'][0])
+							except: raise Exception("Can't fetch tRNA locus_tag!")
+						else:
+							# raise Exception("Can't locate gene corresponding to a tRNA!") #TODO add a warning?
+							tRNA_locus.append("tRNA_%s" %(len(tRNA_locus)))
 
                 if element.type == 'rRNA':
                     rna_seq = _get_RNA_sequence(element.location, element.strand, record)
                     rRNA_seq.append(rna_seq)
-                    rRNA_locus.append(element.qualifiers['locus_tag'][0])
                     rRNA_number.append(_get_number(rna_seq))
+                    rRNA_locus.append(element.qualifiers['locus_tag'][0])
+					except:
+						before = record.features[max(0,i-1)]
+						if before.type == 'gene':
+							try: rRNA_locus.append(before.qualifiers['locus_tag'][0])
+							except: raise Exception("Can't fetch rRNA locus_tag!")
+						else:
+							# raise Exception("Can't locate gene corresponding to a rRNA!") #TODO add a warning?
+							rRNA_locus.append("rRNA_%s" %(len(rRNA_locus)))
+
+
 
     elif identifier == 'geneID':
         genome_record = SeqIO.parse(path_to_genbank, 'genbank')
@@ -288,7 +318,8 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic
         raise Exception('WEIGHT FRACTION should be a number between 0 and 1')
     # Operations
     model = _import_model(path_to_model)
-    rRNA_dict, tRNA_dict, mRNA_dict = _process_record(path_to_genbank,path_to_transcriptomic,identifier)
+    try: rRNA_dict, tRNA_dict, mRNA_dict = _process_record(path_to_genbank,path_to_transcriptomic,identifier)
+    except: embed()
     RNA_coefficients = _total_coefficients(rRNA_dict, tRNA_dict, mRNA_dict,
                                            mRNA_WEIGHT_FRACTION, tRNA_WEIGHT_FRACTION, rRNA_WEIGHT_FRACTION)
     RNA_biomass_ratios = _convert_to_mmolgDW(RNA_coefficients,
