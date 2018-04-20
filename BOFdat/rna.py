@@ -176,39 +176,39 @@ def _process_record(path_to_genbank,path_to_transcriptomic,identifier):
                     tRNA_seq.append(rna_seq)
                     tRNA_number.append(_get_number(rna_seq))
                     try: tRNA_locus.append(element.qualifiers['locus_tag'][0])
-					except:
-						# It is possible that tRNA features lack the 'locus_tag' field!
-						# lines below are taken from Prokaryotic Annotation Guide!
-						# (https://www.ncbi.nlm.nih.gov/genbank/genomesubmit_annotation/#RNA)
-						#
-						# RNA features (rRNA, tRNA, ncRNA) must include a corresponding gene feature with a locus_tag qualifier. 
-						# Please be sure to specify which amino acid the tRNA gene corresponds to. 
-						# If the amino acid of a tRNA is unknown, use tRNA-Xxx as the product, as in the example.
-						# Many submitters like to label the tRNAs such as tRNA-Gly1, etc. 
-						# If you wish to do this please include "tRNA-Gly1" as a note and not in /gene. 
-						# The use of /gene is reserved for the actual biological gene symbol such as "trnG".
-						# If a tRNA is a pseudogene, please use the /pseudo qualifier.
-						before = record.features[max(0,i-1)]
-						if before.type == 'gene':
-							try: tRNA_locus.append(before.qualifiers['locus_tag'][0])
-							except: raise Exception("Can't fetch tRNA locus_tag!")
-						else:
-							# raise Exception("Can't locate gene corresponding to a tRNA!") #TODO add a warning?
-							tRNA_locus.append("tRNA_%s" %(len(tRNA_locus)))
+                    except:
+                        # It is possible that tRNA features lack the 'locus_tag' field!
+                        # lines below are taken from Prokaryotic Annotation Guide!
+                        # (https://www.ncbi.nlm.nih.gov/genbank/genomesubmit_annotation/#RNA)
+                        #
+                        # RNA features (rRNA, tRNA, ncRNA) must include a corresponding gene feature with a locus_tag qualifier. 
+                        # Please be sure to specify which amino acid the tRNA gene corresponds to. 
+                        # If the amino acid of a tRNA is unknown, use tRNA-Xxx as the product, as in the example.
+                        # Many submitters like to label the tRNAs such as tRNA-Gly1, etc. 
+                        # If you wish to do this please include "tRNA-Gly1" as a note and not in /gene. 
+                        # The use of /gene is reserved for the actual biological gene symbol such as "trnG".
+                        # If a tRNA is a pseudogene, please use the /pseudo qualifier.
+                        before = record.features[max(0,i-1)]
+                        if before.type == 'gene':
+                            try: tRNA_locus.append(before.qualifiers['locus_tag'][0])
+                            except: raise Exception("Can't fetch tRNA locus_tag!")
+                        else:
+                            # raise Exception("Can't locate gene corresponding to a tRNA!") #TODO add a warning?
+                            tRNA_locus.append("tRNA_%s" %(len(tRNA_locus)))
 
                 if element.type == 'rRNA':
                     rna_seq = _get_RNA_sequence(element.location, element.strand, record)
                     rRNA_seq.append(rna_seq)
                     rRNA_number.append(_get_number(rna_seq))
-                    rRNA_locus.append(element.qualifiers['locus_tag'][0])
-					except:
-						before = record.features[max(0,i-1)]
-						if before.type == 'gene':
-							try: rRNA_locus.append(before.qualifiers['locus_tag'][0])
-							except: raise Exception("Can't fetch rRNA locus_tag!")
-						else:
-							# raise Exception("Can't locate gene corresponding to a rRNA!") #TODO add a warning?
-							rRNA_locus.append("rRNA_%s" %(len(rRNA_locus)))
+                    try: rRNA_locus.append(element.qualifiers['locus_tag'][0])
+                    except:
+                        before = record.features[max(0,i-1)]
+                        if before.type == 'gene':
+                            try: rRNA_locus.append(before.qualifiers['locus_tag'][0])
+                            except: raise Exception("Can't fetch rRNA locus_tag!")
+                        else:
+                            # raise Exception("Can't locate gene corresponding to a rRNA!") #TODO add a warning?
+                            rRNA_locus.append("rRNA_%s" %(len(rRNA_locus)))
 
 
 
