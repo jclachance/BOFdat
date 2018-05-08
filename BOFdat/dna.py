@@ -27,7 +27,8 @@ def _get_number_of_bases(genome):
     # Counts the number of each letter in the genome
     base_genome = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
     for element in genome:
-        value = base_genome.get(element)
+        value = base_genome.get(element.upper())
+	if value == None: continue
         new_value = value + 1
         base_genome[element] = new_value
 
