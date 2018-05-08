@@ -183,7 +183,7 @@ def _convert_to_coefficient(ratio_dict, path_to_model, CELL_WEIGHT):
         coefficients.append(mmols_per_gDW)
         metabolites.append(letter_to_bigg.get(letter))
 
-    Protein_biomass_coefficients = dict(zip(metabolites,coefficients))
+    Protein_biomass_coefficients = dict(zip(metabolites,[-i for i in coefficients]))
     return Protein_biomass_coefficients
 
 
@@ -219,7 +219,9 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, PRO
     norm_sum = _get_norm_sum(normalized_dict)
     ratio_dict = _get_ratio(normalized_dict, norm_sum, PROTEIN_WEIGHT_FRACTION, CELL_WEIGHT)
     biomass_coefficients = _convert_to_coefficient(ratio_dict,path_to_model, CELL_WEIGHT)
-
+    h2o_coeff = sum(biomass_coefficients.values())
+    h2o_dict = {model.metabolites.get_by_id('h2o_c'): h2o_coeff}
+    biomass_coefficients.update(h2o_dict)
     return biomass_coefficients
 
 '''
