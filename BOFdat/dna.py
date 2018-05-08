@@ -66,7 +66,7 @@ def _convert_to_coefficient(model, ratio_genome, CELL_WEIGHT, DNA_RATIO):
         coefficients.append(mmols_per_gDW)
         metabolites.append(base_to_bigg.get(letter))
 
-    DNA_coefficients = dict(zip(metabolites,coefficients))
+    DNA_coefficients = dict(zip(metabolites,[-i for i in coefficients]))
     return DNA_coefficients
 
 def generate_coefficients(path_to_fasta, path_to_model , DNA_WEIGHT_FRACTION=0.031):
@@ -91,6 +91,11 @@ def generate_coefficients(path_to_fasta, path_to_model , DNA_WEIGHT_FRACTION=0.0
     ratio_in_genome = _get_ratio(base_in_genome, genome)
     biomass_coefficients = _convert_to_coefficient(_import_model(path_to_model), ratio_in_genome, CELL_WEIGHT,
                                                   DNA_WEIGHT_FRACTION)
+    #Add Pyrophosphate synthesis as the sum of the coefficients
+    ppi_coeff = sum(biomass_coefficients.values())
+    ppi_dict = {model.metabolites.get_by_id('ppi_c'):ppi_coeff}
+    biomass_coefficients.update(ppi_dict)
+
     return biomass_coefficients
 
 '''
