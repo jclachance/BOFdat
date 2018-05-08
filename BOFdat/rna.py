@@ -280,7 +280,7 @@ def _convert_to_mmolgDW(RNA_coefficients, model, RNA_RATIO, CELL_WEIGHT):
         coefficients.append(mmols_per_gDW)
         metabolites.append(rna_base_to_bigg.get(letter))
 
-    RNA_biomass_ratios = dict(zip(metabolites, coefficients))
+    RNA_biomass_ratios = dict(zip(metabolites, [-i for i in coefficients]))
     return RNA_biomass_ratios
 
 def generate_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic,
@@ -324,6 +324,9 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic
                                            mRNA_WEIGHT_FRACTION, tRNA_WEIGHT_FRACTION, rRNA_WEIGHT_FRACTION)
     RNA_biomass_ratios = _convert_to_mmolgDW(RNA_coefficients,
                                             model, RNA_WEIGHT_FRACTION, CELL_WEIGHT)
+    ppi_coeff = sum(RNA_biomass_ratios.values())
+    ppi_dict = {model.metabolites.get_by_id('ppi_c'): ppi_coeff}
+    RNA_biomass_ratios.update(ppi_dict)
 
     return RNA_biomass_ratios
 
