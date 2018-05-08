@@ -24,4 +24,4 @@ https://www.biorxiv.org/content/early/2018/01/05/243881
 
 Author: Jean-Christophe Lachance
 Date: 10-24-2017
-Version: 0.3
+Version: 0.1.2
