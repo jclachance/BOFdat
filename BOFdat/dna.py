@@ -90,7 +90,8 @@ def generate_coefficients(path_to_fasta, path_to_model , DNA_WEIGHT_FRACTION=0.0
     genome = _import_genome(path_to_fasta)
     base_in_genome = _get_number_of_bases(genome)
     ratio_in_genome = _get_ratio(base_in_genome, genome)
-    biomass_coefficients = _convert_to_coefficient(_import_model(path_to_model), ratio_in_genome, CELL_WEIGHT,
+    model = _import_model(path_to_model)
+    biomass_coefficients = _convert_to_coefficient(model, ratio_in_genome, CELL_WEIGHT,
                                                   DNA_WEIGHT_FRACTION)
     #Add Pyrophosphate synthesis as the sum of the coefficients
     ppi_coeff = sum(biomass_coefficients.values())

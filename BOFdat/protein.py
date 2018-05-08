@@ -151,9 +151,9 @@ def _get_ratio(normalized_dict, norm_sum, PROTEIN_WEIGHT_FRACTION, CELL_WEIGHT):
 
     return ratio_dict
 
-def _convert_to_coefficient(ratio_dict, path_to_model, CELL_WEIGHT):
+def _convert_to_coefficient(ratio_dict, model, CELL_WEIGHT):
     WATER_WEIGHT = 18.01528
-    model = _import_model(path_to_model)
+
     # 3- Convert gram ratios to mmol/g Dry weight
     '''
     To verify that the normalized to grams to get to the total amount of protein
@@ -218,7 +218,8 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, PRO
     # Proteomics data should come in a 2 columns standard format protein_id:abundance
     norm_sum = _get_norm_sum(normalized_dict)
     ratio_dict = _get_ratio(normalized_dict, norm_sum, PROTEIN_WEIGHT_FRACTION, CELL_WEIGHT)
-    biomass_coefficients = _convert_to_coefficient(ratio_dict,path_to_model, CELL_WEIGHT)
+    model = _import_model(path_to_model)
+    biomass_coefficients = _convert_to_coefficient(ratio_dict,model, CELL_WEIGHT)
     h2o_coeff = sum(biomass_coefficients.values())
     h2o_dict = {model.metabolites.get_by_id('h2o_c'): h2o_coeff}
     biomass_coefficients.update(h2o_dict)
