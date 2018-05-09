@@ -95,7 +95,7 @@ def generate_coefficients(path_to_fasta, path_to_model , DNA_WEIGHT_FRACTION=0.0
                                                   DNA_WEIGHT_FRACTION)
     #Add Pyrophosphate synthesis as the sum of the coefficients
     ppi_coeff = sum(biomass_coefficients.values())
-    ppi_dict = {model.metabolites.get_by_id('ppi_c'):ppi_coeff}
+    ppi_dict = {model.metabolites.get_by_id('ppi_c'):-ppi_coeff}
     biomass_coefficients.update(ppi_dict)
 
     return biomass_coefficients

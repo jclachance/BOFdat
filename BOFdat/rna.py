@@ -325,7 +325,7 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic
     RNA_biomass_ratios = _convert_to_mmolgDW(RNA_coefficients,
                                             model, RNA_WEIGHT_FRACTION, CELL_WEIGHT)
     ppi_coeff = sum(RNA_biomass_ratios.values())
-    ppi_dict = {model.metabolites.get_by_id('ppi_c'): ppi_coeff}
+    ppi_dict = {model.metabolites.get_by_id('ppi_c'): -ppi_coeff}
     RNA_biomass_ratios.update(ppi_dict)
 
     return RNA_biomass_ratios
