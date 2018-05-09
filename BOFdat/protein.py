@@ -221,7 +221,7 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, PRO
     model = _import_model(path_to_model)
     biomass_coefficients = _convert_to_coefficient(ratio_dict,model, CELL_WEIGHT)
     h2o_coeff = sum(biomass_coefficients.values())
-    h2o_dict = {model.metabolites.get_by_id('h2o_c'): h2o_coeff}
+    h2o_dict = {model.metabolites.get_by_id('h2o_c'): -h2o_coeff}
     biomass_coefficients.update(h2o_dict)
     return biomass_coefficients
 
