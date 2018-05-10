@@ -36,7 +36,7 @@ def assess_solvability(metabolite_list, model):
     return solvable_metab
 
 
-def branching_analysis(model):
+def connectivity_analysis(model):
     metab, number_of_rxn = [], []
     for m in model.metabolites:
         metab.append(m.id)
