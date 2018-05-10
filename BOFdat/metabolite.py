@@ -329,7 +329,7 @@ def generate_coefficients(path_to_metabolomic, path_to_conversion_file, path_to_
     return biomass_coefficients
 
 """
-Functions to assess connectivity of metabolites. 
+Functions to assess connectivity of metabolites.
 
 """
 
