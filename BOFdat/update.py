@@ -98,17 +98,17 @@ def make_new_BOF(model, update_model=False, update_NGAM=True, *args, **kwargs):
     """
     from cobra import Reaction
     base_biomass = {}
-
+   
     for d in args:
         base_biomass.update(d)
     ppi_coeff, h2o_coeff, atp_coeff = [], [], []
     remove_keys = []
     for k, v in base_biomass.iteritems():
         if k.id == 'ppi_c':
-            ppi_coeff.append(-v)  # This -v will change in the committed version
+            ppi_coeff.append(v) 
             remove_keys.append(k)
         elif k.id == 'h2o_c':
-            h2o_coeff.append(-v)  # This -v will change in the committed version
+            h2o_coeff.append(v) 
             remove_keys.append(k)
         elif k.id == 'atp_c':
             atp_coeff.append(v)
@@ -140,12 +140,12 @@ def make_new_BOF(model, update_model=False, update_NGAM=True, *args, **kwargs):
                       model.metabolites.h_c: GAM,
                       model.metabolites.ppi_c: ppi_coeff
                       }
+
     # Remove the keys that were found before
     for k in remove_keys:
         base_biomass.pop(k, None)
 
     base_biomass.update(atp_hydrolysis)
-
     if update_model:
         old_biomass = get_biomass_objective_function(model)
         old_biomass.remove_from_model()

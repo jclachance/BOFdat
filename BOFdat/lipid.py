@@ -168,7 +168,7 @@ def _calculate_coefficients(weight_dict,relative_abundance,LIPID_WEIGHT,CELL_WEI
         # Convert to usable units in BIOMASS equation
         mmols_per_gDW = mmols_per_cell / CELL_WEIGHT
         # Save value
-        values.append(mmols_per_gDW)
+        values.append(-mmols_per_gDW)
         keys.append(model.metabolites.get_by_id(k))
 
     return dict(zip(keys,values))
