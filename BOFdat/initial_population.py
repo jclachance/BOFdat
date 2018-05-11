@@ -25,7 +25,7 @@ def _assess_solvability(metabolite_list, model):
     # Identify the list of metabolites that do not prevent the model to solve when added to the BOF
     atp_hydrolysis = ['atp', 'h2o', 'adp', 'pi', 'h', 'ppi']
     for m in metabolite_list:
-        biomass = get_biomass_objective_function(model)
+        biomass = _get_biomass_objective_function(model)
         biomass.remove_from_model()
         BIOMASS = Reaction('BIOMASS')
         model.add_reactions([BIOMASS])
