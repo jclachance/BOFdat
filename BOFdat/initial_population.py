@@ -77,7 +77,7 @@ def _eval_ind(individual, model, exp_ess, distance):
     biomass.objective_coefficient = 1.
 
     # Generate deletion results --> BOTTLENECK FOR SURE
-    deletion_results = single_gene_deletion(model, model.genes)
+    deletion_results = single_gene_deletion(model, model.genes,processes=8)
 
     # Filter the results to get a boolean result
     a = [(str(next(iter(i))), 1) for i in deletion_results[deletion_results['growth'] > 1e-3].index]
@@ -98,7 +98,35 @@ def _eval_ind(individual, model, exp_ess, distance):
     else:
         print('Error: Invalid distance metric')
 
+'''
+def _pebble_map(pop, initial_pop, model, exp_ess, distance, processes):
+    print(processes)
+    initial_pop_iter = repeat(initial_pop)
+    model_iter = repeat(model)
+    exp_ess_iter = repeat(exp_ess)
+    distance_iter = repeat(distance)
+    with ProcessPool(processes) as pool:
+        future = pool.map(_eval_ind, pop, initial_pop_iter, model_iter, exp_ess_iter, distance_iter, timeout=40)
+        iterator = future.result()
+        all_results = []
+        while True:
+            try:
+                result = next(iterator)
+                all_results.append(result)
+            except StopIteration:
+                break
+            except TimeoutError as error:
+                print("function took longer than %d seconds" % error.args[1])
+                result = 0, 100
+                all_results.append(result)
+            except ProcessExpired as error:
+                print("%s. Exit code: %d" % (error, error.exitcode))
+            except Exception as error:
+                print("function raised %s" % error)
+                print(error.traceback)  # Python's traceback of remote process
 
+    return all_results
+'''
 
 def _generate_metab_index(model, base_biomass,exp_essentiality):
     metab_index = [m for m in model.metabolites]
@@ -111,10 +139,10 @@ def _generate_metab_index(model, base_biomass,exp_essentiality):
     # 3- Remove unsolvable metabolites
     metab_index = _assess_solvability(metab_index, model)
     # 4- Find the most relevant metabolites for a maximum gene essentiality prediction
-    #Generate a population to test metabolites one by one
+    #Generate a population to test mcc of each metabolite one by one
     pop_list = []
     for m in metab_index:
-        pop_list.append(_make_ind(m, index))
+        pop_list.append(_make_ind(m, metab_index))
     pop_df = pd.DataFrame(pop_list, index=metab_index)
 
     metab, mcc = [], []
