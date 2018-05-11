@@ -10,6 +10,7 @@ import os
 import pandas as pd
 from cobra.flux_analysis import single_gene_deletion
 from cobra.util.solver import linear_reaction_coefficients
+from cobra import Reaction
 from sklearn.metrics import matthews_corrcoef
 import multiprocessing
 
@@ -19,7 +20,6 @@ def _get_biomass_objective_function(model):
     return list(linear_reaction_coefficients(model).keys())[0]
 
 def _assess_solvability(metabolite_list, model):
-    from cobra import Reaction
     print('Generating list of solvable metabolites')
     solvable_metab = []
     # Identify the list of metabolites that do not prevent the model to solve when added to the BOF
