@@ -103,7 +103,7 @@ def _eval_ind(individual, model, exp_ess, distance):
 def _generate_metab_index(model, base_biomass,exp_essentiality):
     metab_index = [m for m in model.metabolites]
     # 1- Remove metabolites present in the base biomass
-    base_biomass_metab = [k.id for k in base_biomass.keys()]
+    base_biomass_metab = [k for k in base_biomass.keys()]
     metab_index = [m for m in metab_index if m.id not in base_biomass_metab]
     # 2- Remove highly branched metabolites
     highly_branched_metab = _branching_analysis(model)
