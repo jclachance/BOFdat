@@ -55,7 +55,7 @@ def _branching_analysis(model):
 
         return [model.metabolites.get_by_id(m) for m in branching_df['Metab']]
 
-def make_ind(metab,index):
+def _make_ind(metab,index):
     # Generates an individual with  metabolites
     ind_dict = {}
     for i in index:
@@ -109,12 +109,12 @@ def _generate_metab_index(model, base_biomass,exp_essentiality):
     highly_branched_metab = _branching_analysis(model)
     metab_index = [m for m in metab_index if m.id not in highly_branched_metab]
     # 3- Remove unsolvable metabolites
-    metab_index = assess_solvability(metab_index, model)
+    metab_index = _assess_solvability(metab_index, model)
     # 4- Find the most relevant metabolites for a maximum gene essentiality prediction
     #Generate a population to test metabolites one by one
     pop_list = []
     for m in metab_index:
-        pop_list.append(make_ind(m, index))
+        pop_list.append(_make_ind(m, index))
     pop_df = pd.DataFrame(pop_list, index=metab_index)
 
     metab, mcc = [], []
