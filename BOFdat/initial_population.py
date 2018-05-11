@@ -5,12 +5,14 @@ Initial population
 This module generates initial population for the genetic algorithm.
 
 """
+import numpy as np
+import os
+import pandas as pd
 from cobra.flux_analysis import single_gene_deletion
 from cobra.util.solver import linear_reaction_coefficients
 from sklearn.metrics import matthews_corrcoef
 import multiprocessing
-import numpy as np
-import os
+
 
 def _get_biomass_objective_function(model):
     from cobra.util.solver import linear_reaction_coefficients
