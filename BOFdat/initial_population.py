@@ -132,8 +132,8 @@ def _pebble_map(metabolite_list,model):
 def _generate_metab_index(model, base_biomass,exp_essentiality):
     metab_index = [m for m in model.metabolites]
     # 1- Remove metabolites present in the base biomass
-    base_biomass = dict(zip([model.metabolites.get_by_id(m) for m in new_biomass.Metabolites],
-                            [coeff for coeff in new_biomass.Coefficients]))
+    base_biomass = dict(zip([model.metabolites.get_by_id(m) for m in base_biomass.Metabolites],
+                            [coeff for coeff in base_biomass.Coefficients]))
     base_biomass_metab = [k.id for k in base_biomass.keys()]
     metab_index = [m for m in metab_index if m.id not in base_biomass_metab]
     # 2- Remove highly branched metabolites
