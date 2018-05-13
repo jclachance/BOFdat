@@ -139,10 +139,13 @@ def _generate_metab_index(model, base_biomass,exp_essentiality):
     # 2- Remove highly branched metabolites
     highly_branched_metab = _branching_analysis(model)
     metab_index = [m for m in metab_index if m.id not in highly_branched_metab]
+    print(metab_index)
     #3- Remove metabolites from atp hydrolysis reaction
     atp_hydrolysis = ['atp', 'h2o', 'adp', 'pi', 'h', 'ppi']
     metab_index = [m for m in metab_index if m.id not in atp_hydrolysis]
+    print(metab_index)
     # 3- Remove unsolvable metabolites
+    print('going to assess solvability')
     solvability = _pebble_map(metab_index, model)
     metab_index = [t[0] for t in solvability if t[1] == True]
 
