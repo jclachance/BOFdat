@@ -5,42 +5,47 @@ Initial population
 This module generates initial population for the genetic algorithm.
 
 """
-import numpy as np
-import os
+import random
+from random import shuffle, randint
+# import cobra
 import pandas as pd
+import numpy as np
+from itertools import repeat
+from deap import creator, base, tools
+from deap.tools import History, HallOfFame
+from cobra import Reaction
 from cobra.flux_analysis import single_gene_deletion
 from cobra.util.solver import linear_reaction_coefficients
-from cobra import Reaction
 from sklearn.metrics import matthews_corrcoef
+from scipy.spatial.distance import hamming
+# Recording data and stats
+import matplotlib.pyplot as plt
+import networkx
+# Parallel
 import multiprocessing
+# Timeout imports and definitions
+from concurrent.futures import TimeoutError
+from pebble import ProcessPool, ProcessExpired
 
 
 def _get_biomass_objective_function(model):
     from cobra.util.solver import linear_reaction_coefficients
     return list(linear_reaction_coefficients(model).keys())[0]
 
-def _assess_solvability(metabolite_list, model):
-    print('Generating list of solvable metabolites')
-    solvable_metab = []
+def _assess_solvability(m, model):
     # Identify the list of metabolites that do not prevent the model to solve when added to the BOF
-    atp_hydrolysis = ['atp', 'h2o', 'adp', 'pi', 'h', 'ppi']
-    for m in metabolite_list:
-        biomass = _get_biomass_objective_function(model)
-        biomass.remove_from_model()
-        BIOMASS = Reaction('BIOMASS')
-        model.add_reactions([BIOMASS])
-        # Exclude mass balanced metabolite atp_c
-        if m.id[:-2] not in atp_hydrolysis:
-            model.reactions.BIOMASS.add_metabolites({m: -1.})
-            model.reactions.BIOMASS.objective_coefficient = 1.
-            solution = model.optimize()
-            # If the model can produce that metabolite
-            if solution.f > 1e-9:
-                solvable_metab.append(m)
-        else:
-            model.reactions.BIOMASS.objective_coefficient = 1.
-
-    return solvable_metab
+    biomass = _get_biomass_objective_function(model)
+    biomass.remove_from_model()
+    BIOMASS = Reaction('BIOMASS')
+    model.add_reactions([BIOMASS])
+    model.reactions.BIOMASS.add_metabolites({m: -1.})
+    model.reactions.BIOMASS.objective_coefficient = 1.
+    solution = model.optimize()
+    # If the model can produce that metabolite
+    if solution.f > 1e-9:
+        return (m,True)
+    else:
+        return (m,False)
 
 def _branching_analysis(model):
     metab, number_of_rxn = [], []
@@ -53,16 +58,16 @@ def _branching_analysis(model):
         branching_df = branching_df[branching_df['Number of metab'] > THRESHOLD]
         branching_df.sort_values('Number of metab', inplace=True, ascending=False)
 
-        return [model.metabolites.get_by_id(m) for m in branching_df['Metab']]
+        return [m for m in branching_df['Metab']]
 
-def _make_ind(metab,index):
+def _make_ind(m,metab_index):
     # Generates an individual with  metabolites
     ind_dict = {}
-    for i in index:
-        if i == metab:
-            ind_dict[i] = 1
+    for i in metab_index:
+        if i.id == m.id:
+            ind_dict[i.id] = 1
         else:
-            ind_dict[i] = 0
+            ind_dict[i.id] = 0
     return ind_dict
 
 def _eval_ind(individual, model, exp_ess, distance):
@@ -98,15 +103,11 @@ def _eval_ind(individual, model, exp_ess, distance):
     else:
         print('Error: Invalid distance metric')
 
-'''
-def _pebble_map(pop, initial_pop, model, exp_ess, distance, processes):
-    print(processes)
-    initial_pop_iter = repeat(initial_pop)
+def _pebble_map(metabolite_list,model):
+    processes = multiprocessing.cpu_count()
     model_iter = repeat(model)
-    exp_ess_iter = repeat(exp_ess)
-    distance_iter = repeat(distance)
     with ProcessPool(processes) as pool:
-        future = pool.map(_eval_ind, pop, initial_pop_iter, model_iter, exp_ess_iter, distance_iter, timeout=40)
+        future = pool.map(_assess_solvability, metabolite_list,model_iter, timeout=40)
         iterator = future.result()
         all_results = []
         while True:
@@ -126,25 +127,32 @@ def _pebble_map(pop, initial_pop, model, exp_ess, distance, processes):
                 print(error.traceback)  # Python's traceback of remote process
 
     return all_results
-'''
+
 
 def _generate_metab_index(model, base_biomass,exp_essentiality):
     metab_index = [m for m in model.metabolites]
     # 1- Remove metabolites present in the base biomass
-    base_biomass_metab = [k for k in base_biomass.keys()]
+    base_biomass = dict(zip([model.metabolites.get_by_id(m) for m in new_biomass.Metabolites],
+                            [coeff for coeff in new_biomass.Coefficients]))
+    base_biomass_metab = [k.id for k in base_biomass.keys()]
     metab_index = [m for m in metab_index if m.id not in base_biomass_metab]
     # 2- Remove highly branched metabolites
     highly_branched_metab = _branching_analysis(model)
     metab_index = [m for m in metab_index if m.id not in highly_branched_metab]
+    #3- Remove metabolites from atp hydrolysis reaction
+    atp_hydrolysis = ['atp', 'h2o', 'adp', 'pi', 'h', 'ppi']
+    metab_index = [m for m in metab_index if m.id not in atp_hydrolysis]
     # 3- Remove unsolvable metabolites
-    metab_index = _assess_solvability(metab_index, model)
+    solvability = _pebble_map(metab_index, model)
+    metab_index = [t[0] for t in solvability if t[1] == True]
+
     # 4- Find the most relevant metabolites for a maximum gene essentiality prediction
     #Generate a population to test mcc of each metabolite one by one
     pop_list = []
     for m in metab_index:
         pop_list.append(_make_ind(m, metab_index))
-    pop_df = pd.DataFrame(pop_list, index=metab_index)
-
+    pop_df = pd.DataFrame(pop_list, index=[m.id for m in metab_index])
+    print(pop_df)
     metab, mcc = [], []
     exp_ess = pd.read_csv(exp_essentiality, index_col=0)
     for col in pop_df:
@@ -224,7 +232,6 @@ def make_initial_population(population_name, model, base_biomass, exp_essentiali
     :param exp_essentiality: Experimental essentiality as a 2 columns csv file the output of the
     :return:
     """
-    print(os.getcwd())
     # Convert base_biomass dataframe to dictionary
     # base_biomass = dict(zip([model.metabolites.get_by_id(k) for k in base_biomass['Metabolites']],
     #                   [v for v in base_biomass['Coefficients']]))
