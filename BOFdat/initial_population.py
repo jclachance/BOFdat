@@ -18,9 +18,6 @@ from cobra.flux_analysis import single_gene_deletion
 from cobra.util.solver import linear_reaction_coefficients
 from sklearn.metrics import matthews_corrcoef
 
-# Recording data and stats
-import matplotlib.pyplot as plt
-import networkx
 # Parallel
 import multiprocessing
 # Timeout imports and definitions
@@ -49,7 +46,8 @@ def _branching_analysis(model):
 
         return [m for m in branching_df['Metab']]
 
-
+"""
+Deprecated
 def _make_metab_ind(m,metab_index):
     # Generates an individual with  metabolites
     ind_dict = {}
@@ -59,7 +57,7 @@ def _make_metab_ind(m,metab_index):
         else:
             ind_dict[i.id] = 0
     return ind_dict
-
+"""
 
 def _eval_metab(metab, model, exp_ess):
     # Set this as warning
@@ -133,17 +131,24 @@ def _assess_ind_solvability(ind, model):
         ind.solvability = False
     return ind
 
-def _pebble_map(eval_func, iterable, model):
-    processes = multiprocessing.cpu_count()
+def _parallel_assess(eval_func, iterable, model):
+    """
+    This function runs the evaluation function in parallel with 3 arguments.
+    It is used twice: first to get the metabolite that the model can produce,
+    second to verify the solvability of the generated individuals (multiple metabolites)
+
+    """
+    processes = 4
     print(processes)
     model_iter = repeat(model)
-    with ProcessPool(processes) as pool:
+    with ProcessPool(max_workers=processes,max_tasks=4) as pool:
         future = pool.map(eval_func, iterable, model_iter, timeout=40)
         iterator = future.result()
         all_results = []
         while True:
             try:
                 result = next(iterator)
+                print(result)
                 all_results.append(result)
             except StopIteration:
                 break
@@ -160,10 +165,15 @@ def _pebble_map(eval_func, iterable, model):
     return all_results
 
 def _pebble_eval(eval_func,iterable,model,exp_ess):
+    """
+    This function runs the evaluation function in parallel with 4 parameters.
+    It is used once by the population generator function to score the metabolites in order of mcc.
+
+    """
     processes = 4
     exp_ess_iter = repeat(exp_ess)
     model_iter = repeat(model)
-    with ProcessPool(processes) as pool:
+    with ProcessPool(max_workers=processes,max_tasks=4) as pool:
         future = pool.map(eval_func, iterable, model_iter, exp_ess_iter,timeout=40)
         iterator = future.result()
         all_results = []
@@ -189,7 +199,8 @@ def _generate_metab_index(model, base_biomass,exp_essentiality):
     exp_ess = pd.read_csv(exp_essentiality, index_col=0)
     metab_index = [m for m in model.metabolites]
     # 1- Remove metabolites present in the base biomass
-
+    base_biomass = dict(zip([model.metabolites.get_by_id(m) for m in base_biomass.Metabolites],
+                            [coeff for coeff in base_biomass.Coefficients]))
     base_biomass_metab = [k.id for k in base_biomass.keys()]
     metab_index = [m for m in metab_index if m.id not in base_biomass_metab]
     # 2- Remove highly branched metabolites
@@ -198,10 +209,9 @@ def _generate_metab_index(model, base_biomass,exp_essentiality):
     #3- Remove metabolites from atp hydrolysis reaction
     atp_hydrolysis = ['atp', 'h2o', 'adp', 'pi', 'h', 'ppi']
     metab_index = [m for m in metab_index if m.id not in atp_hydrolysis]
-    print(metab_index)
     # 3- Remove unsolvable metabolites
     print('Going to assess solvability')
-    solvability = _pebble_map(_assess_solvability,metab_index, model)
+    solvability = _parallel_assess(_assess_solvability,metab_index, model)
     metab_index = [t[0] for t in solvability if t[1] == True]
     # 4- Find the most relevant metabolites for a maximum gene essentiality prediction
     # Generate a population to test mcc of each metabolite one by one
@@ -252,7 +262,7 @@ def _generate_initial_populations(population_name, metab_index, base_biomass, mo
             individual.solvability = False
             ind_list.append(individual)
 
-        solutions = _pebble_map(_assess_ind_solvability, ind_list, model)
+        solutions = _parallel_assess(_assess_ind_solvability, ind_list, model)
         for ind in solutions:
             if ind.solvability != False:
                 biomass_list.append(ind)
