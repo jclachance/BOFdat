@@ -302,4 +302,4 @@ def make_initial_population(population_name, model, base_biomass, exp_essentiali
     #2- Make the initial populations
     for n in range(number_of_populations):
         pop_name = population_name + '_' + str(n) + '.csv'
-        _generate_initial_populations(pop_name, metab_index, base_biomass)
+        _generate_initial_populations(pop_name, metab_index, base_biomass,model)
