@@ -199,8 +199,6 @@ def _generate_metab_index(model, base_biomass,exp_essentiality):
     exp_ess = pd.read_csv(exp_essentiality, index_col=0)
     metab_index = [m for m in model.metabolites]
     # 1- Remove metabolites present in the base biomass
-    base_biomass = dict(zip([model.metabolites.get_by_id(m) for m in base_biomass.Metabolites],
-                            [coeff for coeff in base_biomass.Coefficients]))
     base_biomass_metab = [k.id for k in base_biomass.keys()]
     metab_index = [m for m in metab_index if m.id not in base_biomass_metab]
     # 2- Remove highly branched metabolites
