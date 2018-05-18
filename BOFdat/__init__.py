@@ -5,4 +5,5 @@ from BOFdat import protein
 from BOFdat import lipid
 from BOFdat import metabolite
 from BOFdat import maintenance
+from BOFdat import branching
 from BOFdat import initial_population
