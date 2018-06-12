@@ -210,6 +210,7 @@ def _generate_metab_index(model, base_biomass,exp_essentiality):
     # 3- Remove unsolvable metabolites
     print('Going to assess solvability')
     solvability = _parallel_assess(_assess_solvability,metab_index, model)
+    print('Done with that sh*t')
     metab_index = [t[0] for t in solvability if t[1] == True]
     # 4- Find the most relevant metabolites for a maximum gene essentiality prediction
     # Generate a population to test mcc of each metabolite one by one
@@ -225,19 +226,24 @@ def _generate_metab_index(model, base_biomass,exp_essentiality):
 
 def _generate_initial_populations(population_name, metab_index, base_biomass, model):
     # Define the population size as a function of the coverage and individual size
+
+    #This is an option where the individual size is fixed and the population size varies
     IND_SIZE = 20  # --> chosen as such so that the final individuals are easy to analyze for modellers
     COVERAGE = 10  # --> empirical but generally suggested in literature
-    pop_size = COVERAGE * len(metab_index) / IND_SIZE
+    POP_SIZE = COVERAGE * len(metab_index) / IND_SIZE
+
+    # This is an option where the population size is fixed and the individual size varies
+    #POP_SIZE = 100
     # 5- Generate appropriate number of initial population to obtain a significant result after running the genetic algorithm
     # Save the index before modification madness
     df_index = [m for m in metab_index]
 
     biomass_list = []
     it = 1
-    while len(biomass_list) < pop_size:
+    while len(biomass_list) < POP_SIZE:
         print('Im in loop %s and I have %s valid individuals' % (it, len(biomass_list)))
         ind_list = []
-        for n in range(pop_size):
+        for n in range(POP_SIZE):
             # Generate an ordered index with any metabolites but those present in the base biomass
             # index = [m for m in metab_list if m.id not in [v.id for v in base_biomass.keys()]]
             # Generate an initial population from any metabolite
@@ -245,6 +251,7 @@ def _generate_initial_populations(population_name, metab_index, base_biomass, mo
 
             shuffle(index)
             # Make the individual
+            #ind_size = randint(1,float(len(metab_index)/3))
             ind_dict = _make_pop_ind(IND_SIZE, index)
             biomass = {}
             biomass.update(base_biomass)
@@ -294,6 +301,7 @@ def make_initial_population(population_name, model, base_biomass, exp_essentiali
     :param exp_essentiality: Experimental essentiality as a 2 columns csv file the output of the
     :return:
     """
+    print('changes recorded')
     # Convert base_biomass dataframe to dictionary
     base_biomass = dict(zip([model.metabolites.get_by_id(k) for k in base_biomass['Metabolites']],
                             [v for v in base_biomass['Coefficients']]))
