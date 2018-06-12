@@ -28,9 +28,11 @@ def _get_number_of_bases(genome):
     base_genome = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
     for element in genome:
         value = base_genome.get(element.upper())
-	if value == None: continue
-        new_value = value + 1
-        base_genome[element] = new_value
+        if value == None:
+            continue
+        else:
+            new_value = value + 1
+            base_genome[element] = new_value
 
     return base_genome
 
