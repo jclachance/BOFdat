@@ -8,8 +8,5 @@ API
 .. automodule:: BOFdat.step2
    :members: find_coenzymes_and_ions
 
-.. automodule:: BOFdat.step3
-   :members: generate_initial_population, find_metabolites
-
 .. automodule:: BOFdat.util.update
    :members: make_new_BOF
