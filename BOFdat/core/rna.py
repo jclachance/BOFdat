@@ -318,8 +318,10 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic
         raise Exception('WEIGHT FRACTION should be a number between 0 and 1')
     # Operations
     model = _import_model(path_to_model)
-    try: rRNA_dict, tRNA_dict, mRNA_dict = _process_record(path_to_genbank,path_to_transcriptomic,identifier)
-    except: embed()
+    try:
+        rRNA_dict, tRNA_dict, mRNA_dict = _process_record(path_to_genbank,path_to_transcriptomic,identifier)
+    except:
+        raise Exception('Could not distinguish mRNA, tRNA and rRNA from file')
     RNA_coefficients = _total_coefficients(rRNA_dict, tRNA_dict, mRNA_dict,
                                            mRNA_WEIGHT_FRACTION, tRNA_WEIGHT_FRACTION, rRNA_WEIGHT_FRACTION)
     RNA_biomass_ratios = _convert_to_mmolgDW(RNA_coefficients,
