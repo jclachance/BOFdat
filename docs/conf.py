@@ -47,7 +47,7 @@ MOCK_MODULES = ['numpy','numpy.linalg',
                 'glpk', 'gurobipy', 'gurobipy.GRB', 'cplex', 'cplex.exceptions','pp', 
                 'tabulate', 'libsbml','argparse', 'pandas',
                 'matplotlib',  'biopython', 
-	        'cobra>=0.11','cobra.flux_analysis','cobra.util','cobra.util.solver','cobra.io', 'cobra.io.json', 'cobra.io.dict']
+	        'cobra','cobra.flux_analysis','cobra.util','cobra.util.solver','cobra.io', 'cobra.io.json', 'cobra.io.dict']
 
 
 for mod_name in MOCK_MODULES:
@@ -56,6 +56,17 @@ for mod_name in MOCK_MODULES:
 
 # -- General configuration ------------------------------------------------
 
+
+
+# Document Python Code
+autoapi_type = 'python'
+autoapi_dirs = ['..']
+autoapi_ignore = ['.tox', '.pytest_cache', 'scripts', 'benchmarks']
+
+
+# If your documentation needs a minimal Sphinx version, state it here.
+#
+needs_sphinx = '1.0'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
@@ -69,24 +80,6 @@ extensions = [
     'autoapi.extension',
     'nbsphinx'
 ]
-# Document Python Code
-autoapi_type = 'python'
-autoapi_dirs = ['..']
-autoapi_ignore = ['.tox', '.pytest_cache', 'scripts', 'benchmarks']
-
-# Napoleon settings
-napoleon_numpy_docstring = True
-
-# The master toctree document.
-master_doc = 'index'
-# If your documentation needs a minimal Sphinx version, state it here.
-#
-needs_sphinx = '1.0'
-
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
-extensions = ['sphinx.ext.autodoc']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['ntemplates']
@@ -124,13 +117,13 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = []
+# exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+#pygments_style = 'sphinx'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = False
+#todo_include_todos = False
 
 
 # -- Options for HTML output ----------------------------------------------
