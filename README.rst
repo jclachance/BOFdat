@@ -30,6 +30,7 @@ A full biomass objective function stoichiometric coefficients determination from
 Documentation
 ~~~~~~~~~~~~~
 The documentation and API for BOFdat is available on `Read the Docs`_ 
+
 .. _Read the docs: http://BOFdat.readthedocs.org/
 
 
