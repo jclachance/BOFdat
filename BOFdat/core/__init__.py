@@ -1,4 +1,3 @@
-import update
 import dna
 import rna
 import protein
