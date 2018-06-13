@@ -1,5 +1,5 @@
-|License| |Documentation|
-## *The package will be under a series of changes shortly*
+|Build_Status| |License| |Documentation|
+
 BOFdat
 ======
 Package to generate biomass objective function for genome-scale models from experimental data.
@@ -29,7 +29,10 @@ BOFdat: generating biomass objective function stoichiometric coefficients from e
 https://www.biorxiv.org/content/early/2018/01/05/243881
 
 
-
+.. |License| image:: https://img.shields.io/badge/License-MIT-blue.svg
+    :target: https://github.com/jclachance/BOFdat/blob/master/LICENSE
+.. |Documentation| image:: https://readthedocs.org/projects/BOFdat/badge/?version=master
+    :target: https://bofdat.readthedocs.io/en/latest/index.html
 
 Author: Jean-Christophe Lachance
 Date: 05-08-2018
