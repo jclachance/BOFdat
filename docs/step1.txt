@@ -1,8 +1,8 @@
-:mod:`DNA`
-==========
+:mod:`step1`
+============
 
 
-.. automodule:: DNA
+.. automodule:: step1
    :members:
    :undoc-members:
    :special-members:
