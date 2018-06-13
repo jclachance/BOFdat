@@ -1,4 +1,4 @@
-|Build_status| |License| |Documentation|
+|Buildstatus| |License| |Documentation|
 
 BOFdat
 ======
@@ -46,7 +46,7 @@ https://www.biorxiv.org/content/early/2018/01/05/243881
     :target: https://github.com/jclachance/BOFdat/blob/master/LICENSE
 .. |Documentation| image:: https://readthedocs.org/projects/BOFdat/badge/?version=master
     :target: https://bofdat.readthedocs.io/en/latest/index.html
-.. |Build_status| image::https://travis-ci.org/jclachance/BOFdat.svg?branch=master
+.. |Buildstatus| image::https://travis-ci.org/jclachance/BOFdat.svg?branch=master
     :target: https://travis-ci.org/jclachance/BOFdat
 
 .. |Binder| image::https://mybinder.org/badge.svg
