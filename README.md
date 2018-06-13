@@ -1,3 +1,4 @@
+|License| |Documentation|
 ## *The package will be under a series of changes shortly*
 # BOFdat
 ## Package to generate biomass objective function stoichiometric coefficients for genome-scale models from experimental data.
