@@ -1,4 +1,4 @@
-cobra > 0.8
+cobra > 0.11
 deap
 scipy
 sklearn
