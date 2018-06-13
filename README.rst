@@ -1,4 +1,4 @@
-|License| |Documentation|
+|Build_status| |License| |Documentation|
 
 BOFdat
 ======
@@ -36,6 +36,7 @@ The documentation and API for BOFdat is available on `Read the Docs`_
 
 Cite
 ----
+
 BOFdat: generating biomass objective function stoichiometric coefficients from experimental data
 
 https://www.biorxiv.org/content/early/2018/01/05/243881
@@ -47,7 +48,8 @@ https://www.biorxiv.org/content/early/2018/01/05/243881
     :target: https://bofdat.readthedocs.io/en/latest/index.html
 .. |Binder| image::https://mybinder.org/badge.svg
     :target:https://github.com/jclachance/BOFdat/blob/master/Example_usage/Example.ipynb
-
+.. |Build_status| image::https://travis-ci.org/jclachance/BOFdat.svg?branch=master
+    :target:https://travis-ci.org/jclachance/BOFdat
 
 Author: Jean-Christophe Lachance
 
