@@ -11,5 +11,5 @@ setup(name='BOFdat',
       packages=find_packages(),
       install_requires=['cobra>=0.11.0','numpy>=1.13',
 			'BioPython','seaborn',
-			'sklearn>=0.18','scipy',
+			'scikit-learn>=0.18','scipy',
 			'deap','pebble','multiprocessing','matplotlib'])
