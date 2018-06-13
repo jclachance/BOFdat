@@ -13,7 +13,10 @@ Genome-scale metabolic models rely both on a defined media and a precise biomass
 Installation
 ~~~~~~~~~~~~
 
-Use pip to install BOFdat from `PyPi`_
+Use pip to install BOFdat from `PyPi`_::
+
+	pip install BOFdat
+
 
 .. _PyPi: https://pypi.org/project/BOFdat/
 
@@ -26,10 +29,7 @@ A full biomass objective function stoichiometric coefficients determination from
 
 Documentation
 ~~~~~~~~~~~~~
-The documentation and API for BOFdat is available on `Read the Docs`_ ::
-
-	pip install BOFdat
-
+The documentation and API for BOFdat is available on `Read the Docs`_ 
 .. _Read the docs: http://BOFdat.readthedocs.org/
 
 
