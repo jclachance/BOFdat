@@ -2,7 +2,7 @@ cobra > 0.11
 numpy >=1.13
 deap
 scipy
-sklearn
+sklearn >=0.18
 matplotlib
 pebble
 multiprocessing

@@ -33,8 +33,7 @@ Contents
    BOFdat step3
    API
    license
-   help
-   _autogen/modules   
+   help   
    
 
 * :ref:`genindex`
