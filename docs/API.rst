@@ -7,6 +7,3 @@ API
 
 .. automodule:: BOFdat.step2
    :members: find_coenzymes_and_ions
-
-.. automodule:: BOFdat.util.update
-   :members: make_new_BOF
