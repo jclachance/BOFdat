@@ -6,6 +6,5 @@ sklearn
 matplotlib
 pebble
 multiprocessing
-numpy
 pandas
 
