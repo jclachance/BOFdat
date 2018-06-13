@@ -1,1 +1,10 @@
 cobra > 0.8
+deap
+scipy
+sklearn
+matplotlib
+pebble
+multiprocessing
+numpy
+pandas
+
