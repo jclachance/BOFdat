@@ -5,6 +5,9 @@ Metabolite
 This module generates BOFsc for the metabolite content of the cell.
 
 """
+import pandas as pd
+import warnings
+import cobra
 # Operations to screen data for Universal biomass table and model should be included before the get_coefficient method
 #Public
 def filter_for_model_metab(path_to_conversion_file, path_to_model):
@@ -23,7 +26,6 @@ def filter_for_model_metab(path_to_conversion_file, path_to_model):
     # Remove the compartment
     model_metab_id = [m.id[:-2] for m in model.metabolites]
     # Get to_bigg_dict
-    import pandas as pd
     to_bigg_df = pd.read_csv(path_to_conversion_file)
     if len(to_bigg_df.columns) > 2:
         del to_bigg_df[to_bigg_df.columns[0]]
@@ -43,7 +45,6 @@ def filter_for_model_metab(path_to_conversion_file, path_to_model):
 
 #Private
 def _import_universal_table():
-    import pandas as pd
     Universal_biomass = pd.read_csv('BIOMASS_universal_components.csv', skiprows=1)
     all_compounds = []
     for compound in Universal_biomass['Biomolecular components - 518']:
@@ -76,7 +77,6 @@ def filter_for_universal_biomass_metab(path_to_conversion_file):
     # Get the metabolites
     all_compounds = _import_universal_table()
     # Get to_bigg_dict
-    import pandas as pd
     to_bigg_df = pd.read_csv(path_to_conversion_file)
     to_bigg_dict = dict(zip([i for i in to_bigg_df[to_bigg_df.columns[0]]],
                             [i for i in to_bigg_df[to_bigg_df.columns[1]]]))
@@ -99,7 +99,7 @@ def filter_for_universal_biomass_metab(path_to_conversion_file):
     return pd.DataFrame({'metab_name': metab_name, 'metab_id': metab_id}, columns=['metab_name', 'metab_id'])
 
 def _import_model(path_to_model):
-    import cobra
+
     extension = path_to_model.split('.')[-1]
     if extension == 'json':
         model = cobra.io.load_json_model(path_to_model)
@@ -111,8 +111,6 @@ def _import_model(path_to_model):
 
 
 def _import_metabolomic(path_to_metabolomic):
-    import pandas as pd
-    import warnings
     metabolomic = pd.read_csv(path_to_metabolomic, header=None)
     # 1- Verify number of columns
     if len(metabolomic.columns) > 2:
@@ -145,8 +143,6 @@ def _import_metabolomic(path_to_metabolomic):
     return conform_df
 
 def _import_conversion(path_to_conversion_file):
-    import pandas as pd
-    import warnings
     conversion_file = pd.read_csv(path_to_conversion_file, header=None)
     # 1- Verify number of columns
     if len(conversion_file.columns) > 2:
@@ -198,8 +194,6 @@ def _convert_metabolomic_to_bigg(metabolomic, conversion,remove_DNA_RNA_prot):
 
     :return: a dictionary containing BiGG identifiers and their relative abundances
     """
-    import pandas as pd
-
     # Generate the dictionary of lipid_id and relative abundances
     df = pd.merge(left=metabolomic, right=conversion, left_on='identifiers', right_on='metab_name',how='outer')
     # 1- Verify if strictly no match (specifically doubles the length
@@ -241,7 +235,6 @@ def _get_relative_abundance(bigg_abundance,model):
     return dict(zip(keys,values))
 
 def _get_metabolite_weight(bigg_abundance, model):
-    import warnings
     # Import Universal BiGG model
     '''
     Deprecated
@@ -380,7 +373,6 @@ def connectivity_analysis(model):
     dummy_coeff = -0.00223
 
     return dict(zip(solvable_metab, [dummy_coeff for m in solvable_metab]))
-
 
 
 def update_biomass_coefficients(dict_of_coefficients, model):
