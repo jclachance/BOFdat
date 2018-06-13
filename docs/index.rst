@@ -28,9 +28,9 @@ Contents
    :maxdepth: 2
    
    Getting_started
-   Step1
-   Step2
-   Step3
+   BOFdat step1
+   BOFdat step2
+   BOFdat step3
    API
    license
    help
