@@ -18,7 +18,7 @@ class Graph:
         self.edges[to_node].append(from_node)
         self.distances[(from_node, to_node)] = distance
 
-def dijsktra(graph, initial):
+def _dijsktra(graph, initial):
     visited = {initial: 0}
     path = {}
 
@@ -48,31 +48,32 @@ def dijsktra(graph, initial):
 
     return visited, path
 
-#List of co-enzymes (highly connected metabolites)
-THRESHOLD = 15
-co_enzymes = []
-for m in model.metabolites:
-    if len(m.reactions) > THRESHOLD:
-        co_enzymes.append(m.id)
-        
-metab_network = Graph()
-#Add nodes
-for m in model.metabolites:
-    if m.id not in co_enzymes:
-        metab_network.add_node(str(m.id)) 
-#Add edges
-for r in model.reactions:
-    for reac in r.reactants:
-        if reac.id not in co_enzymes:
-            for prod in r.products:
-                if prod.id not in co_enzymes:
-                    metab_network.add_edge(str(reac.id),str(prod.id),1)
-    for prod in r.products:
-        if  prod.id not in co_enzymes:
-            for reac in r.reactants:
-                if reac.id not in co_enzymes:
-                    metab_network.add_edge(str(prod.id),str(reac.id),1)
+def generate_distance_matrix(model,THRESHOLD=15):
+    #List of co-enzymes (highly connected metabolites)
+    co_enzymes = []
+    for m in model.metabolites:
+        if len(m.reactions) > THRESHOLD:
+            co_enzymes.append(m.id)
 
-dijsktra_matrix = []                 
-for m in metab_network.nodes:
-    dijsktra_matrix.append(dijsktra(graph=metab_network,initial=m))
+    metab_network = Graph()
+    #Add nodes
+    for m in model.metabolites:
+        if m.id not in co_enzymes:
+            metab_network.add_node(str(m.id))
+    #Add edges
+    for r in model.reactions:
+        for reac in r.reactants:
+            if reac.id not in co_enzymes:
+                for prod in r.products:
+                    if prod.id not in co_enzymes:
+                        metab_network.add_edge(str(reac.id),str(prod.id),1)
+        for prod in r.products:
+            if  prod.id not in co_enzymes:
+                for reac in r.reactants:
+                    if reac.id not in co_enzymes:
+                        metab_network.add_edge(str(prod.id),str(reac.id),1)
+
+    dijsktra_matrix = []
+    for m in metab_network.nodes:
+        dijsktra_matrix.append(_dijsktra(graph=metab_network,initial=m))
+    return dijsktra_matrix

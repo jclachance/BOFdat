@@ -19,11 +19,11 @@ import multiprocessing
 # Timeout imports and definitions
 from concurrent.futures import TimeoutError
 from pebble import ProcessPool, ProcessExpired
-
+'''
 import argparse
 parser = argparse.ArgumentParser()
 parser.parse_args()
-
+'''
 "-----------------------------"
 
 
@@ -530,9 +530,10 @@ def qual_definition(model_path, init_pop_path, exp_essentiality_path, base_bioma
     _genetic_algo(model, initial_pop, exp_ess, base_biomass, toolbox, default_param, distance, processes,
                   outputs)
 
-
+'''
 if __name__ == '__main__':
     import sys
+
     # Constants
     model_path = '/home/jclachan/Maitrise_UCSD/BOFdat_qual/iML1515.json'
     exp_essentiality_path = '/home/jclachan/Maitrise_UCSD/BOFdat_qual/glucose_exp.csv'
@@ -541,5 +542,6 @@ if __name__ == '__main__':
     init_pop_path = sys.argv[1]
     args = sys.argv[2]
     logbook_path = args.split(',')[0]
-    hof_path = args.split(',')[1]    
+    hof_path = args.split(',')[1]
     qual_definition(model_path, sys.argv[1], exp_essentiality_path, logbook_name=logbook_path,hall_of_fame_name=hof_path)
+'''
