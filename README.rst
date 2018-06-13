@@ -2,7 +2,14 @@
 
 BOFdat
 ======
-Package to generate biomass objective function for genome-scale models from experimental data.
+Generate biomass objective function for genome-scale models from experimental data.
+BOFdat is a three step workflow that allows modellers to generate a complete biomass objective function *de novo* from experimental data:
+
+1. Obtain stoichiometric coefficients for major macromolecules and calculate maintenance cost
+
+2. Find coenzymes and inorganic ions
+
+3. Find metabolic end goals
 
 
 Significance
