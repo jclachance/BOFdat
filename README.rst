@@ -3,7 +3,7 @@
 BOFdat
 ======
 Package to generate biomass objective function for genome-scale models from experimental data.
-----------------------------------------------------------------------------------------------
+
 
 Significance
 ------------

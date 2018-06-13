@@ -26,7 +26,8 @@ Contents
 .. toctree::
    :numbered:
    :maxdepth: 2
-
+   
+   Getting_started
    Step1
    Step2
    Step3
