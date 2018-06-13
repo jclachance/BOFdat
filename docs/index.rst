@@ -34,7 +34,7 @@ Contents
    API
    license
    help
-   
+   _autogen/modules   
    
 
 * :ref:`genindex`
