@@ -7,7 +7,6 @@ This module generates BOFsc for the 4 bases of RNA (ATP, UTP, CTP and GTP)
 """
 BASES = ['A', 'U', 'C', 'G']
 import pandas as pd
-from IPython import embed
 # Methods
 def _import_model(path_to_model):
     import cobra
