@@ -1,4 +1,4 @@
-|Build_Status| |License| |Documentation|
+|License| |Documentation|
 
 BOFdat
 ======
@@ -15,7 +15,7 @@ Example use
 
 A full biomass objective function stoichiometric coefficients determination from experimental data fetched from literature for the *E.coli* model *i*ML1515 is available in the Example folder. The files used are also provided. 
 
-|Binder|]()]()
+|Binder|
 
 Documentation
 -------------
