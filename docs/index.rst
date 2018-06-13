@@ -27,12 +27,9 @@ Contents
    :numbered:
    :maxdepth: 2
 
-   DNA
-   RNA
-   Protein
-   Lipids
-   Metabolites
-   Maintenance
+   Step1
+   Step2
+   Step3
    API
    license
    help
