@@ -76,9 +76,12 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
-    'sphinx.ext.autosummary'
+    'sphinx.ext.autosummary',
+    'nbsphinx'
 ]
-#  'nbsphinx'  'autoapi.extension',
+
+exclude_patterns = ['_build', '**.ipynb_checkpoints']
+#  'autoapi.extension',
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['ntemplates']
 
