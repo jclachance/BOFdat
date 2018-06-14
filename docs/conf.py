@@ -46,7 +46,7 @@ MOCK_MODULES = ['numpy','numpy.linalg',
 		'scipy', 'scipy.sparse', 'scipy.io', 'scipy.stats',
                 'glpk', 'gurobipy', 'gurobipy.GRB', 'cplex', 'cplex.exceptions','pp', 
                 'tabulate', 'libsbml','argparse', 'pandas',
-                'matplotlib',  'biopython', 
+                'matplotlib','matplotlib.pyplot',  'biopython', 
 	        'cobra','cobra.flux_analysis','cobra.util','cobra.util.solver','cobra.io', 'cobra.io.json', 'cobra.io.dict']
 
 
