@@ -1,0 +1,15 @@
+lipid_name,lipid_id
+PE C33:1 (m/z702),pe160_p
+PE C34:2(m/z714),pe161_p
+PE C32:1 (m/z688),pe161_p
+PE C34:1 (m/z716),pe160_p
+PE C35:1 (m/z730),pe181_p
+PE C36:2 (m/z742),pe181_p
+PG C32:1 (m/z719),pg160_p
+PG C33:1 (m/z733),pg161_p
+PG C34:1 (m/z747),pg181_p
+PE  C28:0 (m/z 634),pe160_p
+PE C30:1 (m/z660),pe160_p
+PG C30:1 (m/z691),pg160_p
+PG C30:0 (m/z693),pg160_p
+PG C31:1 (m/z705),pg161_p

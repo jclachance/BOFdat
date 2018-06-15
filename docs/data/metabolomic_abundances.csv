@@ -1,0 +1,122 @@
+metabolite_name,metabolite_id
+Glu,21.4540580126
+Glutathione(ox),8.1792754372
+"N-succinyl-L,L-2,6-diaminopimelate",4.3684112542
+"Putrescine (1,4-Butanediamine)",2.7235705966
+ATP,2.1467481389
+Quinate,2.1364831773
+N-Acetylaspartate,1.7563637478
+Gln,1.7360531061
+Malate,1.3321476174
+UDP-glucose,1.287994459
+Lys,1.195903714
+"F1,6P (Fructose 1,6-bisphosphate)",1.1806434294
+Nicotinamide,1.1391238489
+Carbamoylaspartate,1.1375739153
+UTP,0.9924143214
+UMP,0.9672839165
+Val,0.9031262214
+Ala,0.6946047922
+Succinate,0.671506989
+Ophthalmate,0.6165071404
+Arg,0.5047394022
+Thr,0.4806691678
+GTP,0.4782082831
+Asp,0.4771037185
+UDP-N-acetylglucosamine,0.4611498655
+CTP,0.4439305277
+Citrate,0.4385672406
+Dihydroorotate,0.3768968955
+Allantoin,0.3475165608
+Orotate,0.3359955833
+NAD+,0.3330205894
+G6P (Glucose 6-phosphate),0.3111420535
+Leu,0.2796075783
+3PG and 2PG (3-phosphoglycerate and 2-phosphoglycerate),0.2650523525
+dTMP,0.2583664093
+ADP,0.2526017346
+ITP,0.2479825832
+Glycerophosphate,0.2358391488
+Tyr,0.210639977
+Gly,0.2037581486
+Asn,0.1955372606
+Fumarate,0.1721089336
+Ala-Ala,0.1636937411
+dTTP,0.1573674369
+GABA,0.1560036632
+Sorbitol 6-phosphate,0.1496318386
+NADP+,0.1402458344
+CMP-N-acetylneuraminate,0.1327085052
+Ser,0.1280768485
+isochorismate/prephenate/chorismate,0.125827897
+N-Acetylornithine,0.1132260019
+Met,0.1104263038
+UDP-glucuronate,0.1055043916
+Phe,0.101070925
+UDP,0.0979583773
+2-Oxoglutarate,0.0966159026
+Citramalate/2-Hydroxyglutarate,0.0962073759
+dATP,0.0960094184
+GDP,0.0940850577
+Pro,0.0936901627
+Nicotinamide hypoxanthine dinucleotide+,0.0840927892
+Citrulline,0.0838133802
+"2,3-DPG (2,3-Diphosphoglyceric acid)",0.0830367182
+SAM+ (S-Adenosylmethionine),0.0826628163
+2-Isopropylmalate,0.0757774032
+F6P (Fructose 6-phosphate),0.075024681
+AMP,0.074679481
+Homoserine,0.0720710462
+CMP,0.0673632166
+dCTP,0.0668242991
+His,0.0665151094
+5-Oxoproline,0.0644172909
+5-Aminovalerate,0.0635878188
+G1P (Glucose 1-phosphate),0.063579795
+ppGpp (Diguanosine tetraphosphate),0.0614110866
+Ile,0.0611157611
+2AB (D-Alpha-aminobutyric acid),0.0564698525
+Glucosamine 6-phosphate,0.0541204346
+PEP (Phosphoenolpyruvic acid),0.0506978759
+5-Methylthioadenosine,0.0491682215
+S7P (D-Sedoheptulose 7-phosphate),0.0464640396
+CDP,0.0464496328
+Spermidine,0.0436807921
+Ru5P (D-Ribulose 5-phosphate),0.0423192427
+Cadaverine,0.0409406637
+3-deoxy-D-arabino-heptulosonate-7-phosphate,0.0392964759
+N-Acetylglutamate,0.0383031511
+DHAP,0.0380678103
+Histidinol,0.0302515024
+Ornithine,0.0301374314
+6-Phosphogluconate,0.0267841165
+"Ribulose 1,5-diphosphate (D-Ribulose 1,5-bisphosphate)",0.0257260442
+gamma-Glu-2AB,0.0253559296
+PRPP (Phosphoribosyl pyrophosphate),0.0241734782
+cis-Aconitate,0.0235187487
+Pterin,0.0233041358
+Trp,0.0231202944
+Diethanolamine,0.0226381643
+dTDP,0.0219413004
+N-Acetylputrescine,0.0193279385
+Adenine,0.0181523911
+Glutathione(red),0.0180911092
+Pyridoxamine5'-phosphate,0.0142538112
+R5P (D-Ribose 5-phosphate),0.014106532
+FAD,0.0140523862
+Agmatine,0.013937827
+O-Phosphoserine,0.0132706198
+IMP,0.0121310118
+dADP,0.0119557539
+"2,4-Diaminobutyrate",0.0117060566
+SAH (S-Adenosylhomocysteine),0.0112658768
+NADPH,0.0106480292
+Adenosine,0.0082062458
+dCDP,0.0073730777
+GMP,0.0050241251
+NADH,0.0046284443
+"P1, P4-Di(adenosine-5') tetraphosphate",0.0040678644
+Glu-Glu (Glutamyl-glutamic acid),0.0036037301
+N-Acetylglucosamine 6-phosphate,0.0032477356
+N-Acetylglucosamine 1-phosphate,0.0031061178
+dCMP,0.0010714339

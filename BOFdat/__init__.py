@@ -1,4 +1,4 @@
-from BOFdat import (step1)
+from BOFdat import step1,step2,step3
 from BOFdat.core import (dna,
 	rna,
 	protein,

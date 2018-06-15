@@ -5,7 +5,7 @@ Update
 This module updates BOFsc in the model.
 
 """
-#def change_gam():
+import pandas as pd
 def get_biomass_objective_function(model):
     from cobra.util.solver import linear_reaction_coefficients
     return linear_reaction_coefficients(model).keys()[0]
@@ -154,4 +154,5 @@ def make_new_BOF(model, update_model=False, update_NGAM=True, *args, **kwargs):
         biomass.add_metabolites(base_biomass)
         biomass.objective_coefficient = 1.
     else:
-        return base_biomass
+        return pd.DataFrame.from_records([(k.id,v) for k,v in base_biomass.iteritems()],columns=['Metabolite','Coefficient'])
+

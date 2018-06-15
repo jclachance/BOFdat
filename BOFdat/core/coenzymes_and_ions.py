@@ -5,10 +5,22 @@ Coenzymes
 This module performs metabolite branching analysis to find potential coenzymes worthy of adding to the BOF.
 
 """
+import pandas as pd
 
 def _get_biomass_objective_function(model):
     from cobra.util.solver import linear_reaction_coefficients
     return list(linear_reaction_coefficients(model).keys())[0]
+
+
+def _import_model(path_to_model):
+    import cobra
+    extension = path_to_model.split('.')[-1]
+    if extension == 'json':
+        return cobra.io.load_json_model(path_to_model)
+    elif extension == 'xml':
+        return cobra.io.read_sbml_model(path_to_model)
+    else:
+        raise Exception('Model format not compatible, provide xml or json')
 
 
 def _assess_solvability(metabolite_list, model):
@@ -17,9 +29,9 @@ def _assess_solvability(metabolite_list, model):
     solvable_metab = []
     # Identify the list of metabolites that do not prevent the model to solve when added to the BOF
     atp_hydrolysis = ['atp', 'h2o', 'adp', 'pi', 'h', 'ppi']
-    gases = ['o2','co2']
+    gases = ['o2', 'co2']
     for m in metabolite_list:
-        biomass = get_biomass_objective_function(model)
+        biomass = _get_biomass_objective_function(model)
         biomass.remove_from_model()
         BIOMASS = Reaction('BIOMASS')
         model.add_reactions([BIOMASS])
@@ -30,19 +42,51 @@ def _assess_solvability(metabolite_list, model):
             solution = model.optimize()
             # If the model can produce that metabolite
             if solution.f > 1e-9:
-                solvable_metab.append(m)
+                solvable_metab.append(m.id)
         else:
             model.reactions.BIOMASS.objective_coefficient = 1.
 
     return solvable_metab
 
 
-def _determine_coefficients(list_of_metab, model, WEIGHT_FRACTION=0.05):
+def _find_inorganic_ions(model):
+    # List of inorganic ions from literature
+    #IONS = ['ca2','cl','cobalt2','cu2','fe2','fe3','h','k','mg2','mn2','mobd','na1','nh4','ni2','so4','zn2']
+    import os.path
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    parent_dir = os.path.abspath(os.path.join(current_dir,os.pardir))
+    file_path = os.path.join(parent_dir,'data/BIOMASS_universal_components.csv')
+    universal_components = pd.read_csv(file_path)
+    IONS = [m[1:] + '_c' for m in universal_components.iloc[1:, 2].dropna()]
+    model_metabolites = [m.id[:-2] for m in model.metabolites]
+    inorganic_ions = [m for m in model_metabolites if m in IONS]
+    return inorganic_ions
+
+
+def _find_coenzymes(model):
+    # 1- Analyze metabolite connectivity
+    metab, number_of_rxn = [], []
+    for m in model.metabolites:
+        metab.append(m.id)
+        number_of_rxn.append(len(m.reactions))
+    branching_df = pd.DataFrame({'Metab': metab, 'Number of metab': number_of_rxn})
+
+    # 2- Define threshold using inner stats about the data
+    THRESHOLD = branching_df['Number of metab'].mean() + branching_df['Number of metab'].std()
+    branching_df = branching_df[branching_df['Number of metab'] > THRESHOLD]
+    branching_df.sort_values('Number of metab', inplace=True, ascending=False)
+    metabolite_list = [model.metabolites.get_by_id(m) for m in branching_df['Metab']]
+    solvable_coenzymes = _assess_solvability(metabolite_list, model)
+
+    return solvable_coenzymes
+
+
+def _determine_coefficients(list_of_metab, model, weight_fraction):
     RATIO = float(1) / len(list_of_metab)
     dict_of_coefficients = {}
 
     for m in list_of_metab:
-        total_weight = RATIO * WEIGHT_FRACTION
+        total_weight = RATIO * weight_fraction
         mol_weight = model.metabolites.get_by_id(m).formula_weight
         mmols_per_cell = (total_weight / mol_weight) * 1000
         mmols_per_gDW = mmols_per_cell
@@ -51,27 +95,16 @@ def _determine_coefficients(list_of_metab, model, WEIGHT_FRACTION=0.05):
     return dict_of_coefficients
 
 
-def connectivity_analysis(model,**kwargs):
-    """
+def find_coenzymes_and_ions(path_to_model, weight_fraction):
+    # 1- Import model
+    model = _import_model(path_to_model)
+    # 2- Find coenzymes
+    coenzymes = _find_coenzymes(model)
+    # 3- Find inorganic ions
+    inorganic_ions = _find_inorganic_ions(model)
+    # 4- Merge
+    coenzymes_and_ions = coenzymes + inorganic_ions
+    # 5- Determine the stoichiometric coefficient
+    dictionary_of_coefficients = _determine_coefficients(coenzymes_and_ions, model, weight_fraction)
 
-    :param model:
-    :param kwargs:
-    :return:
-    """
-    metab, number_of_rxn = [], []
-    for m in model.metabolites:
-        metab.append(m.id)
-        number_of_rxn.append(len(m.reactions))
-
-    branching_df = pd.DataFrame({'Metab': metab, 'Number of metab': number_of_rxn})
-    # Define threshold using inner stats about the data
-    THRESHOLD = branching_df['Number of metab'].mean() + branching_df['Number of metab'].std()
-    branching_df = branching_df[branching_df['Number of metab'] > THRESHOLD]
-    branching_df.sort_values('Number of metab', inplace=True, ascending=False)
-    metabolite_list = [model.metabolites.get_by_id(m) for m in branching_df['Metab']]
-    solvable_metab = assess_solvability(metabolite_list, model)
-    #Determine the stoichiometric coefficient
-    dict_of_coeff = _determine_coefficients(solvable_metab,model)
-
-    return dict_of_coeff
-
+    return dictionary_of_coefficients
