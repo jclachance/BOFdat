@@ -62,4 +62,4 @@ https://www.biorxiv.org/content/early/2018/01/05/243881
 
 Author: Jean-Christophe Lachance
 Date: 06-13-2018
-Version: 0.1.3
+Version: 0.1.4
