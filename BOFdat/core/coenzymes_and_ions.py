@@ -81,21 +81,7 @@ def _find_coenzymes(model):
     return solvable_coenzymes
 
 
-def _determine_coefficients(list_of_metab, model, weight_fraction):
-    RATIO = float(1) / len(list_of_metab)
-    dict_of_coefficients = {}
-
-    for m in list_of_metab:
-        total_weight = RATIO * weight_fraction
-        mol_weight = model.metabolites.get_by_id(m).formula_weight
-        mmols_per_cell = (total_weight / mol_weight) * 1000
-        mmols_per_gDW = mmols_per_cell
-        dict_of_coefficients[m] = mmols_per_gDW
-
-    return dict_of_coefficients
-
-
-def find_coenzymes_and_ions(path_to_model, weight_fraction):
+def find_coenzymes_and_ions(path_to_model):
     # 1- Import model
     model = _import_model(path_to_model)
     # 2- Find coenzymes
@@ -104,7 +90,5 @@ def find_coenzymes_and_ions(path_to_model, weight_fraction):
     inorganic_ions = _find_inorganic_ions(model)
     # 4- Merge
     coenzymes_and_ions = coenzymes + inorganic_ions
-    # 5- Determine the stoichiometric coefficient
-    dictionary_of_coefficients = _determine_coefficients(coenzymes_and_ions, model, weight_fraction)
 
-    return dictionary_of_coefficients
+    return coenzymes_and_ions

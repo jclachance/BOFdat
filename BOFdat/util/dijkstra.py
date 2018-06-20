@@ -76,4 +76,15 @@ def generate_distance_matrix(model,THRESHOLD=15):
     dijsktra_matrix = []
     for m in metab_network.nodes:
         dijsktra_matrix.append(_dijsktra(graph=metab_network,initial=m))
-    return dijsktra_matrix
+
+    new_matrix = []
+    for i in range(len(metab_network.nodes)):
+        # Order the dijsktra matrix for this metabolite
+        row = []
+        for m in metab_network.nodes:
+            row.append(dijsktra_matrix[i][0].get(m))
+
+        new_matrix.append(row)
+
+    dist_matrix = pd.DataFrame(new_matrix, columns=metab_network.nodes, index=metab_network.nodes)
+    return dist_matrix

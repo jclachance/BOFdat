@@ -5,9 +5,12 @@ Initial population
 This module generates initial population for the genetic algorithm.
 
 """
+from BOFdat.util.update import _import_csv_file,_import_base_biomass,_import_model,_import_essentiality
+from BOFdat.util.update import _get_biomass_objective_function
+import warnings
 import random
 from random import shuffle, randint
-# import cobra
+import cobra
 import pandas as pd
 import numpy as np
 from itertools import repeat
@@ -24,14 +27,62 @@ import multiprocessing
 from concurrent.futures import TimeoutError
 from pebble import ProcessPool, ProcessExpired
 
+
 class Individual:
     biomass_name = ''
     biomass = {}
     solvability = True
 
+"""
+DEPRECATED --> FUNCTIONS MOVED TO BOFdat.util.update
+
 def _get_biomass_objective_function(model):
     from cobra.util.solver import linear_reaction_coefficients
     return list(linear_reaction_coefficients(model).keys())[0]
+
+def _import_model(path_to_model):
+    extension = path_to_model.split('.')[-1]
+    if extension == 'json':
+        return cobra.io.load_json_model(path_to_model)
+    elif extension == 'xml':
+        return cobra.io.read_sbml_model(path_to_model)
+    else:
+        raise Exception('Model format not compatible, provide xml or json')
+
+def _import_csv_file(path):
+    csv_file = pd.read_csv(path)
+    # 1- Verify number of columns
+    if len(csv_file.columns) > 2:
+        raise Exception("Your file format is not appropriate, more than 2 columns")
+    # 2- Verify presence of header
+    if type(csv_file.iloc[0:0, 0]) == str and type(csv_file.iloc[0:0, 1]) == str:
+        csv_file = csv_file.iloc[1:]
+    # 3- Remove null data
+    if csv_file.isnull().values.any():
+        csv_file = csv_file.dropna()
+
+    return csv_file
+def _import_base_biomass(path):
+    two_col_df = _import_csv_file(path)
+    metabolites = [str(i) for i in two_col_df.iloc[0:, 0]]
+    coefficients = [float(i) for i in two_col_df.iloc[0:, 1]]
+    base_biomass_df = pd.DataFrame({'Metabolites':metabolites,'Coefficients':coefficients},
+                                   columns=['Metabolites','Coefficients'])
+    return base_biomass_df
+
+DEPRECATED --> function not used anymore
+
+def _make_metab_ind(m,metab_index):
+    # Generates an individual with  metabolites
+    ind_dict = {}
+    for i in metab_index:
+        if i.id == m.id:
+            ind_dict[i.id] = 1
+        else:
+            ind_dict[i.id] = 0
+    return ind_dict
+
+"""
 
 def _branching_analysis(model):
     metab, number_of_rxn = [], []
@@ -46,20 +97,14 @@ def _branching_analysis(model):
 
         return [m for m in branching_df['Metab']]
 
-"""
-Deprecated
-def _make_metab_ind(m,metab_index):
-    # Generates an individual with  metabolites
-    ind_dict = {}
-    for i in metab_index:
-        if i.id == m.id:
-            ind_dict[i.id] = 1
-        else:
-            ind_dict[i.id] = 0
-    return ind_dict
-"""
-
 def _eval_metab(metab, model, exp_ess):
+    """
+    This function is used to evaluate the fitness of each metabolite individually
+    :param metab:
+    :param model:
+    :param exp_ess:
+    :return:
+    """
     # Set this as warning
     model.solver = 'gurobi'
     old_biomass = list(linear_reaction_coefficients(model).keys())[0]  # index removed
@@ -78,14 +123,14 @@ def _eval_metab(metab, model, exp_ess):
     b = [(str(next(iter(i))), 0) for i in deletion_results[deletion_results['growth'] <= 1e-3].index]
     c = a + b
     pred_ess = pd.DataFrame(c, columns=['Genes', 'Predicted_growth'])
+
     compare_df = pd.merge(right=exp_ess, left=pred_ess, on='Genes', how='inner')
 
-    # Apply hamming distance
+    # Apply mcc
     u = np.array([f for f in compare_df.Measured_growth])
     v = np.array([x for x in compare_df.Predicted_growth])
 
     return matthews_corrcoef(u, v)
-
 
 def _assess_solvability(m, model):
     # Identify the list of metabolites that do not prevent the model to solve when added to the BOF
@@ -196,7 +241,7 @@ def _pebble_eval(eval_func,iterable,model,exp_ess):
     return all_results
 
 def _generate_metab_index(model, base_biomass,exp_essentiality):
-    exp_ess = pd.read_csv(exp_essentiality, index_col=0)
+    #exp_ess = pd.read_csv(exp_essentiality, index_col=0)
     metab_index = [m for m in model.metabolites]
     # 1- Remove metabolites present in the base biomass
     base_biomass_metab = [k.id for k in base_biomass.keys()]
@@ -208,25 +253,22 @@ def _generate_metab_index(model, base_biomass,exp_essentiality):
     atp_hydrolysis = ['atp', 'h2o', 'adp', 'pi', 'h', 'ppi']
     metab_index = [m for m in metab_index if m.id not in atp_hydrolysis]
     # 3- Remove unsolvable metabolites
-    print('Going to assess solvability')
+    print('Assessing individual metabolite solvability')
     solvability = _parallel_assess(_assess_solvability,metab_index, model)
-    print('Done with that sh*t')
     metab_index = [t[0] for t in solvability if t[1] == True]
     # 4- Find the most relevant metabolites for a maximum gene essentiality prediction
     # Generate a population to test mcc of each metabolite one by one
+    # This allows to remove irrelevant metabolites from the selection
     metab_id = [m.id for m in metab_index]
-
-    result = _pebble_eval(_eval_metab, metab_id, model, exp_ess)
+    result = _pebble_eval(_eval_metab, metab_id, model, exp_essentiality)
     result_df = pd.DataFrame({'metab': metab_id, 'mcc': result})
     result_df.sort_values('mcc', ascending=False, inplace=True)
     THRESHOLD = result_df['mcc'].std() + result_df['mcc'].median()
 
     return [m for m in result_df['metab'][result_df['mcc'] > THRESHOLD]]
 
-
 def _generate_initial_populations(population_name, metab_index, base_biomass, model):
     # Define the population size as a function of the coverage and individual size
-
     #This is an option where the individual size is fixed and the population size varies
     IND_SIZE = 20  # --> chosen as such so that the final individuals are easy to analyze for modellers
     COVERAGE = 10  # --> empirical but generally suggested in literature
@@ -290,23 +332,27 @@ def _generate_initial_populations(population_name, metab_index, base_biomass, mo
     df.to_csv(population_name)
 
 
-def make_initial_population(population_name, model, base_biomass, exp_essentiality,number_of_populations=3):
+def make_initial_population(population_name, path_to_model, base_biomass_path, exp_essentiality_path,number_of_populations=3):
     """
     This function generates the initial population to run the genetic algorithm on.
 
     :param population_name: The name and path to write the populations to
     :param pop_size: The number of populations to be generated, default=3
     :param model: Model object
-    :param base_biomass: The output of step 1 and 2 of BOFdat
-    :param exp_essentiality: Experimental essentiality as a 2 columns csv file the output of the
+    :param base_biomass: The path to a 2 column csv file of metabolite ID and stoichiometric coefficients that represents the output of step1 and 2
+    :param exp_essentiality_path: The path to a 2 column csv file of gene identifiers (same as the model identifiers) and the binary essentiality
     :return:
     """
-    print('changes recorded')
+    #Import all necessary elements
+    model = _import_model(path_to_model)
+    exp_essentiality = _import_essentiality(exp_essentiality_path)
+    base_biomass_df = _import_base_biomass(base_biomass_path)
     # Convert base_biomass dataframe to dictionary
-    base_biomass = dict(zip([model.metabolites.get_by_id(k) for k in base_biomass['Metabolites']],
-                            [v for v in base_biomass['Coefficients']]))
+    base_biomass = dict(zip([model.metabolites.get_by_id(k) for k in base_biomass_df['Metabolites']],
+                            [v for v in base_biomass_df['Coefficients']]))
     #1- Make the metabolite index
     metab_index = _generate_metab_index(model, base_biomass,exp_essentiality)
+    print(metab_index)
     #2- Make the initial populations
     for n in range(number_of_populations):
         pop_name = population_name + '_' + str(n) + '.csv'

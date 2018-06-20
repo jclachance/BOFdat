@@ -4,6 +4,8 @@ from BOFdat.core import (dna,
 	protein,
 	lipid,
 	maintenance)
+from BOFdat.core import coenzymes_and_ions
+from BOFdat.core import initial_population
 from BOFdat.util import update
 
 __version__ = "0.4.0"

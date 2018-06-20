@@ -6,8 +6,8 @@ This module finds the cluster of specie-specific metabolic end goals and calcula
 
 """
 from BOFdat.core import initial_population
-from BOFdat.core import chose_metab
-#from BOFdat.core import metab_end_goals --> write this code
+from BOFdat.core import metab_end_goals
+from BOFdat.core import group_end_goals
 from BOFdat.core import update
 
 def generate_initial_population(population_name, model, base_biomass, exp_essentiality,number_of_populations=3):
@@ -39,7 +39,45 @@ def find_metabolites(model_path, init_pop_path, exp_essentiality_path, base_biom
         :param kwargs:
         :return:
     """
-    chose_metab.qual_definition(model_path, init_pop_path, exp_essentiality_path, base_biomass,
+    metab_end_goals.qual_definition(model_path, init_pop_path, exp_essentiality_path, base_biomass,
                     logbook, hall_of_fame, history, processes, **kwargs)
 
-#def cluster_metabolites():
+def cluster_metabolites(outpath,model_path,CONNECTIVITY_THRESHOLD=15,BASELINE=0.77,show_frequency=True,show_matrix=True,**kwargs):
+    """
+    This function analyzes the outputs of the genetic algorithm
+
+    :param outpath: Path to the outputs (Hall of fame) of the genetic algorithm
+    :param model_path: Path to the model for which the biomass objective function is defined
+    :param CONNECTIVITY_THRESHOLD: The threshold above which to remove metabolites for network distance calculation
+    :param show_frequency: boolean, if *True* will display the frequency of each metabolite in the hall of fames
+    :param show_matrix: boolean, if *True* will display the seaborn cluster map for the reduced distance matrix
+    :return:
+    """
+    if show_frequency:
+        if kwargs.get('frequency_fig_name'):
+            frequency_fig_name = kwargs.get('frequency_fig_name')
+        else:
+            frequency_fig_name = 'frequency_fig.svg'
+    else:
+        frequency_fig_name = 'frequency_fig.svg'
+
+    if show_matrix:
+        if kwargs.get('matrix_fig_name'):
+            matrix_fig_name = kwargs.get('matrix_fig_name')
+        else:
+            matrix_fig_name = 'matrix_fig.svg'
+    else:
+        matrix_fig_name = 'matrix_fig.svg'
+    keywords = {'frequency_fig_name':frequency_fig_name,
+                'matrix_fig_name':matrix_fig_name}
+    print(keywords)
+    return group_end_goals.cluster_metabolites(outpath,
+                                        model_path,
+                                        CONNECTIVITY_THRESHOLD,
+                                        BASELINE,
+                                        show_frequency,
+                                        show_matrix,
+                                        frequency_fig_name,matrix_fig_name)
+
+#def plot_evolutions(): --> consider adding this
+
