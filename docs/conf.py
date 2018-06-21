@@ -44,7 +44,7 @@ class Mock(object):
 
 MOCK_MODULES = ['numpy','numpy.linalg','python-scipy',
 		'scipy', 'scipy.sparse', 'scipy.io', 'scipy.stats', 'scipy.spatial.distance',
-		'sklearn','sklearn.metrics',
+		'sklearn','sklearn.metrics','sklearn.cluster',
                 'glpk', 'gurobipy', 'gurobipy.GRB', 'cplex', 'cplex.exceptions','pp', 
                 'tabulate', 'libsbml','argparse', 'pandas',
                 'matplotlib','matplotlib.pyplot','seaborn','seaborn.color_palette','biopython', 
