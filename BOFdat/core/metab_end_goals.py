@@ -23,7 +23,7 @@ from sklearn.metrics import matthews_corrcoef
 #from scipy.spatial.distance import hamming
 # Recording data and stats
 import matplotlib.pyplot as plt
-import networkx
+#import networkx
 # Parallel
 import multiprocessing
 # Timeout imports and definitions
