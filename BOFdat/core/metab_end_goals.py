@@ -20,7 +20,7 @@ from cobra import Reaction
 from cobra.flux_analysis import single_gene_deletion
 from cobra.util.solver import linear_reaction_coefficients
 from sklearn.metrics import matthews_corrcoef
-from scipy.spatial.distance import hamming
+#from scipy.spatial.distance import hamming
 # Recording data and stats
 import matplotlib.pyplot as plt
 import networkx
@@ -145,9 +145,11 @@ def eval_ind(individual, initial_pop, model, base_biomass, exp_ess, distance):
     # Apply hamming distance
     u = np.array([f for f in compare_df.Measured_growth])
     v = np.array([x for x in compare_df.Predicted_growth])
+    '''
     if distance == 'hd':
         dist = hamming(u, v)
-    elif distance == 'mcc':
+    '''
+    if distance == 'mcc':
         dist = matthews_corrcoef(u, v)
     else:
         print('Error: Invalid distance metric')
