@@ -6,7 +6,7 @@ This module finds the co-enzymes and inorganic ions and calculates their stoichi
 
 """
 from BOFdat.core import coenzymes_and_ions
-from BOFdat.core import update
+from BOFdat.util import update
 
 def find_coenzymes_and_ions(path_to_model,WEIGHT_FRACTION=0.05):
     """
