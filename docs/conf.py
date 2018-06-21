@@ -42,7 +42,7 @@ class Mock(object):
         else:
             return Mock()
 
-MOCK_MODULES = ['numpy','numpy.linalg',
+MOCK_MODULES = ['numpy','numpy.linalg','python-scipy',
 		'scipy', 'scipy.sparse', 'scipy.io', 'scipy.stats', 'scipy.spatial.distance',
 		'sklearn','sklearn.metrics',
                 'glpk', 'gurobipy', 'gurobipy.GRB', 'cplex', 'cplex.exceptions','pp', 
