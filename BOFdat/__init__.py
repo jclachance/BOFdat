@@ -5,7 +5,7 @@ from BOFdat.core import dna
 from BOFdat.core import rna
 from BOFdat.core import protein
 from BOFdat.core import lipid
-from BOfdat.core import maintenance
+from BOFdat.core import maintenance
 from BOFdat.core import coenzymes_and_ions
 from BOFdat.core import initial_population
 from BOFdat.core import find_metabolites
