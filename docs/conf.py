@@ -47,7 +47,7 @@ MOCK_MODULES = ['numpy','numpy.linalg','python-scipy',
 		'sklearn','sklearn.metrics','sklearn.cluster',
                 'glpk', 'gurobipy', 'gurobipy.GRB', 'cplex', 'cplex.exceptions','pp', 
                 'tabulate', 'libsbml','argparse', 'pandas',
-                'matplotlib','matplotlib.pyplot','seaborn','seaborn.color_palette','biopython', 
+                'matplotlib','matplotlib.pyplot','pylab','seaborn','seaborn.color_palette','biopython', 
 	        'cobra','cobra.flux_analysis','cobra.util','cobra.util.solver','cobra.io', 'cobra.io.json', 'cobra.io.dict']
 
 
