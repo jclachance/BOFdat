@@ -10,7 +10,8 @@ from BOFdat.core import metab_end_goals
 from BOFdat.core import group_end_goals
 from BOFdat.core import update
 
-def generate_initial_population(population_name, model, base_biomass, exp_essentiality,number_of_populations=3):
+def generate_initial_population(population_name, model, base_biomass, exp_essentiality,
+                                number_of_populations=3,WEIGHT_FRACTION=0.05):
     """
         This function generates the initial population to run the genetic algorithm on.
 
@@ -19,9 +20,14 @@ def generate_initial_population(population_name, model, base_biomass, exp_essent
         :param model: Model object
         :param base_biomass: The output of step 1 and 2 of BOFdat
         :param exp_essentiality: Experimental essentiality as a 2 columns csv file the output of the
+        :param WEIGHT_FRACTION: weight fraction of the category represented, between 0 and 1
         :return: write population files to the name provided
     """
-    initial_population.make_initial_population(population_name, model, base_biomass, exp_essentiality, number_of_populations)
+    """
+    Add robustness element here
+    """
+    initial_population.make_initial_population(population_name, model, base_biomass, exp_essentiality,
+                                               number_of_populations,WEIGHT_FRACTION)
 
 def find_metabolites(model_path, init_pop_path, exp_essentiality_path, base_biomass=True,
                     logbook=True, hall_of_fame=True, history=False, processes=None, **kwargs):
