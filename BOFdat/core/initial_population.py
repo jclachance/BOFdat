@@ -176,7 +176,7 @@ def _assess_ind_solvability(ind, model):
         ind.solvability = False
     return ind
 
-def _parallel_assess(eval_func, iterable, model):
+def _parallel_init(eval_func, iterable, metab_index,base_biomass,model,weight_fraction):
     """
     This function runs the evaluation function in parallel with 3 arguments.
     It is used twice: first to get the metabolite that the model can produce,
@@ -184,16 +184,18 @@ def _parallel_assess(eval_func, iterable, model):
 
     """
     processes = 4
-    print(processes)
+    metab_index_iter = repeat(metab_index)
+    base_biomass_iter = repeat(base_biomass)
     model_iter = repeat(model)
+    weight_fraction_iter = repeat(weight_fraction)
     with ProcessPool(max_workers=processes,max_tasks=4) as pool:
-        future = pool.map(eval_func, iterable, model_iter, timeout=40)
+        future = pool.map(eval_func, iterable, metab_index_iter,
+                          base_biomass_iter, model_iter, weight_fraction_iter, timeout=400)
         iterator = future.result()
         all_results = []
         while True:
             try:
                 result = next(iterator)
-                print(result)
                 all_results.append(result)
             except StopIteration:
                 break
@@ -267,24 +269,30 @@ def _generate_metab_index(model, base_biomass,exp_essentiality):
 
     return [m for m in result_df['metab'][result_df['mcc'] > THRESHOLD]]
 
-def _generate_initial_populations(population_name, metab_index, base_biomass, model):
+
+def _generate_initial_populations(population_name, metab_index, base_biomass, model, WEIGHT_FRACTION):
+    """
+    This function generates one initial population
+    """
+    # Population size = number of individuals in the population
+    # Individual size = number of metabolites in an individual
     # Define the population size as a function of the coverage and individual size
-    #This is an option where the individual size is fixed and the population size varies
+    # This is an option where the individual size is fixed and the population size varies
     IND_SIZE = 20  # --> chosen as such so that the final individuals are easy to analyze for modellers
     COVERAGE = 10  # --> empirical but generally suggested in literature
     POP_SIZE = COVERAGE * len(metab_index) / IND_SIZE
 
     # This is an option where the population size is fixed and the individual size varies
-    #POP_SIZE = 100
+    # POP_SIZE = 100
     # 5- Generate appropriate number of initial population to obtain a significant result after running the genetic algorithm
     # Save the index before modification madness
     df_index = [m for m in metab_index]
 
     biomass_list = []
     it = 1
+    print("Generating %s populations" % (POP_SIZE,))
     while len(biomass_list) < POP_SIZE:
-        print('Im in loop %s and I have %s valid individuals' % (it, len(biomass_list)))
-        ind_list = []
+        print('Loop %s, %s valid individuals' % (it, len(biomass_list)))
         for n in range(POP_SIZE):
             # Generate an ordered index with any metabolites but those present in the base biomass
             # index = [m for m in metab_list if m.id not in [v.id for v in base_biomass.keys()]]
@@ -293,27 +301,31 @@ def _generate_initial_populations(population_name, metab_index, base_biomass, mo
 
             shuffle(index)
             # Make the individual
-            #ind_size = randint(1,float(len(metab_index)/3))
+            # ind_size = randint(1,float(len(metab_index)/3))
             ind_dict = _make_pop_ind(IND_SIZE, index)
             biomass = {}
             biomass.update(base_biomass)
-
+            # Find the metabolites
+            list_of_metab = []
             for i in index:
                 # Add metabolites to the temporary biomass
                 if ind_dict.get(i) == 1:
-                    biomass.update({model.metabolites.get_by_id(i): -0.1})
+                    list_of_metab.append(i)
+            # Determine coefficients based on weight fraction and molecular weight
+            new_elements = determine_coefficients(list_of_metab, model, WEIGHT_FRACTION)
+
+            # Add to the biomass equation
+            biomass.update({model.metabolites.get_by_id(k): v for k, v in new_elements.iteritems()})
 
             individual = Individual()
             individual.biomass_name = 'biomass' + str(it) + '_' + str(n)
             individual.biomass = biomass
             individual.solvability = False
-            ind_list.append(individual)
-
-        solutions = _parallel_assess(_assess_ind_solvability, ind_list, model)
-        for ind in solutions:
+            ind = _assess_ind_solvability(individual, model)
             if ind.solvability != False:
-                biomass_list.append(ind)
+                biomass_list.append(individual)
 
+        # Verify if the generated individual produces a solution that is in
         shuffle(df_index)
         it += 1
 
@@ -327,12 +339,13 @@ def _generate_initial_populations(population_name, metab_index, base_biomass, mo
             else:
                 metab_list.append(0)
         df[ind.biomass_name] = metab_list
-    print(df)
-    # Write the initial population to file
+
+    # Write the population
     df.to_csv(population_name)
 
 
-def make_initial_population(population_name, path_to_model, base_biomass_path, exp_essentiality_path,number_of_populations=3):
+def make_initial_population(population_name, path_to_model, base_biomass_path,
+                            exp_essentiality_path,number_of_populations=3,WEIGHT_FRACTION=0.05):
     """
     This function generates the initial population to run the genetic algorithm on.
 
@@ -352,8 +365,7 @@ def make_initial_population(population_name, path_to_model, base_biomass_path, e
                             [v for v in base_biomass_df['Coefficients']]))
     #1- Make the metabolite index
     metab_index = _generate_metab_index(model, base_biomass,exp_essentiality)
-    print(metab_index)
-    #2- Make the initial populations
-    for n in range(number_of_populations):
-        pop_name = population_name + '_' + str(n) + '.csv'
-        _generate_initial_populations(pop_name, metab_index, base_biomass,model)
+
+    # 2- Make the initial populations in parallel
+    pop_names = [population_name + '_' + str(n) + '.csv' for n in range(number_of_populations)]
+    _parallel_init(_generate_initial_populations, pop_names, metab_index, base_biomass, model,WEIGHT_FRACTION)

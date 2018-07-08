@@ -57,9 +57,8 @@ def _find_inorganic_ions(model):
     parent_dir = os.path.abspath(os.path.join(current_dir,os.pardir))
     file_path = os.path.join(parent_dir,'data/BIOMASS_universal_components.csv')
     universal_components = pd.read_csv(file_path)
-    IONS = [m[1:] + '_c' for m in universal_components.iloc[1:, 2].dropna()]
-    model_metabolites = [m.id[:-2] for m in model.metabolites]
-    inorganic_ions = [m for m in model_metabolites if m in IONS]
+    IONS = [m[1:] for m in universal_components.iloc[1:, 2].dropna()]
+    inorganic_ions = [m.id for m in model.metabolites if m.id[:-2] in IONS and m.id.endswith('_c')]
     return inorganic_ions
 
 
