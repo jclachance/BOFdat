@@ -211,6 +211,38 @@ def _parallel_init(eval_func, iterable, metab_index,base_biomass,model,weight_fr
 
     return all_results
 
+def _parallel_assess(eval_func, iterable, model):
+    """
+    This function runs the evaluation function in parallel with 3 arguments.
+    It is used twice: first to get the metabolite that the model can produce,
+    second to verify the solvability of the generated individuals (multiple metabolites)
+
+    """
+    processes = 10
+    model_iter = repeat(model)
+    with ProcessPool(max_workers=processes,max_tasks=4) as pool:
+        future = pool.map(eval_func, iterable, model_iter, timeout=40)
+        iterator = future.result()
+        all_results = []
+        while True:
+            try:
+                result = next(iterator)
+                print(result)
+                all_results.append(result)
+            except StopIteration:
+                break
+            except TimeoutError as error:
+                print("function took longer than %d seconds" % error.args[1])
+                result = 0, 100
+                all_results.append(result)
+            except ProcessExpired as error:
+                print("%s. Exit code: %d" % (error, error.exitcode))
+            except Exception as error:
+                print("function raised %s" % error)
+                print(error.traceback)  # Python's traceback of remote process
+
+    return all_results
+
 def _pebble_eval(eval_func,iterable,model,exp_ess):
     """
     This function runs the evaluation function in parallel with 4 parameters.
