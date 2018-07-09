@@ -280,17 +280,21 @@ def _generate_metab_index(model, base_biomass,exp_essentiality):
     # 1- Remove metabolites present in the base biomass
     base_biomass_metab = [k.id for k in base_biomass.keys()]
     metab_index = [m for m in metab_index if m.id not in base_biomass_metab]
+
     # 2- Remove highly branched metabolites
     highly_branched_metab = _branching_analysis(model)
     metab_index = [m for m in metab_index if m.id not in highly_branched_metab]
+
     #3- Remove metabolites from atp hydrolysis reaction
     atp_hydrolysis = ['atp', 'h2o', 'adp', 'pi', 'h', 'ppi']
     metab_index = [m for m in metab_index if m.id not in atp_hydrolysis]
-    # 3- Remove unsolvable metabolites
+
+    #4- Remove unsolvable metabolites
     print('Assessing individual metabolite solvability')
     solvability = _parallel_assess(_assess_solvability,metab_index, model)
     metab_index = [t[0] for t in solvability if t[1] == True]
-    # 4- Find the most relevant metabolites for a maximum gene essentiality prediction
+
+    #5- Find the most relevant metabolites for a maximum gene essentiality prediction
     # Generate a population to test mcc of each metabolite one by one
     # This allows to remove irrelevant metabolites from the selection
     metab_id = [m.id for m in metab_index]
@@ -377,7 +381,7 @@ def _generate_initial_populations(population_name, metab_index, base_biomass, mo
 
 
 def make_initial_population(population_name, path_to_model, base_biomass_path,
-                            exp_essentiality_path,number_of_populations=3,WEIGHT_FRACTION=0.05):
+                            exp_essentiality_path,number_of_populations=3,WEIGHT_FRACTION=0.05,kwargs):
     """
     This function generates the initial population to run the genetic algorithm on.
 
@@ -396,7 +400,10 @@ def make_initial_population(population_name, path_to_model, base_biomass_path,
     base_biomass = dict(zip([model.metabolites.get_by_id(k) for k in base_biomass_df['Metabolites']],
                             [v for v in base_biomass_df['Coefficients']]))
     #1- Make the metabolite index
-    metab_index = _generate_metab_index(model, base_biomass,exp_essentiality)
+    if kwargs.get('metab_index'):
+        metab_index = kwargs.get('metab_index')
+    else:
+        metab_index = _generate_metab_index(model, base_biomass,exp_essentiality)
 
     # 2- Make the initial populations in parallel
     pop_names = [population_name + '_' + str(n) + '.csv' for n in range(number_of_populations)]
