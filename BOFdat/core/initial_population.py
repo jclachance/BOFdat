@@ -6,7 +6,7 @@ This module generates initial population for the genetic algorithm.
 
 """
 from BOFdat.util.update import _import_csv_file,_import_base_biomass,_import_model,_import_essentiality
-from BOFdat.util.update import _get_biomass_objective_function
+from BOFdat.util.update import _get_biomass_objective_function, determine_coefficients
 import warnings
 import random
 from random import shuffle, randint
