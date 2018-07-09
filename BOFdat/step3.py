@@ -28,7 +28,7 @@ def generate_initial_population(population_name, model, base_biomass, exp_essent
     Add robustness element here
     """
     initial_population.make_initial_population(population_name, model, base_biomass, exp_essentiality,
-                                               number_of_populations,WEIGHT_FRACTION,kwargs)
+                                               number_of_populations,WEIGHT_FRACTION,**kwargs)
 
 def find_metabolites(model_path, init_pop_path, exp_essentiality_path, base_biomass=True,
                     logbook=True, hall_of_fame=True, history=False, processes=None, **kwargs):

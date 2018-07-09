@@ -381,7 +381,7 @@ def _generate_initial_populations(population_name, metab_index, base_biomass, mo
 
 
 def make_initial_population(population_name, path_to_model, base_biomass_path,
-                            exp_essentiality_path,number_of_populations=3,WEIGHT_FRACTION=0.05,kwargs):
+                            exp_essentiality_path,number_of_populations=3,WEIGHT_FRACTION=0.05,**kwargs):
     """
     This function generates the initial population to run the genetic algorithm on.
 
