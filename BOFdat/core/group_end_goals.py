@@ -226,12 +226,19 @@ def cluster_metabolites(outpath,
 
     #Generate distance matrix
     distance_matrix = dijkstra.generate_distance_matrix(model,CONNECTIVITY_THRESHOLD)
+
     #Analyze
+    #1- Get the best biomass objective functions accross all evolutions
     best_bof = _filter_hofs(hofs,BASELINE)
+
+    #2- Get the frequency of each metabolite
     freq_df  = _make_freq_df(best_bof)
+
+    #3- Cluster the metabolites
     result_matrix = _generate_result_matrix(freq_df,distance_matrix)
     grouped_clusters = _agglomerative_clustering(result_matrix)
-    #Display
+
+    #4- Display
     if show_frequency:
         _display_occurence(freq_df,frequency_fig_name)
 
