@@ -408,3 +408,6 @@ def make_initial_population(population_name, path_to_model, base_biomass_path,
     # 2- Make the initial populations in parallel
     pop_names = [population_name + '_' + str(n) + '.csv' for n in range(number_of_populations)]
     _parallel_init(_generate_initial_populations, pop_names, metab_index, base_biomass, model,WEIGHT_FRACTION)
+
+
+

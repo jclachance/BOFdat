@@ -89,25 +89,36 @@ def _generate_result_matrix(freq_df,dist_matrix):
     best_bof_dist = dist_matrix[dist_matrix.index.isin(all_metab)]
     transposed_bbd = best_bof_dist.T
     result_matrix = transposed_bbd[transposed_bbd.index.isin(all_metab)]
-    result_matrix.fillna(1000,inplace=True)
+    result_matrix.fillna(1000, inplace=True)
     return result_matrix
 
-def _agglomerative_clustering(result_matrix):
-    # Using agglomerative clustering
-    k = int(float(len(result_matrix))/4)
-    Hclustering = AgglomerativeClustering(n_clusters=k, affinity='euclidean', linkage='average')
-    Hclustering.fit(result_matrix)
-    clusters = []
-    for i in range(len(Hclustering.labels_)):
-        clusters.append((Hclustering.labels_[i], result_matrix.index[i]))
-
+def _dbscan_clustering(result_matrix,eps):
+    from sklearn.cluster import dbscan
+    # Cluster the distance with DBSCAN clustering algorithm
+    dbscan_result = dbscan(result_matrix, eps=eps, min_samples=1)
+    cluster_dict = {result_matrix.index[i]: dbscan_result[1][i] for i in range(len(dbscan_result[1]))}
+    clusters =  []
+    for k,v in cluster_dict.iteritems():
+        clusters.append((v,k))
+        
     cluster_df = pd.DataFrame.from_records(clusters, columns=['cluster', 'metab'])
+    
+    #Group metabolites into their respective clusters
     grouped = cluster_df.groupby('cluster')
     grouped_clusters = grouped.agg(lambda x: ', '.join(x))
-    return grouped_clusters
+    
+    return grouped_clusters,cluster_dict
 
 def _display_occurence(freq_df,fig_name):
+    """
+    Plot the frequency of apparition of every metabolites in the Hall of Fames
+
+    :param freq_df: dataframe of metabolites and their associated frequency
+    :param fig_name: the name of the figure to generate
+
+    """
     from pylab import rcParams
+    #Set general ploting parameters
     default_param = {'figsize':(10,20),
                          'sb_style':'whitegrid',
                          'linestyle':':',
@@ -132,7 +143,7 @@ def _display_occurence(freq_df,fig_name):
 
     plt.show()
 
-def find(x,my_palette,grouped_clusters):
+def _find(x,my_palette,grouped_clusters):
     #1- Find the cluster to which x belongs
     def find_cluster(x,grouped_clusters):
         for i in range(len(grouped_clusters)):
@@ -144,35 +155,78 @@ def find(x,my_palette,grouped_clusters):
 
 
 
-def _display_result_matrix(grouped_clusters,cluster_matrix,figname):
+def _display_result_matrix(cluster_matrix, cluster_dict, freq_df, fig_name):
+    """
+    Plot the result of spatial clustering with DBSCAN.
+
+    :param grouped_clusters:
+    :param cluster_matrix: the result of f
+    :param figname: the name of the figure to generate
+    :return:
+    """
     from pylab import rcParams
+    # General ploting parameters
     default_param = {'figsize': (15, 15),
                      'sb_style': 'whitegrid',
                      'fontsize': 12}
-
-    my_palette = dict(zip(grouped_clusters.index, sb.color_palette('hls', len(grouped_clusters))))
-    my_dark_palette = dict(zip(grouped_clusters.index, sb.hls_palette(len(grouped_clusters), h=0.01, l=0.5, s=0.6)))
-    row_colors = [c for c in cluster_matrix.index.map(lambda x: find(x, my_palette, grouped_clusters))]
-
     rcParams['figure.figsize'] = default_param.get('figsize')
     rcParams['font.size'] = default_param.get('fontsize')
-    g = sb.clustermap(cluster_matrix,
-                      cmap='coolwarm',
-                      method='centroid',
-                      figsize=(15, 15),
-                      linewidth=0.3,
-                      row_colors=row_colors,
-                      col_colors=row_colors,
-                      xticklabels=False,
-                      vmax=15.)
 
-    for tick_label in g.ax_heatmap.get_yticklabels():
-        tick_text = tick_label.get_text()
-        # Get the color
-        tick_label.set_alpha(1.)
-        tick_label.set_color(find(tick_text, my_dark_palette, grouped_clusters))
+    # Arrange the cluster matrix so that the clusters from DBSCAN are together
+    # Add a cluster column to the matrix
+    cluster_matrix['cluster'] = [cluster_dict.get(cluster_matrix.index[i]) for i in range(len(cluster_matrix))]
 
-    plt.savefig(figname)
+    # Calculate each cluster's frequency
+    # The cluster frequency is the sum of all individual metabolite frequency
+    # Convert frequency dataframe to dictionary
+    freq_dict = {row['Metab']: row['Frequency'] for i, row in freq_df.iterrows()}
+
+    # Sort to ensure the rows are in order of cluster
+    cluster_matrix.sort_values('cluster', inplace=True)
+    metab_frequency = [freq_dict.get(i) for i in cluster_matrix.index]
+    cluster_matrix['metabolite frequency'] = metab_frequency
+
+    # Make a dictionary that maps cluster identifier number to their sum frequency
+    cluster_frequency_dict = cluster_matrix.groupby('cluster').sum()['metabolite frequency'].to_dict()
+    cluster_matrix['cluster frequency'] = [cluster_frequency_dict.get(i) for i in cluster_matrix.cluster]
+
+    # Organize matrix for ploting
+    cluster_matrix.sort_values('cluster frequency', ascending=False, inplace=True)
+    cluster_matrix.replace(1000., 20., inplace=True)
+    new_index = [i for i in cluster_matrix.index]
+    # Transpose and associate metabolites to their respective clusters
+    transposed_cluster_matrix = cluster_matrix.T
+    transposed_cluster_matrix.drop(['cluster frequency',
+                                    'metabolite frequency', 'cluster'],
+                                   axis=0,
+                                   inplace=True)
+
+    ploting_matrix = transposed_cluster_matrix.reindex(new_index)
+    # Initialize figure
+    fig, ax = plt.subplots()
+
+    # Plot the heatmap
+    sb.heatmap(ploting_matrix.T, cbar=False, cmap="mako")
+
+    ax.xaxis.set_ticks_position('top')
+
+    i = 0
+    for tick_label in ax.xaxis.get_ticklabels():
+        # Change the xticks labels
+        # tick_label.set_color(reversed_row_colors[i])
+        tick_label.set_rotation(90)
+        tick_label.set_fontsize(18)
+        i += 1
+
+    i = 0
+    for tick_label in ax.yaxis.get_ticklabels():
+        # Change the xticks labels
+        # tick_label.set_color(reversed_row_colors[i])
+        tick_label.set_fontsize(18)
+        i += 1
+
+    fig_path = os.path.join('/home/jean-christophe/Documents/Doctorat/BOFdat_paper/Figures_Drive/Figure 5/', fig_name)
+    # plt.savefig(fig_path)
     plt.show()
 
 def _select_metabolites(freq_df,grouped_clusters,best_bof):
@@ -208,6 +262,7 @@ def cluster_metabolites(outpath,
                         path_to_model,
                         CONNECTIVITY_THRESHOLD,
                         BASELINE,
+                        eps,
                         show_frequency,
                         show_matrix,
                         frequency_fig_name,
@@ -236,79 +291,19 @@ def cluster_metabolites(outpath,
 
     #3- Cluster the metabolites
     result_matrix = _generate_result_matrix(freq_df,distance_matrix)
-    grouped_clusters = _agglomerative_clustering(result_matrix)
+    grouped_clusters, cluster_dictionary = _dbscan_clustering(result_matrix,eps)
 
     #4- Display
     if show_frequency:
         _display_occurence(freq_df,frequency_fig_name)
 
     if show_matrix:
-        _display_result_matrix(grouped_clusters,result_matrix,matrix_fig_name)
+        _display_result_matrix(result_matrix,
+                               cluster_dictionary,
+                               freq_df,
+                               matrix_fig_name)
     #Select metabolites based on frequency of apparition in hall of fame
     list_of_metab = _select_metabolites(freq_df,grouped_clusters,best_bof)
     return list_of_metab
 
 
-"""
-DEPRECATED
-Functions only useful if trying to compare with the original biomass which isnt the case here
-def _generate_distance(dist_matrix,original_bof,compare_bof):
-    non_shared_metab = [m for m in compare_bof if m not in original_bof]
-    non_shared_dist_matrix = dist_matrix[dist_matrix.index.isin(non_shared_metab)]
-    transposed = non_shared_dist_matrix.T
-    transposed_cut  = transposed[transposed.index.isin(original_bof)]
-    distance_result = pd.concat([transposed_cut.idxmin(),transposed_cut.min()],axis=1)
-    return distance_result
-
-def _generate_hof_dist_matrix(model, dist_matrix, hofs):
-    # Incorporate the data and generate a matrix based on that
-    #biomass = _get_biomass_objective_function(model) --> this is useful only to compare
-    #original_bof = [str(m.id) for m in biomass.metabolites] --> this is useful only to compare
-    data = []
-    for i in range(len(hofs)):
-        # 1- Make a list from the best individual of each all of fame
-        HOF_bof = _make_list([m for m in hofs[i].loc[0:0]['Biomass composition']][0])
-        #distance_df = _generate_distance(dist_matrix, original_bof, compare_bof) --> this is useful only to compare
-        data.append(distance_metric(HOF_bof, hofs[i].loc[0:0]['Fitness'][0]))
-
-    metrics_df = pd.DataFrame.from_records(data, columns=['Fitness', 'Sum', 'Mean', 'Median'])
-    return metrics_df
-
-def _make_list(m):
-    #This function makes a list of metabolites from a hall of famer individual
-    l = []
-    for i in m.split(','):
-        i = i.replace("'",'')
-        i = i.replace("[",'')
-        i = i.replace("]",'')
-        i = i.replace(" ",'')
-        l.append(i)
-    return l
-
-def _filter_hofs(metrics_df,hofs,BASELINE):
-    # Only the best hall of fames should be selected
-    best_bof = []
-    for i in range(len(metrics_df)):
-        if metrics_df.iloc[i, 0] > BASELINE:
-            l = _make_list([m for m in hofs[i].loc[0:0]['Biomass composition']][0])
-            for m in l:
-                best_bof.append(m)
-    return best_bof
-
-def _make_freq_df(best_bof):
-    def occurence(metab, best_bof):
-        return float(len([m for m in best_bof if m == metab])) / len(set(best_bof))
-    #Generate the frequency of each metabolite in hall of fames
-    frequency_data = []
-    for m in set(best_bof):
-        f_m = occurence(m, best_bof)
-        frequency_data.append((m, f_m))
-    #Convert to DataFrame
-    freq_df = pd.DataFrame.from_records(frequency_data,
-                                        columns=['Metab', 'Frequency'],
-                                        index=[m for m in set(best_bof)])
-    return freq_df
-
-This filter hofs function should be tweaked to account for the modelling
-(maybe include that modelling function in the tool...)
-"""
