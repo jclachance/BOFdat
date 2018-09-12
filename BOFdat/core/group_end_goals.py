@@ -83,13 +83,14 @@ def _make_freq_df(best_bof):
 def _generate_result_matrix(freq_df,dist_matrix):
     #Select the metabolites based on their apparition frequency in the HALL of FAME
     THRESHOLD = freq_df.mean()[0]
-    selected_metab = [m for m in freq_df[freq_df.iloc[:,1] > THRESHOLD].iloc[:,0]]
+    selected_metab = [m for m in freq_df[freq_df.iloc[:, 1] > THRESHOLD].iloc[:, 0]]
     all_metab = set(selected_metab)
     #Generate the reduced distance matrix used for clustering of metabolic end goals
     best_bof_dist = dist_matrix[dist_matrix.index.isin(all_metab)]
     transposed_bbd = best_bof_dist.T
-    result_matrix = transposed_bbd[transposed_bbd.index.isin(all_metab)]
-    result_matrix.fillna(1000, inplace=True)
+    r = transposed_bbd[transposed_bbd.index.isin(all_metab)]
+    result_matrix = r.replace(np.nan,1000.)
+
     return result_matrix
 
 def _dbscan_clustering(result_matrix,eps):
@@ -152,8 +153,6 @@ def _find(x,my_palette,grouped_clusters):
 
     cluster_id = find_cluster(x,grouped_clusters)
     return my_palette.get(cluster_id)
-
-
 
 def _display_result_matrix(cluster_matrix, cluster_dict, freq_df, fig_name):
     """
