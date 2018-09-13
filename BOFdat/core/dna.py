@@ -34,7 +34,6 @@ def _get_number_of_bases(genome):
             new_value = value + 1
             base_genome[element] = new_value
 
-
     return base_genome
 
 def _get_ratio(base_genome, genome):
