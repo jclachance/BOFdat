@@ -25,6 +25,7 @@ import seaborn as sb
 def _distance_metric(distance_df,fitness):
     distance_df = distance_df[distance_df[1]<1000]
     metrics = (fitness,distance_df[1].sum(),distance_df[1].mean(),distance_df[1].median())
+
     return metrics
 
 def _get_hof_data(outpath):
@@ -35,6 +36,7 @@ def _get_hof_data(outpath):
                 hofs.append(pd.read_csv(join(outpath, f),index_col=0))
             except:
                 warnings.warn('Unable to load file %s'%(f,))
+
     return hofs
 
 def _make_list(m):
@@ -45,6 +47,7 @@ def _make_list(m):
         i = i.replace("]",'')
         i = i.replace(" ",'')
         l.append(i)
+
     return l
 
 def _filter_hofs(hofs, THRESHOLD):
@@ -70,6 +73,7 @@ def _filter_hofs(hofs, THRESHOLD):
         l = _make_list(metrics_df.iloc[i,0])
         for m in l:
             best_bof.append(m)
+
     return best_bof
 
 def _make_freq_df(best_bof):
@@ -80,10 +84,12 @@ def _make_freq_df(best_bof):
     for m in set(best_bof):
         f_m = occurence(m, best_bof)
         frequency_data.append((m, f_m))
-    #Convert to DataFrame
+    #Convert to DataFrame and sort by frequency
     freq_df = pd.DataFrame.from_records(frequency_data,
                                         columns=['Metab', 'Frequency'],
                                         index=[m for m in set(best_bof)])
+    freq_df.sort_values('Frequency',inplace=True)
+
     return freq_df
 
 def _generate_result_matrix(freq_df,dist_matrix):
@@ -199,14 +205,15 @@ def _display_result_matrix(cluster_matrix, cluster_dict, freq_df, fig_name):
     cluster_matrix.sort_values('cluster frequency', ascending=False, inplace=True)
     cluster_matrix.replace(1000., 20., inplace=True)
     new_index = [i for i in cluster_matrix.index]
+
     # Transpose and associate metabolites to their respective clusters
     transposed_cluster_matrix = cluster_matrix.T
     transposed_cluster_matrix.drop(['cluster frequency',
                                     'metabolite frequency', 'cluster'],
                                    axis=0,
                                    inplace=True)
-
     ploting_matrix = transposed_cluster_matrix.reindex(new_index)
+
     # Initialize figure
     fig, ax = plt.subplots()
 
@@ -235,6 +242,7 @@ def _display_result_matrix(cluster_matrix, cluster_dict, freq_df, fig_name):
     plt.show()
 
 def _select_metabolites(freq_df,grouped_clusters,best_bof):
+    #Add selection of the clusters above average
     step3 = []
     for i in grouped_clusters.metab:
         cluster = i.split(', ')
@@ -248,9 +256,8 @@ def _select_metabolites(freq_df,grouped_clusters,best_bof):
         step3.append(sum(mini_step3))
 
     better_results_df = pd.DataFrame({'Step 3 clusters': step3})
-    print(better_results_df)
     compare_cluster_ga = pd.concat([grouped_clusters, better_results_df], axis=1)
-    print(compare_cluster_ga)
+
     bd3_unique = []
     for i, row in compare_cluster_ga.iterrows():
         mini_unique = [(m, freq_df.loc[m]['Frequency']) for m in row['metab'].split(', ')]
@@ -259,9 +266,8 @@ def _select_metabolites(freq_df,grouped_clusters,best_bof):
         del cluster['metab']
         for m in cluster.index[cluster['freq'] == cluster.max()[0]]:
             bd3_unique.append(m)
-    print(bd3_unique)
-    return bd3_unique
 
+    return bd3_unique
 
 def cluster_metabolites(outpath,
                         path_to_model,
@@ -310,5 +316,3 @@ def cluster_metabolites(outpath,
     #Select metabolites based on frequency of apparition in hall of fame
     list_of_metab = _select_metabolites(freq_df,grouped_clusters,best_bof)
     return list_of_metab
-
-
