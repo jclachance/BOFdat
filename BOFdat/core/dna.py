@@ -34,15 +34,24 @@ def _get_number_of_bases(genome):
             new_value = value + 1
             base_genome[element] = new_value
 
+
     return base_genome
 
 def _get_ratio(base_genome, genome):
     # Get the ratios for each letter in the genome
     ratio_genome = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
 
+    #DNA is double strand so the number of A = number of T and C = G
+    at_number = base_genome.get('A') + base_genome.get('T')
+    base_genome['A'] = at_number
+    base_genome['T'] = at_number
+    gc_number = base_genome.get('C') + base_genome.get('G')
+    base_genome['G'] = gc_number
+    base_genome['C'] = gc_number
+
     for letter in BASES:
         number_of_base = float(base_genome.get(letter))
-        total = float(len(genome))
+        total = 2*(float(len(genome)))
         ratio = number_of_base / total
         ratio_genome[letter] = ratio
 
