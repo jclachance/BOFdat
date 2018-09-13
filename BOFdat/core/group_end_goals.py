@@ -14,6 +14,7 @@ from BOFdat.util.update import _import_model
 from BOFdat.util.update import _get_biomass_objective_function
 import cobra
 import pandas as pd
+import numpy as np
 from sklearn.cluster import AgglomerativeClustering
 #Visualization librairies
 from pylab import rcParams
@@ -46,19 +47,24 @@ def _make_list(m):
         l.append(i)
     return l
 
-def _filter_hofs(hofs,BASELINE):
-    #Select only the indviduals above baseline in each HOF
-    select_hofs = []
-    for hof in hofs:
-        baseline_index = (hof['Fitness'] > BASELINE).idxmin()
-        select_hofs.append(hof.iloc[:baseline_index,])
+def _filter_hofs(hofs, THRESHOLD):
+    """
+    Selects the best individuals accross HOF generated from multiple evolutions.
+    HOF are combined together and an arbitrary threshold is set to select the best individuals.
+    The purpose of this operation is to ensure downstream analysis using metabolite frequency
+    is relevant (the metabolites with higher frequency allow to obtain better MCC value).
+
+    :param hofs: list of HOF dataframes with individuals and their associated fitness
+    :param THRESHOLD: the percentage best indviduals to select (default is 20%)
+    :return:
+    """
     #Pool the hall of fame together
-    pooled_hof = pd.concat(select_hofs)
+    pooled_hof = pd.concat(hofs)
     sorted_pooled_hof = pooled_hof.sort_values('Fitness',ascending=False)
-    #Take the 30% best individuals
-    final_index = int(len(pooled_hof)*0.3)
-    metrics_df = sorted_pooled_hof
-    # Only the best hall of fames should be selected
+    #Take the 20% best individuals
+    final_index = int(len(pooled_hof)*THRESHOLD)
+    metrics_df = sorted_pooled_hof.iloc[0:final_index,]
+    #Get the list of metabolites contained in the best all of fames
     best_bof = []
     for i in range(len(metrics_df)):
         l = _make_list(metrics_df.iloc[i,0])
@@ -98,7 +104,7 @@ def _dbscan_clustering(result_matrix,eps):
     # Cluster the distance with DBSCAN clustering algorithm
     dbscan_result = dbscan(result_matrix, eps=eps, min_samples=1)
     cluster_dict = {result_matrix.index[i]: dbscan_result[1][i] for i in range(len(dbscan_result[1]))}
-    clusters =  []
+    clusters = []
     for k,v in cluster_dict.iteritems():
         clusters.append((v,k))
         
@@ -260,7 +266,7 @@ def _select_metabolites(freq_df,grouped_clusters,best_bof):
 def cluster_metabolites(outpath,
                         path_to_model,
                         CONNECTIVITY_THRESHOLD,
-                        BASELINE,
+                        THRESHOLD,
                         eps,
                         show_frequency,
                         show_matrix,
@@ -283,7 +289,7 @@ def cluster_metabolites(outpath,
 
     #Analyze
     #1- Get the best biomass objective functions accross all evolutions
-    best_bof = _filter_hofs(hofs,BASELINE)
+    best_bof = _filter_hofs(hofs,THRESHOLD)
 
     #2- Get the frequency of each metabolite
     freq_df  = _make_freq_df(best_bof)

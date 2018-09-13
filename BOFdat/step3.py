@@ -49,7 +49,7 @@ def find_metabolites(model_path, init_pop_path, exp_essentiality_path, base_biom
     metab_end_goals.qual_definition(model_path, init_pop_path, exp_essentiality_path, base_biomass,
                     logbook, hall_of_fame, history, processes, **kwargs)
 
-def cluster_metabolites(outpath,model_path,CONNECTIVITY_THRESHOLD=15,BASELINE=0.77,eps=6,show_frequency=True,show_matrix=True,**kwargs):
+def cluster_metabolites(outpath,model_path,CONNECTIVITY_THRESHOLD=15,HOF_PERCENT_THRESHOLD=0.2,eps=6,show_frequency=True,show_matrix=True,**kwargs):
     """
     This function analyzes the outputs of the genetic algorithm
 
@@ -81,11 +81,10 @@ def cluster_metabolites(outpath,model_path,CONNECTIVITY_THRESHOLD=15,BASELINE=0.
     return group_end_goals.cluster_metabolites(outpath,
                                         model_path,
                                         CONNECTIVITY_THRESHOLD,
-                                        BASELINE,
+                                        HOF_PERCENT_THRESHOLD,
 					eps,
                                         show_frequency,
                                         show_matrix,
                                         frequency_fig_name,matrix_fig_name)
 
-#def plot_evolutions(): --> consider adding this
 
