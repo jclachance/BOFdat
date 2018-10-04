@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(name='BOFdat',
       version='0.1.5',
-      download_url = 'https://github.com/peterldowns/mypackage/archive/0.1.4.tar.gz',
+      download_url = 'https://github.com/peterldowns/mypackage/archive/0.1.5.tar.gz',
       description='Package to generate biomass objective function stoichiometric coefficients from experimental data',
       url='https://github.com/jclachance/BOFdat/',
       author='Jean-Christophe Lachance',
