@@ -12,4 +12,4 @@ from BOFdat.core import metab_end_goals
 from BOFdat.core import group_end_goals
 from BOFdat.util import update
 
-__version__ = "0.1.5.1"
+__version__ = "0.1.5"
