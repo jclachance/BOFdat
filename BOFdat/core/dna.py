@@ -46,7 +46,7 @@ def _get_number_of_bases(genome):
 
     return base_genome
 
-def _get_ratio(base_genome, genome):
+def _get_ratio(base_genome):
     # Get the ratios for each letter in the genome
     ratio_genome = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
 
@@ -60,7 +60,7 @@ def _get_ratio(base_genome, genome):
 
     for letter in BASES:
         number_of_base = float(base_genome.get(letter))
-        total = 2*(float(len(genome)))
+        total = 2*(sum(base_genome.values()))
         ratio = number_of_base / total
         ratio_genome[letter] = ratio
 
@@ -109,7 +109,7 @@ def generate_coefficients(path_to_fasta, path_to_model , DNA_WEIGHT_FRACTION=0.0
     #Operations
     genome = _import_genome(path_to_fasta)
     base_in_genome = _get_number_of_bases(genome)
-    ratio_in_genome = _get_ratio(base_in_genome, genome)
+    ratio_in_genome = _get_ratio(base_in_genome)
     model = _import_model(path_to_model)
     biomass_coefficients = _convert_to_coefficient(model, ratio_in_genome, CELL_WEIGHT,
                                                   DNA_WEIGHT_FRACTION)
