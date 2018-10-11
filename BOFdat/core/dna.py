@@ -5,12 +5,21 @@ DNA
 This module generates BOFsc for the 4 bases of DNA (dATP, dTTP, dCTP and dGTP)
 
 """
+import warnings
+
 BASES = ['A', 'T', 'C', 'G']
 
 # Methods
 def _import_genome(fasta):
     from Bio import SeqIO
-    genome = SeqIO.read(fasta, 'fasta')
+    try:
+        #Import as a single handle genome    
+        genome = list(SeqIO.parse(fasta,'fasta'))
+        if len(genome) > 1:
+            warnings.warn('%s handles in the genome file.This may indicate that your genome is not completely assembled. \nBOFdat will parse the contigs but the stoichiometric coefficients may not be accurate.'%(len(genome),))
+    except:
+        raise ImportError('The file provided cannot be imported.')
+        
     return genome
 
 def _import_model(path_to_model):
@@ -26,13 +35,14 @@ def _import_model(path_to_model):
 def _get_number_of_bases(genome):
     # Counts the number of each letter in the genome
     base_genome = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
-    for element in genome:
-        value = base_genome.get(element.upper())
-        if value == None:
-            continue
-        else:
-            new_value = value + 1
-            base_genome[element] = new_value
+    for record in genome:
+        for element in record:
+            value = base_genome.get(element.upper())
+            if value == None:
+                continue
+            else:
+                new_value = value + 1
+                base_genome[element] = new_value
 
     return base_genome
 
