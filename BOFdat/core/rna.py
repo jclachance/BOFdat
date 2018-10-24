@@ -58,6 +58,7 @@ def _import_transcriptomic(path_to_transcriptomic,all_locus):
         pass
     else:
         warnings.warn('Some identifiers not found in provided annotation')
+
     return conform_df
 
 def _get_number(seq):
@@ -130,8 +131,10 @@ def _get_total_fractions(df):
 
 def _get_mRNA_fractions(df, path_to_transcriptomic,all_locus):
     transcriptomic = _import_transcriptomic(path_to_transcriptomic,all_locus)
+    print("imported file",transcriptomic)
     # Merge dataframes
     mean_abundance = pd.merge(left=df, right=transcriptomic, left_on='locus', right_on='identifiers')
+    print('merged dataframes',mean_abundance)
     # Generate list of normalized values per gene per base by RPKM from transcriptomic data
     A_norm, U_norm, G_norm, C_norm = [], [], [], []
     for i, row in mean_abundance.iterrows():
@@ -242,10 +245,7 @@ def _process_record(path_to_genbank,path_to_transcriptomic,identifier):
     rRNA_dict = _get_total_fractions(rRNA_df)
     tRNA_dict = _get_total_fractions(tRNA_df)
     all_locus = [i for i in rRNA_df['locus']] + [i for i in tRNA_df['locus']] + [i for i in mRNA_df['locus']]
-    try:
-    	mRNA_dict = _get_mRNA_fractions(mRNA_df, path_to_transcriptomic,all_locus)
-    except:
-	raise Exception('Could not read transcriptomic file, make sure a 2 column .csv file is provided')
+    mRNA_dict = _get_mRNA_fractions(mRNA_df, path_to_transcriptomic,all_locus)
 
     return rRNA_dict, tRNA_dict, mRNA_dict
 
@@ -320,10 +320,9 @@ def generate_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic
         raise Exception('WEIGHT FRACTION should be a number between 0 and 1')
     # Operations
     model = _import_model(path_to_model)
-    try:
-        rRNA_dict, tRNA_dict, mRNA_dict = _process_record(path_to_genbank,path_to_transcriptomic,identifier)
-    except:
-        raise Exception('High-level error: Could not process records. Make sure inputs are correct.')
+ 
+    rRNA_dict, tRNA_dict, mRNA_dict = _process_record(path_to_genbank,path_to_transcriptomic,identifier)
+
     RNA_coefficients = _total_coefficients(rRNA_dict, tRNA_dict, mRNA_dict,
                                            mRNA_WEIGHT_FRACTION, tRNA_WEIGHT_FRACTION, rRNA_WEIGHT_FRACTION)
     RNA_biomass_ratios = _convert_to_mmolgDW(RNA_coefficients,
