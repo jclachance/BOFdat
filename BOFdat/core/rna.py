@@ -131,10 +131,8 @@ def _get_total_fractions(df):
 
 def _get_mRNA_fractions(df, path_to_transcriptomic,all_locus):
     transcriptomic = _import_transcriptomic(path_to_transcriptomic,all_locus)
-    print("imported file",transcriptomic)
     # Merge dataframes
     mean_abundance = pd.merge(left=df, right=transcriptomic, left_on='locus', right_on='identifiers')
-    print('merged dataframes',mean_abundance)
     # Generate list of normalized values per gene per base by RPKM from transcriptomic data
     A_norm, U_norm, G_norm, C_norm = [], [], [], []
     for i, row in mean_abundance.iterrows():
