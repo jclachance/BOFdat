@@ -134,7 +134,16 @@ def _eval_metab(metab, model, exp_ess):
 
 def _assess_solvability(m, model):
     # Identify the list of metabolites that do not prevent the model to solve when added to the BOF
+    #The solver used is gurobi and should be installed (the license is free for academia)
     model.solver = 'gurobi'
+    #Verify that gurobi is used, otherwise warn users
+    solver = str(type(model.solver))
+    if solver.split(' ')[1].split('.')[1].startswith('gurobi'):
+        pass
+    else:
+        warnings.warn(
+            'Your current solver is not gurobi. If you encounter issues running the Step 3 of BOFdat consider using downloading gurobi: http://www.gurobi.com/')
+
     biomass = _get_biomass_objective_function(model)
     biomass.remove_from_model()
     BIOMASS = Reaction('BIOMASS')
@@ -162,6 +171,14 @@ def _make_pop_ind(ind_size, index):
 def _assess_ind_solvability(ind, model):
     # Identify the list of metabolites that do not prevent the model to solve when added to the BOF
     model.solver = 'gurobi'
+    solver = str(type(model.solver))
+    # Verify that gurobi is used, otherwise warn users
+    if solver.split(' ')[1].split('.')[1].startswith('gurobi'):
+        pass
+    else:
+        warnings.warn(
+            'Your current solver is not gurobi. If you encounter issues running the Step 3 of BOFdat consider using downloading gurobi: http://www.gurobi.com/')
+
     biomass = _get_biomass_objective_function(model)
     biomass.remove_from_model()
     BIOMASS = Reaction('BIOMASS')
