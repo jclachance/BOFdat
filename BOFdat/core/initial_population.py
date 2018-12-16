@@ -33,57 +33,6 @@ class Individual:
     biomass = {}
     solvability = True
 
-"""
-DEPRECATED --> FUNCTIONS MOVED TO BOFdat.util.update
-
-def _get_biomass_objective_function(model):
-    from cobra.util.solver import linear_reaction_coefficients
-    return list(linear_reaction_coefficients(model).keys())[0]
-
-def _import_model(path_to_model):
-    extension = path_to_model.split('.')[-1]
-    if extension == 'json':
-        return cobra.io.load_json_model(path_to_model)
-    elif extension == 'xml':
-        return cobra.io.read_sbml_model(path_to_model)
-    else:
-        raise Exception('Model format not compatible, provide xml or json')
-
-def _import_csv_file(path):
-    csv_file = pd.read_csv(path)
-    # 1- Verify number of columns
-    if len(csv_file.columns) > 2:
-        raise Exception("Your file format is not appropriate, more than 2 columns")
-    # 2- Verify presence of header
-    if type(csv_file.iloc[0:0, 0]) == str and type(csv_file.iloc[0:0, 1]) == str:
-        csv_file = csv_file.iloc[1:]
-    # 3- Remove null data
-    if csv_file.isnull().values.any():
-        csv_file = csv_file.dropna()
-
-    return csv_file
-def _import_base_biomass(path):
-    two_col_df = _import_csv_file(path)
-    metabolites = [str(i) for i in two_col_df.iloc[0:, 0]]
-    coefficients = [float(i) for i in two_col_df.iloc[0:, 1]]
-    base_biomass_df = pd.DataFrame({'Metabolites':metabolites,'Coefficients':coefficients},
-                                   columns=['Metabolites','Coefficients'])
-    return base_biomass_df
-
-DEPRECATED --> function not used anymore
-
-def _make_metab_ind(m,metab_index):
-    # Generates an individual with  metabolites
-    ind_dict = {}
-    for i in metab_index:
-        if i.id == m.id:
-            ind_dict[i.id] = 1
-        else:
-            ind_dict[i.id] = 0
-    return ind_dict
-
-"""
-
 def _branching_analysis(model):
     metab, number_of_rxn = [], []
     for m in model.metabolites:
@@ -113,7 +62,7 @@ def _eval_metab(metab, model, exp_ess):
     biomass = Reaction('BIOMASS')
     model.add_reaction(biomass)
     biomass.add_metabolites({model.metabolites.get_by_id(metab): -0.1})
-    biomass.objective_coefficient = 1.
+    model.reactions.BIOMASS.objective_coefficient = 1.
 
     # Generate deletion results --> BOTTLENECK FOR SURE
     deletion_results = single_gene_deletion(model, model.genes, processes=1)
@@ -198,7 +147,6 @@ def _parallel_init(eval_func, iterable, metab_index,base_biomass,model,weight_fr
     This function runs the evaluation function in parallel with 3 arguments.
     It is used twice: first to get the metabolite that the model can produce,
     second to verify the solvability of the generated individuals (multiple metabolites)
-
     """
     processes = 4
     metab_index_iter = repeat(metab_index)
@@ -315,11 +263,14 @@ def _generate_metab_index(model, base_biomass,exp_essentiality):
     # Generate a population to test mcc of each metabolite one by one
     # This allows to remove irrelevant metabolites from the selection
     metab_id = [m.id for m in metab_index]
-    result = _pebble_eval(_eval_metab, metab_id, model, exp_essentiality)
+
+    result = [_eval_metab(m, model, exp_essentiality) for m in metab_id]
+    print("evaluated all metabolites")
+    print(result)
     result_df = pd.DataFrame({'metab': metab_id, 'mcc': result})
     result_df.sort_values('mcc', ascending=False, inplace=True)
-    THRESHOLD = result_df['mcc'].std() + result_df['mcc'].median()
-
+    #THRESHOLD = result_df['mcc'].std() + result_df['mcc'].median()
+    THRESHOLD = 0.
     return [m for m in result_df['metab'][result_df['mcc'] > THRESHOLD]]
 
 
@@ -397,12 +348,12 @@ def _generate_initial_populations(population_name, metab_index, base_biomass, mo
     df.to_csv(population_name)
 
 
-def make_initial_population(population_name, path_to_model, base_biomass_path,
+def make_initial_population(population_path, path_to_model, base_biomass_path,
                             exp_essentiality_path,number_of_populations,WEIGHT_FRACTION,kwargs):
     """
     This function generates the initial population to run the genetic algorithm on.
 
-    :param population_name: The name and path to write the populations to
+    :param population_path: The name and path to write the populations to
     :param pop_size: The number of populations to be generated, default=3
     :param model: Model object
     :param base_biomass: The path to a 2 column csv file of metabolite ID and stoichiometric coefficients that represents the output of step1 and 2
@@ -423,8 +374,59 @@ def make_initial_population(population_name, path_to_model, base_biomass_path,
         metab_index = _generate_metab_index(model, base_biomass,exp_essentiality)
 
     # 2- Make the initial populations in parallel
-    pop_names = [population_name + '_' + str(n) + '.csv' for n in range(number_of_populations)]
-    _parallel_init(_generate_initial_populations, pop_names, metab_index, base_biomass, model,WEIGHT_FRACTION)
+    pop_names = [population_path + '_' + str(n) + '.csv' for n in range(number_of_populations)]
+    #Do not run this in parallel
+    for pop in pop_names:
+        _generate_initial_populations(pop, metab_index, base_biomass, model,WEIGHT_FRACTION)
 
 
+"""
+DEPRECATED --> FUNCTIONS MOVED TO BOFdat.util.update
 
+def _get_biomass_objective_function(model):
+    from cobra.util.solver import linear_reaction_coefficients
+    return list(linear_reaction_coefficients(model).keys())[0]
+
+def _import_model(path_to_model):
+    extension = path_to_model.split('.')[-1]
+    if extension == 'json':
+        return cobra.io.load_json_model(path_to_model)
+    elif extension == 'xml':
+        return cobra.io.read_sbml_model(path_to_model)
+    else:
+        raise Exception('Model format not compatible, provide xml or json')
+
+def _import_csv_file(path):
+    csv_file = pd.read_csv(path)
+    # 1- Verify number of columns
+    if len(csv_file.columns) > 2:
+        raise Exception("Your file format is not appropriate, more than 2 columns")
+    # 2- Verify presence of header
+    if type(csv_file.iloc[0:0, 0]) == str and type(csv_file.iloc[0:0, 1]) == str:
+        csv_file = csv_file.iloc[1:]
+    # 3- Remove null data
+    if csv_file.isnull().values.any():
+        csv_file = csv_file.dropna()
+
+    return csv_file
+def _import_base_biomass(path):
+    two_col_df = _import_csv_file(path)
+    metabolites = [str(i) for i in two_col_df.iloc[0:, 0]]
+    coefficients = [float(i) for i in two_col_df.iloc[0:, 1]]
+    base_biomass_df = pd.DataFrame({'Metabolites':metabolites,'Coefficients':coefficients},
+                                   columns=['Metabolites','Coefficients'])
+    return base_biomass_df
+
+DEPRECATED --> function not used anymore
+
+def _make_metab_ind(m,metab_index):
+    # Generates an individual with  metabolites
+    ind_dict = {}
+    for i in metab_index:
+        if i.id == m.id:
+            ind_dict[i.id] = 1
+        else:
+            ind_dict[i.id] = 0
+    return ind_dict
+
+"""

@@ -214,13 +214,19 @@ def make_new_BOF(model, update_model=False, update_NGAM=True, *args, **kwargs):
 def determine_coefficients(list_of_metab, model, weight_fraction):
     RATIO = float(1) / len(list_of_metab)
     dict_of_coefficients = {}
-
+    print(list_of_metab)
     for m in list_of_metab:
         total_weight = RATIO * weight_fraction
-        mol_weight = model.metabolites.get_by_id(m).formula_weight
-        mmols_per_cell = (total_weight / mol_weight) * 1000
-        mmols_per_gDW = mmols_per_cell
-        dict_of_coefficients[m] = -mmols_per_gDW
+        if model.metabolites.get_by_id(m).formula_weight:
+            mol_weight = model.metabolites.get_by_id(m).formula_weight
+            mmols_per_cell = (total_weight / mol_weight) * 1000
+            mmols_per_gDW = mmols_per_cell
+            dict_of_coefficients[m] = -mmols_per_gDW
+        else:
+            #If no molecular weight is available for the metabolite
+            #Raise warning and attribue a dummy coefficient of -0.1
+            warnings.warn('No formula weight for %s'%(m,))
+            dict_of_coefficients[m] = -0.1
 
     return dict_of_coefficients
 
