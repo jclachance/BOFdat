@@ -12,7 +12,7 @@ BOFdat is conceived as a workflow for the construction of the BOF divided in thr
 
 **Step1: Generate the stoichiometric coefficients for major macromolecules.** 
 
-We found that the **macromolecular weight fractions (MWF)** are the major determinant of the stoichiometric coefficients. Hence, we advise modellers to query detailed composition of their organism. This signifies determining the absolute dry weight of the cell and the percentage dry weight occupied by the major components: proteins, RNA, lipids, DNA and glycans. For more information on how to obtain this composition experimentally we refer to: `*Beck AE et al*
+We found that the **macromolecular weight fractions (MWF)** are the major determinant of the stoichiometric coefficients. Hence, we advise modellers to query detailed composition of their organism. This signifies determining the absolute dry weight of the cell and the percentage dry weight occupied by the major components: proteins, RNA, lipids, DNA and glycans. For more information on how to obtain this composition experimentally we refer to: `Beck AE et al
 <https://doi:10.3390/pr6050038>`_
 
 To generate accurate growth rate prediction, obtaining growth and non-growth associated maintenance (GAM and NGAM) ATP costs is usually the most important parameter. Growth rate data on different substrate with quantification of **substrate consumption rate** and **metabolic waste production rate** can be incorporated in Step1 of BOFdat to generate the experimentally determined maintenance costs. We provide an example of such data and, for further experimental reference, we suggest referring to `Monk JM et al
@@ -31,7 +31,7 @@ The metabolite composition of the BOF reflects the growth requirements of the or
 <https://doi.org/10.1038/nmeth.1377>`_
 
 
-A good example of genome-wide single gene knock-out is the "Keio collection" for *E. coli*, see Baba T et al
+A good example of genome-wide single gene knock-out is the "Keio collection" for *E. coli*, see `Baba T et al
 <https://doi:10.1038/msb4100050>`_
 
 Installation
