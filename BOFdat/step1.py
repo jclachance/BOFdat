@@ -14,7 +14,7 @@ from BOFdat.core import maintenance
 from BOFdat.util import update
 
 
-def generate_dna_coefficients(path_to_fasta, path_to_model , DNA_WEIGHT_FRACTION=0.031):
+def generate_dna_coefficients(path_to_fasta, path_to_model , DNA_WEIGHT_FRACTION=0.031, conversion_table=None):
     """
     Generates a dictionary of metabolite:coefficients for the 4 DNA bases from the organism's
     DNA fasta file and the weight percentage of DNA in the cell.
@@ -27,7 +27,7 @@ def generate_dna_coefficients(path_to_fasta, path_to_model , DNA_WEIGHT_FRACTION
 
     :return: a dictionary of metabolites and coefficients
     """
-    dna_coefficients = dna.generate_coefficients(path_to_fasta, path_to_model , DNA_WEIGHT_FRACTION=0.031)
+    dna_coefficients = dna.generate_coefficients(path_to_fasta, path_to_model , DNA_WEIGHT_FRACTION=0.031, conversion_table=conversion_table)
     return dna_coefficients
 
 def generate_rna_coefficients(path_to_genbank, path_to_model, path_to_transcriptomic,
@@ -35,7 +35,8 @@ def generate_rna_coefficients(path_to_genbank, path_to_model, path_to_transcript
                          rRNA_WEIGHT_FRACTION=0.9,
                          tRNA_WEIGHT_FRACTION=0.05,
                          mRNA_WEIGHT_FRACTION=0.05,
-                         identifier='locus_tag'):
+                         identifier='locus_tag',
+			 conversion_table=None):
     """
     Generates a dictionary of metabolite:coefficients for the 4 RNA bases from the organism's
     GenBank annotated file, total RNA weight percentage, transcriptomic. Alternately, ribosomal,
@@ -65,11 +66,12 @@ def generate_rna_coefficients(path_to_genbank, path_to_model, path_to_transcript
                          rRNA_WEIGHT_FRACTION,
                          tRNA_WEIGHT_FRACTION,
                          mRNA_WEIGHT_FRACTION,
-                         identifier)
+                         identifier,
+			 conversion_table=conversion_table)
 
     return rna_coefficients
 
-def generate_protein_coefficients(path_to_genbank, path_to_model, path_to_proteomic, PROTEIN_WEIGHT_FRACTION=0.55):
+def generate_protein_coefficients(path_to_genbank, path_to_model, path_to_proteomic, PROTEIN_WEIGHT_FRACTION=0.55,conversion_table=None):
     """
     Generates a dictionary of metabolite:coefficients for the 20 amino acids contained in proteins from the organism's
     GenBank annotated file, total Protein weight percentage and proteomic data.
@@ -84,7 +86,7 @@ def generate_protein_coefficients(path_to_genbank, path_to_model, path_to_proteo
 
     :return: a dictionary of metabolites and coefficients
     """
-    protein_coefficients = protein.generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, PROTEIN_WEIGHT_FRACTION)
+    protein_coefficients = protein.generate_coefficients(path_to_genbank, path_to_model, path_to_proteomic, PROTEIN_WEIGHT_FRACTION,conversion_table)
     return protein_coefficients
 
 def generate_lipid_coefficients(path_to_lipidomic,path_to_conversion_file,
