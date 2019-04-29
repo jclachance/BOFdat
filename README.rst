@@ -1,4 +1,4 @@
-|Buildstatus| |License| |Documentation|
+|License| |Documentation|
 
 BOFdat
 ======
@@ -32,7 +32,6 @@ Example use
 
 A full biomass objective function stoichiometric coefficients determination from experimental data fetched from literature for the *E.coli* model iML1515 is available in the Example folder. The files used are also provided. 
 
-|Binder|
 
 Documentation
 ~~~~~~~~~~~~~
@@ -44,18 +43,14 @@ The documentation and API for BOFdat is available on `Read the Docs`_
 Cite
 ----
 
-BOFdat: generating biomass objective function stoichiometric coefficients from experimental data
+BOFdat: Generating biomass objective functions for genome-scale metabolic models from experimental data 
 
-https://www.biorxiv.org/content/early/2018/01/05/243881
-
+.. _BOFdat: Generating biomass objective functions for genome-scale metabolic models from experimental data: https://doi.org/10.1371/journal.pcbi.1006971
 
 .. |License| image:: https://img.shields.io/badge/License-MIT-blue.svg
     :target: https://github.com/jclachance/BOFdat/blob/master/LICENSE
 .. |Documentation| image:: https://readthedocs.org/projects/BOFdat/badge/?version=master
     :target: https://bofdat.readthedocs.io/en/latest/index.html
-.. |Buildstatus| image:: https://travis-ci.org/jclachance/BOFdat.svg?branch=master
-    :target: https://travis-ci.org/jclachance/BOFdat
-.. |Binder| image:: https://mybinder.org/badge.svg :target: https://mybinder.org/v2/gh/jclachance/BOFdat/master?filepath=Example_usage%2FExample.ipynb
 
 Author: Jean-Christophe Lachance
 Date: 06-13-2018
