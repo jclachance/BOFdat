@@ -47,7 +47,7 @@ Cite
 
 
 .. _BOFdat Generating biomass objective functions for genome-scale metabolic models from experimental data: https://doi.org/10.1371/journal.pcbi.1006971
-.. |Lachance JC et al| replace:: BOFdat: Generating biomass objective functions for genome-scale metabolic models from experimental data
+.. |BOFdat Generating biomass objective functions for genome-scale metabolic models from experimental data| replace:: BOFdat: Generating biomass objective functions for genome-scale metabolic models from experimental data
 
 .. |License| image:: https://img.shields.io/badge/License-MIT-blue.svg
     :target: https://github.com/jclachance/BOFdat/blob/master/LICENSE
