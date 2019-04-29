@@ -30,7 +30,7 @@ Use pip to install BOFdat from `PyPi`_::
 Example use
 ~~~~~~~~~~~
 
-A full biomass objective function stoichiometric coefficients determination from experimental data fetched from literature for the *E.coli* model iML1515 is available in the Example folder. The files used are also provided. 
+A full biomass objective function stoichiometric coefficients determination from experimental data fetched from literature for the *E.coli* model *i*ML1515 is available in the Example folder. The files used are also provided. 
 
 
 Documentation
@@ -43,9 +43,11 @@ The documentation and API for BOFdat is available on `Read the Docs`_
 Cite
 ----
 
-|BOFdat: Generating biomass objective functions for genome-scale metabolic models from experimental data|_
+|BOFdat Generating biomass objective functions for genome-scale metabolic models from experimental data|_
 
-.. _BOFdat: Generating biomass objective functions for genome-scale metabolic models from experimental data: https://doi.org/10.1371/journal.pcbi.1006971
+
+.. _BOFdat Generating biomass objective functions for genome-scale metabolic models from experimental data: https://doi.org/10.1371/journal.pcbi.1006971
+.. |Lachance JC et al| replace:: BOFdat: Generating biomass objective functions for genome-scale metabolic models from experimental data
 
 .. |License| image:: https://img.shields.io/badge/License-MIT-blue.svg
     :target: https://github.com/jclachance/BOFdat/blob/master/LICENSE
