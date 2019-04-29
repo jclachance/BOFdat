@@ -43,7 +43,7 @@ The documentation and API for BOFdat is available on `Read the Docs`_
 Cite
 ----
 
-BOFdat: Generating biomass objective functions for genome-scale metabolic models from experimental data 
+|BOFdat: Generating biomass objective functions for genome-scale metabolic models from experimental data|_
 
 .. _BOFdat: Generating biomass objective functions for genome-scale metabolic models from experimental data: https://doi.org/10.1371/journal.pcbi.1006971
 
