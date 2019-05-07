@@ -61,7 +61,7 @@ def _import_essentiality(path):
 
 def _get_biomass_objective_function(model):
     from cobra.util.solver import linear_reaction_coefficients
-    return linear_reaction_coefficients(model).keys()[0]
+    return list(linear_reaction_coefficients(model))[0]
 
 #------------------------------#
 
@@ -78,7 +78,7 @@ def add_biomass_metab(dict_of_metab, biomass):
 
 def find_in_biomass(biomass, dict_of_coefficients):
     # 1- Find metabolites in BIOMASS
-    for k, v in dict_of_coefficients.iteritems():
+    for k, v in dict_of_coefficients.items():
         metab = k
         dict_addition = {k: -v}
         for r in biomass.reactants:
@@ -92,7 +92,7 @@ def find_in_biomass(biomass, dict_of_coefficients):
 
 def find_metabolites_in_biomass(biomass, dict_of_coefficients):
     # 1- Find metabolites in BIOMASS
-    for k, v in dict_of_coefficients.iteritems():
+    for k, v in dict_of_coefficients.items():
         metab = k
         dict_addition = {k: -v}
         for r in biomass.reactants:
@@ -158,7 +158,7 @@ def make_new_BOF(model, update_model=False, update_NGAM=True, *args, **kwargs):
         base_biomass.update(d)
     ppi_coeff, h2o_coeff, atp_coeff = [], [], []
     remove_keys = []
-    for k, v in base_biomass.iteritems():
+    for k, v in base_biomass.items():
         if k.id == 'ppi_c':
             ppi_coeff.append(v) 
             remove_keys.append(k)
@@ -209,7 +209,7 @@ def make_new_BOF(model, update_model=False, update_NGAM=True, *args, **kwargs):
         biomass.add_metabolites(base_biomass)
         biomass.objective_coefficient = 1.
     else:
-        return pd.DataFrame.from_records([(k.id,v) for k,v in base_biomass.iteritems()],columns=['Metabolite','Coefficient'])
+        return pd.DataFrame.from_records([(k.id,v) for k,v in base_biomass.items()],columns=['Metabolite','Coefficient'])
 
 def determine_coefficients(list_of_metab, model, weight_fraction):
     RATIO = float(1) / len(list_of_metab)
@@ -250,7 +250,7 @@ def save_biomass(biomass,file_path):
     :param file_path: file name and path under which to save the biomass
     :return:
     """
-    df = pd.DataFrame.from_records([(k,v) for k,v in biomass.iteritems()],
+    df = pd.DataFrame.from_records([(k,v) for k,v in biomass.items()],
                                      columns=['Metabolites','Coefficients'])
     df.to_csv(file_path)
 

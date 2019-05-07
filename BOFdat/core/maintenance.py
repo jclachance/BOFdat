@@ -11,6 +11,7 @@ This package offers two options for the user:
 
 """
 import cobra
+from BOFdat.util.update import _get_biomass_objective_function
 import pandas as pd
 import numpy as np
 import warnings
@@ -45,6 +46,7 @@ def _import_data(path_to_data):
 def _get_carbon_sources(data):
     return [c for c in data.Source]
 
+
 def _attribute_colors(data,carbon_sources):
     # Attribute colors to carbon sources for ploting
     # Set a color palette
@@ -56,15 +58,13 @@ def _attribute_colors(data,carbon_sources):
 
     return data
 
-def _get_biomass_objective_function(model):
-    from cobra.util.solver import linear_reaction_coefficients
-    return linear_reaction_coefficients(model).keys()[0]
 
 def _atp_cost(model):
     solution = model.optimize().f
     if solution == None:
         solution = 0
     return solution
+
 
 def _calculate_gam(model,data,show_GAM):
     #Build the output matrix
@@ -278,6 +278,7 @@ def _show_gam(raw_GAM):
 
     return {'GAM': m, 'NGAM': b}
 
+
 def experimental_maintenance(path_to_data, path_to_model,show_GAM=False):
     """
 
@@ -306,6 +307,7 @@ def experimental_maintenance(path_to_data, path_to_model,show_GAM=False):
     #new_gams_calc_grs(gams)
 
     return gams
+
 
 def update_maintenance_costs(gams,model,RNA_atp):
     """

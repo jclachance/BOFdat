@@ -428,7 +428,8 @@ def qual_definition(model_path, init_pop_path, exp_essentiality_path, base_bioma
 
     if base_biomass:
         if 'base_biomass_path' in kwargs:
-            base_biomass_df = pd.read_csv(kwargs.get('base_biomass_path'), index_col=0)
+            base_biomass_df = _import_base_biomass(kwargs.get('base_biomass_path'))
+            print(base_biomass_df)
             base_biomass = dict(zip([model.metabolites.get_by_id(k) for k in base_biomass_df['Metabolites']],
                                     [v for v in base_biomass_df['Coefficients']]))
         else:
