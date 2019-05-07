@@ -15,6 +15,7 @@ from BOFdat.core import maintenance
 
 def generate_dna_coefficients(path_to_fasta, path_to_model,
                               DNA_WEIGHT_FRACTION=0.031):
+
     """
     Generate a dictionary of metabolite:coefficients for the 4 DNA bases.
 
@@ -30,6 +31,7 @@ def generate_dna_coefficients(path_to_fasta, path_to_model,
 
     :return: a dictionary of metabolites and coefficients
     """
+
     dna_coefficients = dna.generate_coefficients(path_to_fasta,
                                                  path_to_model,
                                                  DNA_WEIGHT_FRACTION=0.031)
@@ -44,6 +46,7 @@ def generate_rna_coefficients(path_to_genbank,
                               tRNA_WEIGHT_FRACTION=0.05,
                               mRNA_WEIGHT_FRACTION=0.05,
                               identifier='locus_tag'):
+
     """
     Generate a dictionary of metabolite:coefficients for the 4 RNA bases.
 
@@ -74,6 +77,7 @@ def generate_rna_coefficients(path_to_genbank,
 
     :return: a dictionary of metabolites and coefficients
     """
+
     rna_coefficients = rna.generate_coefficients(path_to_genbank,
                                                  path_to_model,
                                                  path_to_transcriptomic,
@@ -90,6 +94,7 @@ def generate_protein_coefficients(path_to_genbank,
                                   path_to_model,
                                   path_to_proteomic,
                                   PROTEIN_WEIGHT_FRACTION=0.55):
+
     """
     Generate a dictionary of metabolite:coefficients all 20 amino acids.
 
@@ -107,10 +112,12 @@ def generate_protein_coefficients(path_to_genbank,
 
     :return: a dictionary of metabolites and coefficients
     """
+
     protein_coefficients = protein.generate_coefficients(path_to_genbank,
                                                          path_to_model,
                                                          path_to_proteomic,
                                                          PROTEIN_WEIGHT_FRACTION)
+
     return protein_coefficients
 
 
