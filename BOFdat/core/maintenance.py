@@ -60,7 +60,7 @@ def _attribute_colors(data,carbon_sources):
 
 
 def _atp_cost(model):
-    solution = model.optimize().f
+    solution = model.optimize().objective_value
     if solution == None:
         solution = 0
     return solution
