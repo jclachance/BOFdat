@@ -10,18 +10,18 @@ from BOFdat.core import metab_end_goals
 from BOFdat.core import group_end_goals
 from BOFdat.core import update
 
-def generate_initial_population(population_path, model, base_biomass, exp_essentiality,
+def generate_initial_population(population_write_path, model_path, base_biomass_path, exp_essentiality,
                                 number_of_populations=3,WEIGHT_FRACTION=0.05,**kwargs):
     """
         This function generates a given number of initial populations. An initial population is matrix of metabolites
         and individuals where each individual is a list of 0 and 1 corresponding to the presence or absence of a given
         metabolite.
 
-        :param population_path: The path to write the population to. BOFdat will add "pop_N.csv" to the given path,
+        :param population_write_path: The path to write the population to. BOFdat will add "pop_N.csv" to the given path,
         where N is the Nth population generated.
         :param pop_size: The number of populations to generate, default is 3.
-        :param model: A model object.
-        :param base_biomass: The output of step 1 and 2 of BOFdat in 2 column ".csv" file.
+        :param model_path: The path to the model.
+        :param base_biomass_path: The path to the output of step 1 and 2 of BOFdat in 2 column ".csv" file.
         :param exp_essentiality: Experimental essentiality as a 2 columns ".csv" file.
         First column is the gene identifiers, second column is the binary experimental essentiality ("E":0,"NE":1).
         :param WEIGHT_FRACTION: weight fraction of the category represented, between 0 and 1
@@ -31,7 +31,7 @@ def generate_initial_population(population_path, model, base_biomass, exp_essent
     """
     Add robustness element here
     """
-    initial_population.make_initial_population(population_path, model, base_biomass, exp_essentiality,
+    initial_population.make_initial_population(population_write_path, model_path, base_biomass_path, exp_essentiality,
                                                number_of_populations,WEIGHT_FRACTION,kwargs)
 
 def find_metabolites(model_path, init_pop_path, exp_essentiality_path, base_biomass=True,
