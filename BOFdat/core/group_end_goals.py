@@ -269,6 +269,64 @@ def _select_metabolites(freq_df,grouped_clusters,best_bof):
 
     return bd3_unique
 
+
+def _select_metabolites_method2(freq_df, cluster_matrix, best_bof):
+    """
+    Function that selects the metabolites to add to the BOF
+    Returns a list of metabolites
+    """
+    # 1- Convert frequency dataframe to dictionary
+    freq_dict = {row['Metab']: row['Frequency'] for i, row in freq_df.iterrows()}
+
+    # 2- Sort to ensure the rows are in order of cluster
+    cluster_matrix.sort_values('cluster', inplace=True)
+    metab_frequency = [freq_dict.get(i) for i in cluster_matrix.index]
+    cluster_matrix['metabolite frequency'] = metab_frequency
+
+    # 3- Make a dictionary that maps cluster identifier number to their sum frequency
+    cluster_frequency_dict = cluster_matrix.groupby('cluster').sum()['metabolite frequency'].to_dict()
+    cluster_matrix['cluster frequency'] = [cluster_frequency_dict.get(i) for i in cluster_matrix.cluster]
+
+    # 4- Remove the columns with distance, keeping only cluster and metabolite frequencies
+    selection_matrix = cluster_matrix.iloc[:, -3:]
+
+    # 5- Make a dictionary of max value and cluster identifier
+    # Get the maximum metabolite frequency for each cluster
+    grouped = selection_matrix.groupby('cluster').max()
+    # max_metab_freq = [i for i in grouped['metabolite frequency']]
+    cluster_frequency = [i for i in grouped['cluster frequency']]
+    clusters = [i for i in grouped.index]
+    # max_metab_dict = dict(zip(clusters,max_metab_freq))
+    cluster_freq_dict = dict(zip(clusters, cluster_frequency))
+
+    # Normalize cluster frequency
+    cluster_freq = pd.DataFrame(cluster_freq_dict.items(), columns=['Cluster', 'Frequency'])
+
+    from scipy.stats import zscore
+    weight = []
+    for z in zscore(cluster_freq['Frequency']):
+        if z > 1:
+            weight.append(3)
+        elif 1 > z > 0:
+            weight.append(2)
+        else:
+            weight.append(1)
+
+    cluster_weight_dict = dict(zip([c for c in cluster_freq['Cluster']], weight))
+    # 6- Add w metabolites from each cluster where w is the weight
+    # determined based on the z-score of cluster frequency
+    selected_metab = []
+    for i, row in selection_matrix.iterrows():
+        cluster = row['cluster']
+        number_of_metab = cluster_weight_dict.get(cluster)
+
+        for i in selection_matrix[selection_matrix['cluster'] == cluster].sort_values('metabolite frequency',
+                                                                                      ascending=False)[
+                 :number_of_metab].index:
+            selected_metab.append(i)
+
+    return set(selected_metab)
+
 def cluster_metabolites(outpath,
                         path_to_model,
                         CONNECTIVITY_THRESHOLD,

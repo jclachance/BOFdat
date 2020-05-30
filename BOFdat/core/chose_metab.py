@@ -436,9 +436,9 @@ def qual_definition(model_path, init_pop_path, exp_essentiality_path, base_bioma
 
     if base_biomass:
         if 'base_biomass_path' in kwargs:
-            base_biomass = pd.read_csv(base_biomass_path, index_col=0)
-            base_biomass = dict(zip([model.metabolites.get_by_id(k) for k in base_biomass['Metabolites']],
-                                    [v for v in base_biomass['Coefficients']]))
+            base_biomass_df = pd.read_csv(kwargs.get(base_biomass_path), index_col=0)
+            base_biomass = dict(zip([model.metabolites.get_by_id(k) for k in base_biomass_df['Metabolites']],
+                                    [v for v in base_biomass_df['Coefficients']]))
         else:
             # Give a standard biomass reaction
             bb_id = {'ala__L_c': -0.8582035429224959,

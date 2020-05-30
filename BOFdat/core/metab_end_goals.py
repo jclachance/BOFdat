@@ -52,7 +52,7 @@ def initPopulation(pcls, ind_init, filename):
 def make_ind(index):
     # Generates an individual with 100 metabolites
     ind_dict = {}
-    ind_size = randint(0,float(len(index))/3)
+    ind_size = randint(0,int(float(len(index))/3))
     for i in index:
         if sum(ind_dict.values()) < ind_size:
             ind_dict[i] = randint(0, 1)
@@ -89,15 +89,15 @@ def generate_new_individual(universal_index, model, base_biomass):
 
         # Add a constraint to the biomass
         # Meaning that the final model has to produce DNA and RNA
-        biomass.add_metabolites(base_biomass)
+        model.reactions.BIOMASS.add_metabolites(base_biomass)
 
         for i in shuffle_index:
             # Add metabolites to the temporary biomass
             if ind.get(i) == 1:
-                biomass.add_metabolites({i: -0.1})
+                model.reactions.BIOMASS.add_metabolites({i: -0.1})
 
         # Set new biomass and test individual
-        biomass.objective_coefficient = 1.
+        model.reactions.BIOMASS.objective_coefficient = 1.
         solvable = feasible(model.slim_optimize())
 
         if solvable == True:
@@ -129,9 +129,10 @@ def eval_ind(individual, initial_pop, model, base_biomass, exp_ess, distance):
     index = initial_pop.index
     for i in range(len(index)):
         if individual[i] == 1:
-            biomass.add_metabolites({initial_pop.index[i]: -0.1})
-    biomass.add_metabolites(base_biomass)
-    biomass.objective_coefficient = 1.
+            model.reactions.BIOMASS.add_metabolites({initial_pop.index[i]: -0.1})
+
+    model.reactions.BIOMASS.add_metabolites(base_biomass)
+    model.reactions.BIOMASS.objective_coefficient = 1.
     # Generate deletion results --> BOTTLENECK FOR SURE
     deletion_results = single_gene_deletion(model, model.genes, processes=1)
 
@@ -427,9 +428,10 @@ def qual_definition(model_path, init_pop_path, exp_essentiality_path, base_bioma
 
     if base_biomass:
         if 'base_biomass_path' in kwargs:
-            base_biomass = _import_base_biomass(base_biomass_path)
-            base_biomass = dict(zip([model.metabolites.get_by_id(k) for k in base_biomass['Metabolites']],
-                                    [v for v in base_biomass['Coefficients']]))
+            base_biomass_df = _import_base_biomass(kwargs.get('base_biomass_path'))
+            print(base_biomass_df)
+            base_biomass = dict(zip([model.metabolites.get_by_id(k) for k in base_biomass_df['Metabolites']],
+                                    [v for v in base_biomass_df['Coefficients']]))
         else:
             # Give a standard biomass reaction
             bb_id = {'ala__L_c': -0.8582035429224959,
@@ -520,4 +522,3 @@ def qual_definition(model_path, init_pop_path, exp_essentiality_path, base_bioma
     distance = default_param.get('distance_measure')
     _genetic_algo(model, initial_pop, exp_ess, base_biomass, toolbox, default_param, distance, processes,
                   outputs)
-
