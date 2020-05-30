@@ -116,7 +116,7 @@ def _convert_lipidomics_to_bigg(lipidomic,conversion):
 def _get_relative_abundance(bigg_abundance):
     # Calculate relative abundances
     total_peak = sum(bigg_abundance.values())
-    return {k: float(v) / total_peak for k, v in bigg_abundance.iteritems()}
+    return {k: float(v) / total_peak for k, v in bigg_abundance.items()}
 
 def _get_lipid_weight(model,compound_list,R_WEIGHT):
     #Function to change the molecular weight of a lipid that entails R chains of undefined weight
@@ -160,7 +160,7 @@ def _get_lipid_weight(model,compound_list,R_WEIGHT):
 
 def _calculate_coefficients(weight_dict,relative_abundance,LIPID_WEIGHT,CELL_WEIGHT,model):
     keys,values = [],[]
-    for k,v in weight_dict.iteritems():
+    for k,v in weight_dict.items():
         #Generate the total weight of the compound in the cell
         total_weight = LIPID_WEIGHT * relative_abundance.get(k)
         # Get molarity of the compound in the cell
@@ -240,10 +240,10 @@ def filter_for_model_lipid(path_to_conversion_file, path_to_model):
                             [i for i in to_bigg_df[to_bigg_df.columns[1]]]))
 
     # Get the metabolites that are in the model
-    model_metab = {k: v for k, v in to_bigg_dict.iteritems() if v in model_metab_id}
+    model_metab = {k: v for k, v in to_bigg_dict.items() if v in model_metab_id}
 
     # Get the metabolites that are not in the model but present in OMICs data
-    non_model_metab = [k for k,v in to_bigg_dict.iteritems() if v not in model_metab_id]
+    non_model_metab = [k for k,v in to_bigg_dict.items() if v not in model_metab_id]
     if len(non_model_metab) != 0:
         print("These lipids were not found in the model but were present in your lipidomic data, "
                      "consider adding them to your model: %s " % ([metab for metab in non_model_metab]))

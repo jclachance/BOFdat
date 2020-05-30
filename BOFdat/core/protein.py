@@ -81,7 +81,7 @@ def _get_aa_composition(seq_dict):
     # Keys = amino acid by letter code
     # Values = the occurence of that amino acid
     list_of_dict = []
-    for k,v in seq_dict.iteritems():
+    for k,v in seq_dict.items():
         list_of_occurences = []
         # Get the occurence for each letter
         for letter in AMINO_ACIDS:

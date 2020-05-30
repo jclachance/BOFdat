@@ -1,4 +1,4 @@
-|Buildstatus| |License| |Documentation|
+|License| |Documentation|
 
 BOFdat
 ======
@@ -30,9 +30,8 @@ Use pip to install BOFdat from `PyPi`_::
 Example use
 ~~~~~~~~~~~
 
-A full biomass objective function stoichiometric coefficients determination from experimental data fetched from literature for the *E.coli* model iML1515 is available in the Example folder. The files used are also provided. 
+A full biomass objective function stoichiometric coefficients determination from experimental data fetched from literature for the *E.coli* model *i*ML1515 is available in the Example folder. The files used are also provided. 
 
-|Binder|
 
 Documentation
 ~~~~~~~~~~~~~
@@ -44,21 +43,16 @@ The documentation and API for BOFdat is available on `Read the Docs`_
 Cite
 ----
 
-BOFdat: generating biomass objective function stoichiometric coefficients from experimental data
+|BOFdat Generating biomass objective functions for genome-scale metabolic models from experimental data|_
 
-https://www.biorxiv.org/content/early/2018/01/05/243881
 
+.. _BOFdat Generating biomass objective functions for genome-scale metabolic models from experimental data: https://doi.org/10.1371/journal.pcbi.1006971
+.. |BOFdat Generating biomass objective functions for genome-scale metabolic models from experimental data| replace:: BOFdat: Generating biomass objective functions for genome-scale metabolic models from experimental data
 
 .. |License| image:: https://img.shields.io/badge/License-MIT-blue.svg
     :target: https://github.com/jclachance/BOFdat/blob/master/LICENSE
 .. |Documentation| image:: https://readthedocs.org/projects/BOFdat/badge/?version=master
     :target: https://bofdat.readthedocs.io/en/latest/index.html
-.. |Buildstatus| image:: https://travis-ci.org/jclachance/BOFdat.svg?branch=master
-    :target: https://travis-ci.org/jclachance/BOFdat
-
-.. |Binder| image::https://mybinder.org/badge.svg
-    :target: https://github.com/jclachance/BOFdat/blob/master/Example_usage/Example.ipynb
-
 
 Author: Jean-Christophe Lachance
 Date: 06-13-2018
